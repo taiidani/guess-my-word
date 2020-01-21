@@ -1,35 +1,40 @@
-# Welcome to Buffalo!
+# Guess My Word
 
-Thank you for choosing Buffalo for your web development needs.
+This is a pet project based on original work done at https://hryanjones.com/guess-my-word/, after addicting me for a couple of weeks. It is a variant that pushes more of the logic to the backend, preventing any JavaScript-savvy individuals from spoiling themselves of the fun of guessing :)
 
-## Database Setup
+Currently a work in progress.
 
-It looks like you chose to set up your application using a database! Fantastic!
+## Attributions
 
-The first thing you need to do is open up the "database.yml" file and edit it to use the correct usernames, passwords, hosts, etc... that are appropriate for your environment.
+Inspiration was taken heavily from https://hryanjones.com/guess-my-word/.
 
-You will also need to make sure that **you** start/install the database of your choice. Buffalo **won't** install and start it for you.
+The Scrabble word list was obtained from https://sourceforge.net/projects/scrabbledict/.
 
-### Create Your Databases
+The web framework in use is Buffalo: https://gobuffalo.io/en
 
-Ok, so you've edited the "database.yml" file and started your database, now Buffalo can create the databases in that file for you:
+## Contributing
 
-	$ buffalo pop create -a
+The application requires the following to be configured:
 
-## Starting the Application
+* Go 1.11+ installed
+* The [Buffalo](https://gobuffalo.io/en) CLI installed.
+* If using the leaderboard functionality, Docker and Docker Compose.
 
-Buffalo ships with a command that will watch your application and automatically rebuild the Go binary and any assets for you. To do that run the "buffalo dev" command:
+If you are going to access the leaderboard functionality, first start its Postgres database with:
 
-	$ buffalo dev
+```sh
+docker-compose up -d
 
-If you point your browser to [http://127.0.0.1:3000](http://127.0.0.1:3000) you should see a "Welcome to Buffalo!" page.
+# First time use only -- run migrations
+buffalo pop create -a
+```
 
-**Congratulations!** You now have your Buffalo application up and running.
+Once up and running, start the application in development mode with:
 
-## What Next?
+```
+buffalo dev
+```
 
-We recommend you heading over to [http://gobuffalo.io](http://gobuffalo.io) and reviewing all of the great documentation there.
+Then view the website at http://127.0.0.1:3000.
 
-Good luck!
-
-[Powered by Buffalo](http://gobuffalo.io)
+Dev away!

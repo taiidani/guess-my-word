@@ -1,0 +1,14 @@
+version: '2.4'
+
+services:
+    postgres:
+        image: postgres:12-alpine
+        ports: [ "127.0.0.1:5432:5432"]
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: postgres
+        volumes:
+            - dbdata:/var/lib/postgresql/data
+
+volumes:
+    dbdata:
