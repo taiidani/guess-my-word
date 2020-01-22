@@ -2,63 +2,52 @@
   <div class="container">
     <div class="row">
       <div class="col-md-1 col-sm-2 col-xs-2 logo">
-        <a href="<%= rootPath() %>"><img src="<%= rootPath() %>assets/images/logo.svg" alt=""></a>
+        <a href="<%= rootPath() %>"><img src="<%= rootPath() %>assets/images/logo.svg"
+            alt="Question by Gregor Cresnar from the Noun Project"></a>
       </div>
       <div class="col-md-9 col-sm-9 col-xs-10 titles">
         <h1><%= t("welcome_greeting") %></h1>
         <h2>
-          <a href="https://github.com/gobuffalo/buffalo"><i class="fab fa-github" aria-hidden="true"></i> https://github.com/gobuffalo/buffalo</a>
-        </h2>
-        <h2 class="documentation">
-          <a href="http://gobuffalo.io/"><i class="fa fa-book" aria-hidden="true"></i> Documentation</a>
+          <a href="https://github.com/taiidani/guess-my-word"><i class="fab fa-github" aria-hidden="true"></i>
+            https://github.com/taiidani/guess-my-word</a>
         </h2>
       </div>
     </div>
   </div>
-
 </header>
 
 <div class="row">
   <div class="col-md-12">
-    <div class="subtitle">
-      <div class="container">
-        <h3>Defined Routes</h3>
-      </div>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-striped">
-        <thead>
-          <tr text-align="left">
-            <th class="centered">METHOD</th>
-            <th>PATH</th>
-            <th>NAME</th>
-            <th>HANDLER</th>
-          </tr>
-        </thead>
-        <tbody>
+    <p>
+      This application hosts a daily word game, originally inspired by <a
+        href="https://hryanjones.com/guess-my-word/#">H Ryan Jones' "Guess My Word" web app</a>. Each guess will inform
+      you whether it
+      falls before or after the daily word. Every day a new word will become guessable. Good luck!
+    </p>
 
-          <%= for (r) in routes { %>
-            <tr>
-              <td class="centered">
-                <%= r.Method %>
-              </td>
-              <td>
-                <%= if (r.Method != "GET" || r.Path ~= "{") {
-                  return r.Path
-                } else {
-                  return linkTo(r.Path, {body: r.Path})
-                } %>
-              </td>
-              <td>
-                <%= r.PathName %>
-              </td>
-              <td><code><%= r.HandlerName %></code></td>
-            </tr>
-          <% } %>
+    <div>
+      <ul id="after" class="list-group"></ul>
 
-        </tbody>
-      </table>
+      <p>
+        <%= form({id: "guesser", action: guessPath(), method: "GET"}) { %>
+        <div class="row">
+          <div class="col-md-4">
+            <%= f.InputTag({name:"word", placeholder: t("input_placeholder") }) %>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-primary" type="submit">Guess</button>
+          </div>
+        </div>
+        <% } %>
+        </di>
+
+        <ul id="before" class="list-group"></ul>
+      </p>
     </div>
   </div>
-</div>
-<div class="foot"> <span> Powered by <a href="http://gobuffalo.io/">gobuffalo.io</a></span> </div>
+
+  <div id="gutter" class="d-none">
+    <li class="list-group-item guess">
+      <span class="word"></span>
+    </li>
+  </div>

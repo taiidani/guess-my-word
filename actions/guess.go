@@ -37,8 +37,8 @@ func GuessHandler(c buffalo.Context) error {
 	}
 
 	reply := guessReply{}
-	reply.Guess = c.Param("word")
-	if len(strings.TrimSpace(reply.Guess)) == 0 {
+	reply.Guess = strings.ToLower(strings.TrimSpace(c.Param("word")))
+	if len(reply.Guess) == 0 {
 		reply.Error = "Guess must not be empty"
 	} else if _, ok := scrabble[reply.Guess]; !ok {
 		reply.Error = "Guess must be a valid Scrabble word"
