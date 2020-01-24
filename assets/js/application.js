@@ -1,7 +1,6 @@
 require("expose-loader?$!expose-loader?jQuery!jquery");
 require("bootstrap/dist/js/bootstrap.bundle.js");
 
-let scrabble = null;
 let state = new Object();
 state.before = [];
 state.after = [];
@@ -25,11 +24,6 @@ $(() => {
         }
     }
 
-    // Load the Scrabble dictionary
-    $.get("/assets/sowpods.txt", function (data) {
-        scrabble = data.split("\n");
-    });
-
     // Attach the guess event
     $("form#guesser").submit(function (evt) {
         event.preventDefault();
@@ -47,12 +41,6 @@ function guess(word) {
     // Validate that we haven't guessed this before
     if (state.before.indexOf(word) >= 0 || state.after.indexOf(word) >= 0) {
         alert("You've guessed this word before!");
-        return;
-    }
-
-    // Validate that it's a valid Scrabble word
-    if (!validateWord(word)) {
-        alert("Guess must be a valid Scrabble word");
         return;
     }
 
@@ -101,20 +89,4 @@ function renderGuesses() {
     if (state.answer != "") {
         $("#guess-box").text("🎉 You guessed \"" + state.answer + "\" correctly in " + state.guesses + " tries. Come back tomorrow for another!");
     }
-}
-
-function validateWord(word) {
-    if (scrabble == null) {
-        console.error("Scrabble dictionary was not loaded");
-        return false;
-    }
-
-    let found = false;
-    scrabble.forEach(function (candidate) {
-        if (word == candidate) {
-            found = true;
-        }
-    })
-
-    return found;
 }

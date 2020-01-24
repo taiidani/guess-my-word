@@ -1,8 +1,6 @@
 package actions
 
 import (
-	"bufio"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -22,7 +20,6 @@ var (
 	word      string
 	day       time.Time // The current time, in UTC
 	wordMutex sync.Mutex
-	scrabble  map[string]bool
 
 	// words were taken from the original inspiration for this app, https://hryanjones.com/guess-my-word/
 	// That project took the words from 1-1,000 common English words on TV and movies https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/TV/2006/1-1000
@@ -40,7 +37,7 @@ func GuessHandler(c buffalo.Context) error {
 	reply.Guess = strings.ToLower(strings.TrimSpace(c.Param("word")))
 	if len(reply.Guess) == 0 {
 		reply.Error = "Guess must not be empty"
-	} else if _, ok := scrabble[reply.Guess]; !ok {
+	} else if !validateWord(reply.Guess) {
 		reply.Error = "Guess must be a valid Scrabble word"
 	}
 
@@ -62,21 +59,6 @@ func generateWord() error {
 	wordMutex.Lock()
 	defer wordMutex.Unlock()
 
-	// Load the Scrabble dictionary if not loaded yet
-	if scrabble == nil {
-		scrabble = map[string]bool{}
-		f, err := os.Open("assets/sowpods.txt")
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		scanner := bufio.NewScanner(f)
-		for scanner.Scan() {
-			scrabble[strings.TrimSpace(scanner.Text())] = true
-		}
-	}
-
 	// Set the word of the day if not set yet
 	if word == "" || day.YearDay() != time.Now().UTC().YearDay() {
 		day = time.Now().UTC()
@@ -84,4 +66,14 @@ func generateWord() error {
 	}
 
 	return nil
+}
+
+func validateWord(word string) bool {
+	for _, line := range scrabble {
+		if line == word {
+			return true
+		}
+	}
+
+	return false
 }
