@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-1 col-sm-2 col-xs-2 logo">
         <a href="<%= rootPath() %>"><img src="<%= rootPath() %>assets/images/logo.svg"
-            alt="Question by Gregor Cresnar from the Noun Project"></a>
+            alt="Question by Gregor Cresnar from the Noun Project" /></a>
       </div>
       <div class="col-md-9 col-sm-9 col-xs-10 titles">
         <h1><%= t("welcome_greeting") %></h1>
@@ -25,16 +25,23 @@
       falls before or after the daily word. Every day a new word will become guessable. Good luck!
     </p>
 
+    <hr />
+
     <div>
       <ul id="after" class="list-group"></ul>
 
       <p>
         <%= form({id: "guesser", action: guessPath(), method: "GET"}) { %>
         <div class="row">
-          <div class="col-md-4">
-            <%= f.InputTag({name:"word", placeholder: t("input_placeholder") }) %>
+          <div class="col-md-1">
+            <img id="between-logo" src="<%= rootPath() %>assets/images/between.svg"
+              alt="Page Break by Arthur Shlain from the Noun Project" />
           </div>
-          <div class="col-md-2">
+          <div id="guess-box" class="offset-md-1">
+            <label>
+              <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"false" }) %>
+            </label>
+
             <button class="btn btn-primary" type="submit">Guess</button>
           </div>
         </div>

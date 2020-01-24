@@ -4,17 +4,24 @@ require("bootstrap/dist/js/bootstrap.bundle.js");
 state = new Object();
 state.before = [];
 state.after = [];
-state.start = Date.now();
+state.start = new Date();
 state.guesses = 0;
+state.answer = "";
 
 $(() => {
-    // Validate localstorage
+    // Validate localstorage and restore if from the same day
     if (typeof (Storage) === "undefined") {
         alert("Your browser does not appear to support the Local Storage API. Please upgrade to a modern browser in order to activate this feature.");
         return;
     } else if (typeof (sessionStorage.state) !== "undefined") {
-        state = JSON.parse(sessionStorage.state);
-        renderGuesses();
+        incomingState = JSON.parse(sessionStorage.state);
+        incomingState.start = new Date(incomingState.start);
+        console.debug(incomingState);
+
+        if (incomingState.start.getUTCDate() == state.start.getUTCDate()
+            && incomingState.start.getUTCMonth() == state.start.getUTCMonth()) {
+            state = incomingState;
+        }
     }
 
     $("form#guesser").submit(function (evt) {
@@ -23,38 +30,41 @@ $(() => {
         let word = $("input", evt.target).first().val();
         $("input", evt.target).first().val("");
 
-        // Validate that we haven't guessed this before
-        if (state.before.indexOf(word) >= 0 || state.after.indexOf(word) >= 0) {
-            alert("You've guessed this word before!");
+        guess(word);
+    });
+
+    renderGuesses();
+});
+
+function guess(word) {
+    // Validate that we haven't guessed this before
+    if (state.before.indexOf(word) >= 0 || state.after.indexOf(word) >= 0) {
+        alert("You've guessed this word before!");
+        return;
+    }
+
+    $.get("/guess?word=" + word, function (data) {
+        console.debug(data);
+
+        if (data.error != "") {
+            alert(data.error);
             return;
         }
 
-        $.get("/guess?word=" + word, function (data) {
-            console.debug(data);
+        state.guesses += 1;
+        if (data.after) {
+            state.after.push(word);
+        } else if (data.before) {
+            state.before.push(word);
+        } else if (data.correct) {
+            state.answer = word;
+        }
 
-            if (data.error != "") {
-                alert(data.error);
-                return;
-            }
-
-            state.guesses += 1;
-            if (data.after) {
-                console.debug("Guess is after word");
-                state.after.push(word);
-                renderGuesses();
-            } else if (data.before) {
-                console.debug("Guess is before word");
-                state.before.push(word);
-                renderGuesses();
-            } else if (data.correct) {
-                alert("You got it in " + state.guesses + " guesses!");
-            }
-
-            sessionStorage.state = JSON.stringify(state);
-            console.debug(state);
-        });
+        renderGuesses();
+        sessionStorage.state = JSON.stringify(state);
+        console.debug(state);
     });
-});
+}
 
 function renderGuesses() {
     console.debug("Rendering...");
@@ -74,4 +84,8 @@ function renderGuesses() {
         $("#gutter .guess .word").text(item);
         $("#gutter .guess").clone().appendTo(afterElem);
     });
+
+    if (state.answer != "") {
+        $("#guess-box").text("🎉 You guessed \"" + state.answer + "\" correctly in " + state.guesses + " tries. Come back tomorrow for another!");
+    }
 }

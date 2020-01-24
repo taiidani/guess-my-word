@@ -20,7 +20,7 @@ type guessReply struct {
 
 var (
 	word      string
-	day       time.Time
+	day       time.Time // The current time, in UTC
 	wordMutex sync.Mutex
 	scrabble  map[string]bool
 
@@ -78,8 +78,8 @@ func generateWord() error {
 	}
 
 	// Set the word of the day if not set yet
-	if word == "" || day.YearDay() != time.Now().YearDay() {
-		day = time.Now()
+	if word == "" || day.YearDay() != time.Now().UTC().YearDay() {
+		day = time.Now().UTC()
 		word = words[(day.Year()*day.YearDay())%len(words)]
 	}
 
