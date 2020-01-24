@@ -18,18 +18,8 @@ The application requires the following to be configured:
 
 * Go 1.11+ installed
 * The [Buffalo](https://gobuffalo.io/en) CLI installed.
-* If using the leaderboard functionality, Docker and Docker Compose.
 
-If you are going to access the leaderboard functionality, first start its Postgres database with:
-
-```sh
-docker-compose up -d
-
-# First time use only -- run migrations
-buffalo pop create -a
-```
-
-Once up and running, start the application in development mode with:
+Start the application in development mode with:
 
 ```
 buffalo dev

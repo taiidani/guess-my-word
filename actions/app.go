@@ -7,9 +7,6 @@ import (
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	"github.com/unrolled/secure"
 
-	"guess_my_word/models"
-
-	"github.com/gobuffalo/buffalo-pop/pop/popmw"
 	csrf "github.com/gobuffalo/mw-csrf"
 	i18n "github.com/gobuffalo/mw-i18n"
 	"github.com/gobuffalo/packr/v2"
@@ -19,6 +16,8 @@ import (
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
+
+// T is a translation helper
 var T *i18n.Translator
 
 // App is where all routes and middleware for buffalo
@@ -50,11 +49,6 @@ func App() *buffalo.App {
 		// Protect against CSRF attacks. https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
 		// Remove to disable this.
 		app.Use(csrf.New)
-
-		// Wraps each request in a transaction.
-		//  c.Value("tx").(*pop.Connection)
-		// Remove to disable this.
-		app.Use(popmw.Transaction(models.DB))
 
 		// Setup and use translations:
 		app.Use(translations())
