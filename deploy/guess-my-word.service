@@ -1,0 +1,13 @@
+[Unit]
+Description=Guess My Word app
+
+[Service]
+ExecStart=/usr/local/bin/guess-my-word
+User=pi
+Group=pi
+# UMask=007
+Environment="ADDR=0.0.0.0"
+# Environment="GO_ENV=production"
+
+[Install]
+WantedBy=multi-user.target

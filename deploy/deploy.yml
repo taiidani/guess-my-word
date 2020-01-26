@@ -1,0 +1,35 @@
+- hosts: 10.0.1.2
+  user: pi
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Build
+      local_action:
+        module: command
+        args:
+          _raw_params: make arm
+          chdir: ../
+      vars:
+        ansible_become: false
+
+    - name: Upload Binary
+      copy:
+        src: ../bin/guess-my-word
+        dest: /usr/local/bin/guess-my-word
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Upload Service
+      copy:
+        src: guess-my-word.service
+        dest: /etc/systemd/system/guess-my-word.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Enable Service
+      systemd:
+        name: guess-my-word
+        state: restarted
+        enabled: true
