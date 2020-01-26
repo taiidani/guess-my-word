@@ -44,7 +44,8 @@ function guess(word) {
         return;
     }
 
-    $.get("/guess?word=" + word, function (data) {
+    params = { "word": word, "start": state.start.getTime() }
+    $.get("/guess?" + $.param(params), function (data) {
         console.debug(data);
 
         if (data.error != "") {
