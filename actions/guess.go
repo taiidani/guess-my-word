@@ -67,7 +67,7 @@ func extractGuess(c buffalo.Context) guess {
 
 	startStr := strings.TrimSpace(c.Param("start"))
 	if startUnix, err := strconv.ParseInt(startStr, 10, 64); err == nil {
-		ret.start = time.Unix(startUnix, 0)
+		ret.start = time.Unix(startUnix/1000, 0)
 	}
 
 	return ret

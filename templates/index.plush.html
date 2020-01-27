@@ -24,37 +24,48 @@
       you whether it
       falls before or after the daily word. Every day a new word will become guessable. Good luck!
     </p>
+  </div>
+</div>
 
-    <hr />
+<hr />
 
-    <div>
-      <ul id="after" class="list-group"></ul>
+<div class="row">
+  <div class="col-md-12">
+    <ul id="after" class="list-group"></ul>
 
-      <p>
-        <%= form({id: "guesser", action: guessPath(), method: "GET"}) { %>
-        <div class="row">
-          <div class="col-md-1">
-            <img id="between-logo" src="<%= rootPath() %>assets/images/between.svg"
-              alt="Page Break by Arthur Shlain from the Noun Project" />
-          </div>
-          <div id="guess-box" class="offset-md-1">
-            <label>
-              <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"false" }) %>
-            </label>
-
-            <button class="btn btn-primary" type="submit">Guess</button>
-          </div>
+    <p>
+      <%= form({id: "guesser", action: guessPath(), method: "GET"}) { %>
+      <div class="row">
+        <div class="col-md-1">
+          <img id="between-logo" src="<%= rootPath() %>assets/images/between.svg"
+            alt="Page Break by Arthur Shlain from the Noun Project" />
         </div>
-        <% } %>
-        </di>
+        <div id="guess-box" class="offset-md-1">
+          <label>
+            <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"false" }) %>
+          </label>
 
-        <ul id="before" class="list-group"></ul>
-      </p>
-    </div>
-  </div>
+          <button class="btn btn-primary" type="submit">Guess</button>
+        </div>
+      </div>
+      <% } %>
+      </di>
 
-  <div id="gutter" class="d-none">
-    <li class="list-group-item guess">
-      <span class="word"></span>
-    </li>
+      <ul id="before" class="list-group"></ul>
+    </p>
   </div>
+</div>
+
+<hr />
+
+<div class="row">
+  <div class="col-md-12">
+    <p>Yesterday's word: <strong><%= yesterday %></strong></p>
+  </div>
+</div>
+
+<div id="gutter" class="d-none">
+  <li class="list-group-item guess">
+    <span class="word"></span>
+  </li>
+</div>
