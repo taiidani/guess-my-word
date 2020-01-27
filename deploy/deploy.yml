@@ -3,15 +3,6 @@
   become: true
   gather_facts: false
   tasks:
-    - name: Build
-      local_action:
-        module: command
-        args:
-          _raw_params: make arm
-          chdir: ../
-      vars:
-        ansible_become: false
-
     - name: Upload Binary
       copy:
         src: ../bin/guess-my-word
@@ -33,3 +24,14 @@
         name: guess-my-word
         state: restarted
         enabled: true
+
+    - name: Upload Consul config
+      copy:
+        src: consul.hcl
+        dest: /etc/consul.d/guess-my-word.hcl
+        owner: consul
+        group: consul
+        mode: 0644
+
+    - name: Register Consul config
+      command: consul reload
