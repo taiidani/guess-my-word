@@ -94,10 +94,17 @@ function renderGuesses() {
         $("#gutter .guess").clone().appendTo(afterElem);
     });
 
+    // scroll screen to last after, if available
+    scrollElem = $("#after li:nth-last-child(2)").get(0)
+    if (typeof scrollElem != "undefined") {
+        scrollElem.scrollIntoView()
+    }
+
+    // Completion text. Congratulations!
     if (state.answer != "") {
         guessSeconds = Math.floor((state.end - state.start) / 1000)
         guessMinutes = Math.floor(guessSeconds / 60)
         guessSeconds = guessSeconds % 60
-        $("#guess-box").text("🎉 You guessed \"" + state.answer + "\" correctly with " + state.guesses + " tries in " + guessMinutes + " minutes, " + guessSeconds + " seconds. Come back tomorrow for another!");
+        $("#guesser").text("🎉 You guessed \"" + state.answer + "\" correctly with " + state.guesses + " tries in " + guessMinutes + " minutes, " + guessSeconds + " seconds. Come back tomorrow for another!");
     }
 }

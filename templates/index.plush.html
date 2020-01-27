@@ -1,11 +1,11 @@
 <header>
   <div class="container">
     <div class="row">
-      <div class="col-md-1 col-sm-2 col-xs-2 logo">
+      <div class="col-md-1 col-sm-2 col-xs-1 logo">
         <a href="<%= rootPath() %>"><img src="<%= rootPath() %>assets/images/logo.svg"
             alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041" /></a>
       </div>
-      <div class="col-md-9 col-sm-9 col-xs-10 titles">
+      <div class="col-md-11 col-sm-10 col-xs-11 titles">
         <h1><%= t("welcome_greeting") %></h1>
         <h2>
           <a href="https://github.com/taiidani/guess-my-word"><i class="fab fa-github" aria-hidden="true"></i>
@@ -35,24 +35,18 @@
 
     <p>
       <%= form({id: "guesser", action: guessPath(), method: "GET"}) { %>
-      <div class="row">
-        <div class="col-md-1">
-          <img id="between-logo" src="<%= rootPath() %>assets/images/between.svg"
-            alt="Page Break by Arthur Shlain from the Noun Project" />
-        </div>
-        <div id="guess-box" class="offset-md-1">
-          <label>
-            <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"false" }) %>
-          </label>
+      <img id="between-logo" src="<%= rootPath() %>assets/images/between.svg"
+        alt="Page Break by Arthur Shlain from the Noun Project" />
 
-          <button class="btn btn-primary" type="submit">Guess</button>
-        </div>
-      </div>
+      <label>
+        <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"off", autocorrect:"off", autocapitalize:"off", spellcheck:"false" }) %>
+      </label>
+
+      <button class="btn btn-primary" type="submit">Guess</button>
       <% } %>
-      </di>
-
-      <ul id="before" class="list-group"></ul>
     </p>
+
+    <ul id="before" class="list-group"></ul>
   </div>
 </div>
 
