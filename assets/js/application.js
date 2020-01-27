@@ -67,32 +67,38 @@ function guess(word) {
     requestStart = new Date()
     $("form#guesser button").attr("disabled", "disabled")
     params = { "word": word, "start": state.start.getTime() }
-    $.get("/guess?" + $.param(params), function (data) {
-        console.debug(data);
+    $.get("/guess?" + $.param(params))
+        .done(function (data) {
+            console.debug(data);
 
-        if (data.error != "") {
-            alert(data.error);
-            return;
-        }
+            if (data.error != "") {
+                alert(data.error);
+                return;
+            }
 
-        state.guesses += 1;
-        if (data.after) {
-            state.after.push(word);
-        } else if (data.before) {
-            state.before.push(word);
-        } else if (data.correct) {
-            state.answer = word;
-            state.end = new Date();
-        }
+            state.guesses += 1;
+            if (data.after) {
+                state.after.push(word);
+            } else if (data.before) {
+                state.before.push(word);
+            } else if (data.correct) {
+                state.answer = word;
+                state.end = new Date();
+            }
 
-        renderGuesses();
+            renderGuesses();
 
-        // Update the state and restore the ability to make submissions
-        state.idleTime = state.idleTime + (new Date() - requestStart)
-        sessionStorage.state = JSON.stringify(state);
-        $("form#guesser button").removeAttr("disabled")
-        console.debug(state);
-    });
+            // Update the state
+            sessionStorage.state = JSON.stringify(state);
+            console.debug(state);
+        })
+        .always(function () {
+            // Track network request time
+            state.idleTime = state.idleTime + (new Date() - requestStart)
+
+            // Restore the ability to make submissions
+            $("form#guesser button").removeAttr("disabled")
+        });
 }
 
 function renderGuesses() {
