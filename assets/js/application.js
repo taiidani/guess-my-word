@@ -5,6 +5,7 @@ let state = new Object();
 state.before = [];
 state.after = [];
 state.start = new Date();
+state.end = null;
 state.guesses = 0;
 state.answer = "";
 
@@ -16,6 +17,11 @@ $(() => {
     } else if (typeof (sessionStorage.state) !== "undefined") {
         incomingState = JSON.parse(sessionStorage.state);
         incomingState.start = new Date(incomingState.start);
+
+        if (incomingState.end != null) {
+            incomingState.end = new Date(incomingState.end);
+        }
+
         console.debug(incomingState);
 
         if (incomingState.start.getUTCDate() == state.start.getUTCDate()
@@ -60,6 +66,7 @@ function guess(word) {
             state.before.push(word);
         } else if (data.correct) {
             state.answer = word;
+            state.end = new Date();
         }
 
         renderGuesses();
@@ -88,6 +95,9 @@ function renderGuesses() {
     });
 
     if (state.answer != "") {
-        $("#guess-box").text("🎉 You guessed \"" + state.answer + "\" correctly in " + state.guesses + " tries. Come back tomorrow for another!");
+        guessSeconds = Math.floor((state.end - state.start) / 1000)
+        guessMinutes = Math.floor(guessSeconds / 60)
+        guessSeconds = guessSeconds % 60
+        $("#guess-box").text("🎉 You guessed \"" + state.answer + "\" correctly with " + state.guesses + " tries in " + guessMinutes + " minutes, " + guessSeconds + " seconds. Come back tomorrow for another!");
     }
 }
