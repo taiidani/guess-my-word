@@ -2,12 +2,13 @@ require("expose-loader?$!expose-loader?jQuery!jquery");
 require("bootstrap/dist/js/bootstrap.bundle.js");
 
 let state = new Object();
-state.before = [];
-state.after = [];
-state.start = new Date();
-state.end = null;
-state.guesses = 0;
-state.answer = "";
+state.before = []; // after tracks all guesses that the correct word is before
+state.after = []; // after tracks all guesses that the correct word is after
+state.start = new Date();  // start tracks when the guessing started
+state.end = null; // end tracks when the correct guess was made
+state.idleTime = 0; // idleTime tracks how long the user was blocked from guessing (network time)
+state.guesses = 0; // guesses is the number of guesses that the user has made
+state.answer = ""; // answer stores the correct answer once it has been found
 
 $(() => {
     // Validate localstorage and restore if from the same day
@@ -15,19 +16,7 @@ $(() => {
         alert("Your browser does not appear to support the Local Storage API. Please upgrade to a modern browser in order to activate this feature.");
         return;
     } else if (typeof (sessionStorage.state) !== "undefined") {
-        incomingState = JSON.parse(sessionStorage.state);
-        incomingState.start = new Date(incomingState.start);
-
-        if (incomingState.end != null) {
-            incomingState.end = new Date(incomingState.end);
-        }
-
-        console.debug(incomingState);
-
-        if (incomingState.start.getUTCDate() == state.start.getUTCDate()
-            && incomingState.start.getUTCMonth() == state.start.getUTCMonth()) {
-            state = incomingState;
-        }
+        loadState()
     }
 
     // Attach the guess event
@@ -43,6 +32,30 @@ $(() => {
     renderGuesses();
 });
 
+// loadState will restore the browser's state object from the stored sessionStorage state
+function loadState() {
+    incomingState = JSON.parse(sessionStorage.state);
+
+    // Massage string dates back into Date objects
+    incomingState.start = new Date(incomingState.start);
+    if (incomingState.end != null) {
+        incomingState.end = new Date(incomingState.end);
+    }
+
+    // Default idletime
+    if (typeof (incomingState.idleTime) == "undefined") {
+        incomingState.idleTime = 0
+    }
+
+    console.debug(incomingState);
+
+    // Only assign the state if it started on the same day as the current word
+    if (incomingState.start.getUTCDate() == state.start.getUTCDate()
+        && incomingState.start.getUTCMonth() == state.start.getUTCMonth()) {
+        state = incomingState;
+    }
+}
+
 function guess(word) {
     // Validate that we haven't guessed this before
     if (state.before.indexOf(word) >= 0 || state.after.indexOf(word) >= 0) {
@@ -50,6 +63,9 @@ function guess(word) {
         return;
     }
 
+    // Populate and track the request while disabling submissions
+    requestStart = new Date()
+    $("form#guesser button").attr("disabled", "disabled")
     params = { "word": word, "start": state.start.getTime() }
     $.get("/guess?" + $.param(params), function (data) {
         console.debug(data);
@@ -70,13 +86,17 @@ function guess(word) {
         }
 
         renderGuesses();
+
+        // Update the state and restore the ability to make submissions
+        state.idleTime = state.idleTime + (new Date() - requestStart)
         sessionStorage.state = JSON.stringify(state);
+        $("form#guesser button").removeAttr("disabled")
         console.debug(state);
     });
 }
 
 function renderGuesses() {
-    console.debug("Rendering...");
+    // Empty and repopulate the after/before lists
     let beforeElem = $("#before");
     beforeElem.empty();
     let afterElem = $("#after");
@@ -102,7 +122,7 @@ function renderGuesses() {
 
     // Completion text. Congratulations!
     if (state.answer != "") {
-        guessSeconds = Math.floor((state.end - state.start) / 1000)
+        guessSeconds = Math.floor((state.end - state.start - state.idleTime) / 1000)
         guessMinutes = Math.floor(guessSeconds / 60)
         guessSeconds = guessSeconds % 60
         $("#guesser").text("🎉 You guessed \"" + state.answer + "\" correctly with " + state.guesses + " tries in " + guessMinutes + " minutes, " + guessSeconds + " seconds. Come back tomorrow for another!");
