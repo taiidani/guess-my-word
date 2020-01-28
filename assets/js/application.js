@@ -1,5 +1,8 @@
-require("expose-loader?$!expose-loader?jQuery!jquery");
-require("bootstrap/dist/js/bootstrap.bundle.js");
+// Externalize jQuery to CDN
+// require("expose-loader?$!expose-loader?jQuery!jquery");
+
+// Default boostrap JS. Disabled as currently not required
+// require("bootstrap/dist/js/bootstrap.bundle.js");
 
 let state = new Object();
 state.before = []; // after tracks all guesses that the correct word is before
