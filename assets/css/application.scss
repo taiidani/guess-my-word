@@ -3,28 +3,28 @@
 // Disabling Font Awesome as it's unused
 // @import "~@fortawesome/fontawesome-free/css/all.min.css";
 
-@import "buffalo";
+@import "screen";
 
 #between-logo {
-    height: 3em;
+  height: 3em;
 }
 
 #after {
-    font-size: 1em;
-    color: #999;
+  font-size: 1em;
+  color: #999;
 
-    li:last-child {
-        font-size: 2em;
-        color: #111;
-    }
+  li:last-child {
+    font-size: 2em;
+    color: #111;
+  }
 }
 
 #before {
-    font-size: 1em;
-    color: #999;
+  font-size: 1em;
+  color: #999;
 
-    li:first-child {
-        font-size: 2em;
-        color: #111;
-    }
+  li:first-child {
+    font-size: 2em;
+    color: #111;
+  }
 }

@@ -1,0 +1,31 @@
+body {
+  background-color: #222;
+  color: #eee;
+}
+
+a {
+  color: #eee;
+  text-decoration: underline;
+}
+
+header {
+  background-color: #5295de;
+  padding: 10px 20px;
+  margin-bottom: 1em;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+
+  img {
+    display: inline-block;
+    max-height: 2em;
+  }
+
+  h1 {
+    display: inline;
+    font-size: 30px;
+  }
+}
+
+hr {
+  border-color: #eee;
+}
