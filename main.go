@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"guess_my_word/actions"
+	"guess_my_word/internal/data"
 )
 
 // main is the starting point for your Buffalo application.
@@ -13,6 +14,10 @@ import (
 // call `app.Serve()`, unless you don't want to start your
 // application that is. :)
 func main() {
+	backend, teardown := data.NewBadgerBackend(nil)
+	defer teardown()
+	data.SetBackend(backend)
+
 	app := actions.App()
 	if err := app.Serve(); err != nil {
 		log.Fatal(err)

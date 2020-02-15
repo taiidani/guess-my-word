@@ -1,13 +1,22 @@
 package actions
 
-import "github.com/gobuffalo/buffalo"
+import (
+	"guess_my_word/internal/data"
+	"time"
 
-import "time"
+	"github.com/gobuffalo/buffalo"
+)
 
 // HomeHandler is a default handler to serve up
 // a home page.
 func HomeHandler(c buffalo.Context) error {
-	yesterday, _ := generateWord(time.Now().UTC().AddDate(0, 0, -1))
+	var yesterday *data.Date
+	yesterDate := time.Now().UTC().AddDate(0, 0, -1)
+	yesterday, err := data.LoadDate(yesterDate)
+	if err != nil {
+		c.Logger().Infof("Could not load yesterday from data store. Defaulting to temporary new date: %s", err)
+		yesterday = data.NewDate(yesterDate)
+	}
 	c.Set("yesterday", yesterday)
 
 	return c.Render(200, r.HTML("index.html"))
