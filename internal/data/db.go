@@ -2,6 +2,7 @@ package data
 
 import (
 	"log"
+	"time"
 
 	"github.com/dgraph-io/badger/v2"
 )
@@ -45,6 +46,12 @@ func NewBadgerBackend(opts *badger.Options) (back Backend, teardown func() error
 	if ret.db, err = badger.Open(*opts); err != nil {
 		log.Panicf("Unable to open Badger database %s", err)
 	}
+
+	// Ensure that the database garbage collects regularly
+	go func() {
+		ret.db.RunValueLogGC(0.5)
+		time.Sleep(time.Minute * 60)
+	}()
 
 	return &ret, ret.db.Close
 }

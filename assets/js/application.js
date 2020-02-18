@@ -32,6 +32,16 @@ $(() => {
         guess(word);
     });
 
+    // Attach the complete event
+    $("#completion form").submit(function (evt) {
+        event.preventDefault();
+
+        let username = $("#username", evt.target).val();
+        let suggestion = $("#suggestion", evt.target).val();
+
+        complete(username, suggestion);
+    });
+
     renderGuesses();
 });
 
@@ -104,6 +114,32 @@ function guess(word) {
         });
 }
 
+function complete(username, suggestion) {
+    // Populate and track the request while disabling submissions
+    $("#completion button").attr("disabled", "disabled")
+    params = {
+        "word": state.answer,
+        "suggestion": suggestion,
+        "username": username,
+        "start": state.start.getTime(),
+        "duration": getTotalDuration(),
+        "guesses": state.guesses,
+    }
+    $.post("/complete", params)
+        .done(function (data) {
+            $("#completion form").remove()
+        })
+        .fail(function (data) {
+            if (data.responseJSON.error != undefined && data.responseJSON.error != "") {
+                alert(data.responseJSON.error);
+            }
+        })
+        .always(function (data) {
+            console.debug(data);
+            $("#completion button").removeAttr("disabled")
+        });
+}
+
 function renderGuesses() {
     // Empty and repopulate the after/before lists
     let beforeElem = $("#before");
@@ -131,9 +167,20 @@ function renderGuesses() {
 
     // Completion text. Congratulations!
     if (state.answer != "") {
-        guessSeconds = Math.floor((state.end - state.start - state.idleTime) / 1000)
+        guessSeconds = getTotalDuration()
         guessMinutes = Math.floor(guessSeconds / 60)
         guessSeconds = guessSeconds % 60
-        $("#guesser").text("🎉 You guessed \"" + state.answer + "\" correctly with " + state.guesses + " tries in " + guessMinutes + " minutes, " + guessSeconds + " seconds. Come back tomorrow for another!");
+
+        $("#guesser").remove()
+        $("#answer").text(state.answer)
+        $("#guesses").text(state.guesses)
+        $("#minutes").text(guessMinutes)
+        $("#seconds").text(guessSeconds);
+        $("#completion").show()
+        $("#completion input").first().focus()
     }
+}
+
+function getTotalDuration() {
+    return Math.floor((state.end - state.start - state.idleTime) / 1000)
 }

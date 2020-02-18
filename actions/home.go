@@ -16,6 +16,7 @@ func HomeHandler(c buffalo.Context) error {
 	if err != nil {
 		c.Logger().Infof("Could not load yesterday from data store. Defaulting to temporary new date: %s", err)
 		yesterday = data.NewDate(yesterDate)
+		c.Logger().Debugf("Generated temporary yesterDate word '%s' from '%s'", yesterday.Word, yesterday.ID)
 	}
 	c.Set("yesterday", yesterday)
 

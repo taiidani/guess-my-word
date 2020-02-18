@@ -3,3 +3,7 @@
   translation: "Guess My Word"
 - id: input_placeholder
   translation: "Enter a word here"
+- id: username_placeholder
+  translation: "Your username"
+- id: suggest_placeholder
+  translation: "Suggest tomorrow's word"

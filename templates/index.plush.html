@@ -28,12 +28,32 @@
         alt="Page Break by Arthur Shlain from the Noun Project" />
 
       <label>
-        <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"off", autocorrect:"off", autocapitalize:"off", spellcheck:"false" }) %>
+        <%= f.InputTag({name:"word", placeholder: t("input_placeholder"), autocomplete:"off", autocorrect:"off", autocapitalize:"off", spellcheck:"false", required:"true" }) %>
       </label>
 
       <button class="btn btn-primary" type="submit">Guess</button>
       <% } %>
     </p>
+
+    <div id="completion">
+      <p>🎉 You guessed "<span id="answer"></span>" correctly with <span id="guesses"></span> tries in <span
+          id="minutes"></span> minutes, <span id="seconds"></span> seconds. Come back tomorrow for another! If you'd
+        like to be added to the leaderboard or suggest tomorrow's word, fill out the form below.</p>
+
+      <%= form({action: completePath(), method: "POST"}) { %>
+      <label>
+        <strong>Username:</strong>
+        <%= f.InputTag({id:"username", placeholder: t("username_placeholder"), autocorrect:"off", autocapitalize:"off", spellcheck:"false", required:"true" }) %>
+      </label>
+
+      <label>
+        <strong>Suggestion:</strong>
+        <%= f.InputTag({id:"suggestion", placeholder: t("suggest_placeholder") }) %>
+      </label>
+
+      <button class="btn btn-success" type="submit">Submit</button>
+      <% } %>
+    </div>
 
     <ul id="before" class="list-group"></ul>
   </div>

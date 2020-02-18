@@ -42,6 +42,12 @@ func Test_generateWord(t *testing.T) {
 			seed: time.Unix(1580083201, 0), // Mon Jan 27 00:00:01 2020 UTC
 			want: "tell",
 		},
+		{
+			name:    "Bad timestamp",
+			seed:    time.Unix(0, 0),
+			want:    "",
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -52,6 +58,32 @@ func Test_generateWord(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("generateWord() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestValidateWord(t *testing.T) {
+	tests := []struct {
+		name string
+		word string
+		want bool
+	}{
+		{
+			name: "Good word",
+			word: "horse",
+			want: true,
+		},
+		{
+			name: "Bad word",
+			word: "esroh",
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ValidateWord(tt.word); got != tt.want {
+				t.Errorf("ValidateWord() = %v, want %v", got, tt.want)
 			}
 		})
 	}
