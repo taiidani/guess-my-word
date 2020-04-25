@@ -1,0 +1,58 @@
+/* Screen */
+body {
+  background-color: #222;
+  color: #eee;
+}
+
+a {
+  color: #eee;
+  text-decoration: underline;
+}
+
+header {
+  background-color: #5295de;
+  padding: 10px 20px;
+  margin-bottom: 1em;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+header img {
+    display: inline-block;
+    max-height: 2em;
+  }
+
+header h1 {
+  display: inline;
+  font-size: 30px;
+}
+
+hr {
+  border-color: #eee;
+}
+
+/* Application */
+
+#between-logo {
+  height: 3em;
+}
+
+#after {
+  font-size: 1em;
+  color: #999;
+}
+
+#after li:last-child {
+  font-size: 2em;
+  color: #111;
+}
+
+#before {
+  font-size: 1em;
+  color: #999;
+}
+
+#before li:first-child {
+  font-size: 2em;
+  color: #111;
+}

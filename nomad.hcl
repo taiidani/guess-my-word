@@ -11,7 +11,7 @@ job "guess-my-word" {
 
     env {
       ADDR   = "0.0.0.0"
-      GO_ENV = "production"
+      GIN_MODE = "release"
     }
 
     service {

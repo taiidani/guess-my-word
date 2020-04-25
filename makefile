@@ -1,10 +1,14 @@
 default:
-	buffalo build
+	go build -o bin/guess-my-word
 
 arm:
-	GOOS=linux GOARCH=arm GOARM=5 buffalo build
+	GOOS=linux GOARCH=arm GOARM=5 go build -o bin/guess-my-word
 
-deploy: arm
+pack:
+	rm -f pkged.go
+	pkger
+
+deploy: pack arm
 	chmod +x ./bin/guess-my-word
 
 	rsync ./bin/guess-my-word pi@10.0.1.2:/tmp/

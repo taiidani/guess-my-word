@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gobuffalo/buffalo"
+	"github.com/gin-gonic/gin"
 )
 
 type guess struct {
@@ -29,7 +29,7 @@ var (
 )
 
 // GuessHandler is an API handler to process a user's guess.
-func GuessHandler(c buffalo.Context) error {
+func GuessHandler(c *gin.Context) {
 	guess := extractGuess(c)
 	reply := guessReply{}
 	reply.Guess = guess.word
@@ -44,7 +44,9 @@ func GuessHandler(c buffalo.Context) error {
 	// Generate the word for the day
 	word, err := generateWord(guess.start)
 	if err != nil {
-		return err
+		reply.Error = err.Error()
+		c.JSON(500, reply)
+		return
 	}
 
 	if reply.Error == "" {
@@ -58,14 +60,14 @@ func GuessHandler(c buffalo.Context) error {
 		}
 	}
 
-	return c.Render(200, r.JSON(reply))
+	c.JSON(200, reply)
 }
 
-func extractGuess(c buffalo.Context) guess {
+func extractGuess(c *gin.Context) guess {
 	ret := guess{}
-	ret.word = strings.ToLower(strings.TrimSpace(c.Param("word")))
+	ret.word = strings.ToLower(strings.TrimSpace(c.Query("word")))
 
-	startStr := strings.TrimSpace(c.Param("start"))
+	startStr := strings.TrimSpace(c.Query("start"))
 	if startUnix, err := strconv.ParseInt(startStr, 10, 64); err == nil {
 		ret.start = time.Unix(startUnix/1000, 0)
 	}

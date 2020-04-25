@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <title>Guess My Word</title>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="/assets/css/application.css" />
+  <link rel="icon" href="/assets/images/favicon.png" />
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>
+        <a href="/"><img src="/assets/images/logo.svg"
+            alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041" /></a>
+        Guess My Word
+      </h1>
+    </header>
+
+    <div class="row">
+      <div class="col-md-12">
+        <p>
+          This application hosts a daily word game, originally inspired by <a
+            href="https://hryanjones.com/guess-my-word/#">H Ryan Jones' "Guess My Word" web app</a>. Each guess will
+          inform you whether it falls before or after the daily word. Every day a new word will become guessable. Good
+          luck!
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <ul id="after" class="list-group"></ul>
+
+        <p>
+          <form id="guesser" action="/guess" method="GET">
+            <img id="between-logo" src="/assets/images/between.svg"
+              alt="Page Break by Arthur Shlain from the Noun Project" />
+
+            <label>
+              <input name="word" placeholder="Enter a word here" autocomplete="off" autocorrect="off"
+                autocapitalize="off" spellcheck="off" />
+            </label>
+
+            <button class="btn btn-primary" type="submit">Guess</button>
+          </form>
+        </p>
+
+        <ul id="before" class="list-group"></ul>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="row">
+      <div class="col-md-12">
+        <p style="float: left;">Yesterday's word: <strong>{{ .yesterday }}</strong></p>
+        <p style="float: right;">
+          Source: <a href="https://github.com/taiidani/guess-my-word">GitHub</a>
+        </p>
+      </div>
+    </div>
+
+    <div id="gutter" class="d-none">
+      <li class="list-group-item guess">
+        <span class="word"></span>
+      </li>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/assets/js/application.js"></script>
+</body>
+
+</html>
