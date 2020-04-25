@@ -12,7 +12,7 @@
   <link rel="icon" href="/assets/images/favicon.png" />
 </head>
 
-<body>
+<body class="mode-{{ .mode }}" data-mode="{{ .mode }}">
   <div class="container">
     <header>
       <h1>
@@ -33,7 +33,7 @@
       </div>
     </div>
 
-    <hr/>
+    <hr />
 
     <div class="row">
       <div class="col-md-12">
@@ -50,19 +50,30 @@
             </label>
 
             <button class="btn btn-primary" type="submit">Guess</button>
-          </form>
-        </p>
-
-        <ul id="before" class="list-group"></ul>
       </div>
     </div>
+    </form>
+    </p>
+
+    <ul id="before" class="list-group"></ul>
 
     <hr />
 
     <div class="row">
-      <div class="col-md-12">
-        <p style="float: left;">Yesterday's word: <strong>{{ .yesterday }}</strong></p>
-        <p style="float: right;">
+      <div class="col-md-4">
+        <p>
+          Yesterday's word: <strong>{{ .yesterday }}</strong>
+        </p>
+      </div>
+      <div class="col-md-4"></div>
+      <div class="col-md-2">
+        <select id="mode" class="custom-select">
+          <option value="default" {{ if eq .mode "default"}}selected{{ end }}>Default</option>
+          <option value="hard" {{ if eq .mode "hard"}}selected{{ end }}>Hard</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <p>
           Source: <a href="https://github.com/taiidani/guess-my-word">GitHub</a>
         </p>
       </div>
@@ -73,6 +84,7 @@
         <span class="word"></span>
       </li>
     </div>
+  </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"

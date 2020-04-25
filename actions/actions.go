@@ -19,6 +19,7 @@ func AddHandlers(r *gin.Engine) {
 		addHandlersStaticProduction(r)
 	}
 
+	r.Use(middlewareStandardHeaders())
 	r.GET("/", HomeHandler)
 	r.GET("/guess", GuessHandler)
 }

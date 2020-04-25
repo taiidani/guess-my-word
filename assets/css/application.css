@@ -1,6 +1,11 @@
 /* Screen */
 body {
-  background-color: #222;
+  background-color: #224;
+  color: #eee;
+}
+
+body.mode-hard {
+  background-color: #422;
   color: #eee;
 }
 

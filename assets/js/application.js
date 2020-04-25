@@ -1,8 +1,8 @@
-// Externalize jQuery to CDN
-// require("expose-loader?$!expose-loader?jQuery!jquery");
+let mode = $("body").data("mode");
+let stateVersion = 0.9;
 
-// Default boostrap JS. Disabled as currently not required
-// require("bootstrap/dist/js/bootstrap.bundle.js");
+let states = {};
+states["version"] = stateVersion;
 
 let state = new Object();
 state.before = []; // after tracks all guesses that the correct word is before
@@ -18,8 +18,8 @@ $(() => {
     if (typeof (Storage) === "undefined") {
         alert("Your browser does not appear to support the Local Storage API. Please upgrade to a modern browser in order to activate this feature.");
         return;
-    } else if (typeof (sessionStorage.state) !== "undefined") {
-        loadState()
+    } else if (typeof (sessionStorage.states) !== "undefined") {
+        loadState(sessionStorage.states);
     }
 
     // Attach the guess event
@@ -32,12 +32,24 @@ $(() => {
         guess(word);
     });
 
+    // Attach the mode change event
+    $("#mode").change(function (evt) {
+        event.preventDefault();
+        window.location.replace("/?mode=" + $("#mode").val());
+        return;
+    });
+
     renderGuesses();
 });
 
 // loadState will restore the browser's state object from the stored sessionStorage state
-function loadState() {
-    incomingState = JSON.parse(sessionStorage.state);
+function loadState(storage) {
+    states = JSON.parse(storage);
+    if (typeof (states[mode]) === "undefined") {
+        return;
+    }
+
+    incomingState = states[mode];
 
     // Massage string dates back into Date objects
     incomingState.start = new Date(incomingState.start);
@@ -69,7 +81,7 @@ function guess(word) {
     // Populate and track the request while disabling submissions
     requestStart = new Date()
     $("form#guesser button").attr("disabled", "disabled")
-    params = { "word": word, "start": state.start.getTime() }
+    params = { "word": word, "start": state.start.getTime(), "mode": mode }
     $.get("/guess?" + $.param(params))
         .done(function (data) {
             console.debug(data);
@@ -92,8 +104,7 @@ function guess(word) {
             renderGuesses();
 
             // Update the state
-            sessionStorage.state = JSON.stringify(state);
-            console.debug(state);
+            saveState(state);
         })
         .always(function () {
             // Track network request time
@@ -102,6 +113,14 @@ function guess(word) {
             // Restore the ability to make submissions
             $("form#guesser button").removeAttr("disabled")
         });
+}
+
+function saveState(state) {
+    states[mode] = state;
+
+    serialized = JSON.stringify(states);
+    sessionStorage.states = serialized;
+    console.debug(serialized);
 }
 
 function renderGuesses() {

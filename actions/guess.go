@@ -11,6 +11,7 @@ import (
 
 type guess struct {
 	word  string
+	mode  string
 	start time.Time
 }
 
@@ -42,7 +43,7 @@ func GuessHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := generateWord(guess.start)
+	word, err := generateWord(guess.start, getWordList(guess.mode))
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)
@@ -66,6 +67,7 @@ func GuessHandler(c *gin.Context) {
 func extractGuess(c *gin.Context) guess {
 	ret := guess{}
 	ret.word = strings.ToLower(strings.TrimSpace(c.Query("word")))
+	ret.mode = strings.ToLower(strings.TrimSpace(c.Query("mode")))
 
 	startStr := strings.TrimSpace(c.Query("start"))
 	if startUnix, err := strconv.ParseInt(startStr, 10, 64); err == nil {
@@ -75,7 +77,7 @@ func extractGuess(c *gin.Context) guess {
 	return ret
 }
 
-func generateWord(seed time.Time) (string, error) {
+func generateWord(seed time.Time, words []string) (string, error) {
 	if seed.Unix() == 0 {
 		return "", fmt.Errorf("Invalid timestamp for word")
 	}
@@ -92,4 +94,13 @@ func validateWord(word string) bool {
 	}
 
 	return false
+}
+
+func getWordList(mode string) []string {
+	switch mode {
+	case "hard":
+		return scrabble
+	default:
+		return words
+	}
 }
