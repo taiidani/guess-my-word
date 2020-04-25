@@ -47,6 +47,11 @@ hr {
   color: #111;
 }
 
+#after li.placeholder, #before li.placeholder {
+  font-size: 1em !important;
+  color: #999 !important;
+}
+
 #before {
   font-size: 1em;
   color: #999;

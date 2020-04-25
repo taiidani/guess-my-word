@@ -108,20 +108,31 @@ function renderGuesses() {
     // Empty and repopulate the after/before lists
     let beforeElem = $("#before");
     beforeElem.empty();
+
+    if (state.before.length > 0) {
+        state.before.sort();
+        state.before.forEach(function (item) {
+            $("#gutter .guess .word").text(item);
+            $("#gutter .guess").clone().appendTo(beforeElem);
+        });
+    } else {
+        $("#gutter .guess .word").html("No guesses after the word");
+        $("#gutter .guess").clone().addClass("placeholder").appendTo(beforeElem);
+    }
+
     let afterElem = $("#after");
     afterElem.empty();
 
-    state.before.sort();
-    state.before.forEach(function (item) {
-        $("#gutter .guess .word").text(item);
-        $("#gutter .guess").clone().appendTo(beforeElem);
-    });
-
-    state.after.sort();
-    state.after.forEach(function (item) {
-        $("#gutter .guess .word").text(item);
-        $("#gutter .guess").clone().appendTo(afterElem);
-    });
+    if (state.after.length > 0) {
+        state.after.sort();
+        state.after.forEach(function (item) {
+            $("#gutter .guess .word").text(item);
+            $("#gutter .guess").clone().appendTo(afterElem);
+        });
+    } else {
+        $("#gutter .guess .word").html("No guesses before the word");
+        $("#gutter .guess").clone().addClass("placeholder").appendTo(afterElem);
+    }
 
     // scroll screen to last after, if available
     scrollElem = $("#after li:nth-last-child(2)").get(0)
