@@ -45,7 +45,7 @@ func Test_generateWord(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := generateWord(tt.seed)
+			got, err := generateWord(tt.seed, words)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("generateWord() error = %v, wantErr %v", err, tt.wantErr)
 				return
