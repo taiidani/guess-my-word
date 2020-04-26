@@ -35,27 +35,46 @@
 
     <hr />
 
-    <div class="row">
+    <div id="guess-area" class="row">
       <div class="col-md-12">
-        <ul id="after" class="list-group"></ul>
+        <ul id="after" class="list-group">
+          <li class="list-group-item guess placeholder" v-if="!state.after.length">
+            <span class="word">No guesses before the word</span>
+          </li>
+          <li class="list-group-item guess" v-for="word in state.after">
+            <span class="word">{{"{{ word }}"}}</span>
+          </li>
+        </ul>
 
         <p>
-          <form id="guesser" action="/guess" method="GET">
+          <form id="guesser" v-on:submit.prevent="guess" v-if="!state.answer">
             <img id="between-logo" src="/assets/images/between.svg"
               alt="Page Break by Arthur Shlain from the Noun Project" />
 
             <label>
               <input name="word" placeholder="Enter a word here" autocomplete="off" autocorrect="off"
-                autocapitalize="off" spellcheck="off" />
+                autocapitalize="off" spellcheck="off" v-model="word" />
             </label>
 
             <button class="btn btn-primary" type="submit">Guess</button>
+          </form>
+          <p v-else>
+            🎉 You guessed "{{"{{state.answer}}"}}" correctly with {{"{{state.guesses}}"}} tries in
+            {{"{{guessMinutes}}"}}
+            minutes, {{"{{guessSeconds % 60}}"}} seconds. Come back tomorrow for another!
+          </p>
+        </p>
+
+        <ul id="before" class="list-group">
+          <li class="list-group-item guess placeholder" v-if="!state.before.length">
+            <span class="word">No guesses after the word</span>
+          </li>
+          <li class="list-group-item guess" v-for="word in state.before">
+            <span class="word">{{"{{ word }}"}}</span>
+          </li>
+        </ul>
       </div>
     </div>
-    </form>
-    </p>
-
-    <ul id="before" class="list-group"></ul>
 
     <hr />
 
@@ -78,17 +97,16 @@
         </p>
       </div>
     </div>
-
-    <div id="gutter" class="d-none">
-      <li class="list-group-item guess">
-        <span class="word"></span>
-      </li>
-    </div>
   </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"
     integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  {{ if .debug }}
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  {{ else }}
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+  {{ end}}
   <script type="text/javascript" src="/assets/js/application.js"></script>
 </body>
 

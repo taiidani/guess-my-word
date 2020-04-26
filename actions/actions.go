@@ -3,7 +3,6 @@ package actions
 import (
 	"html/template"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -32,7 +31,6 @@ func loadTemplate() (*template.Template, error) {
 			return err
 		}
 
-		log.Println("Walking templates; found ", name, " with name ", info.Name())
 		if info.IsDir() || !strings.HasSuffix(name, ".html") {
 			return nil
 		}

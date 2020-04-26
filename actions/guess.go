@@ -2,7 +2,7 @@ package actions
 
 import (
 	"fmt"
-	"strconv"
+	"log"
 	"strings"
 	"time"
 
@@ -10,9 +10,9 @@ import (
 )
 
 type guess struct {
-	word  string
-	mode  string
-	start time.Time
+	Word  string    `form:"word"`
+	Mode  string    `form:"mode"`
+	Start time.Time `form:"start" time_format:"unix"`
 }
 
 type guessReply struct {
@@ -23,6 +23,17 @@ type guessReply struct {
 	Error   string `json:"error"`
 }
 
+const (
+	// ErrInvalidWord is emitted when the guess is not a legitimate word
+	ErrInvalidWord = "Guess must be a valid Scrabble word"
+
+	// ErrInvalidStartTime is emitted when the start time is malformed or invalid
+	ErrInvalidStartTime = "Invalid start time provided with request"
+
+	// ErrEmptyGuess is emitted when the guess provided was empty
+	ErrEmptyGuess = "Guess must not be empty"
+)
+
 var (
 	// words were taken from the original inspiration for this app, https://hryanjones.com/guess-my-word/
 	// That project took the words from 1-1,000 common English words on TV and movies https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/TV/2006/1-1000
@@ -31,25 +42,34 @@ var (
 
 // GuessHandler is an API handler to process a user's guess.
 func GuessHandler(c *gin.Context) {
-	guess := extractGuess(c)
+	guess := guess{}
 	reply := guessReply{}
-	reply.Guess = guess.word
 
 	// Validate the guess
-	if len(reply.Guess) == 0 {
-		reply.Error = "Guess must not be empty"
-	} else if !validateWord(reply.Guess) {
-		reply.Error = "Guess must be a valid Scrabble word"
+	if err := c.ShouldBind(&guess); err != nil {
+		reply.Error = err.Error()
+	} else if len(strings.TrimSpace(guess.Word)) == 0 {
+		reply.Error = ErrEmptyGuess
+	} else if !validateWord(guess.Word) {
+		reply.Error = ErrInvalidWord
+	} else if guess.Start.Unix() == 0 {
+		reply.Error = ErrInvalidStartTime
+	}
+	reply.Guess = strings.TrimSpace(guess.Word)
+	if reply.Error != "" {
+		c.JSON(200, reply)
+		return
 	}
 
 	// Generate the word for the day
-	word, err := generateWord(guess.start, getWordList(guess.mode))
+	word, err := generateWord(guess.Start, getWordList(guess.Mode))
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)
 		return
 	}
 
+	log.Println("The correct word is " + word)
 	if reply.Error == "" {
 		switch strings.Compare(reply.Guess, word) {
 		case -1:
@@ -62,19 +82,6 @@ func GuessHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, reply)
-}
-
-func extractGuess(c *gin.Context) guess {
-	ret := guess{}
-	ret.word = strings.ToLower(strings.TrimSpace(c.Query("word")))
-	ret.mode = strings.ToLower(strings.TrimSpace(c.Query("mode")))
-
-	startStr := strings.TrimSpace(c.Query("start"))
-	if startUnix, err := strconv.ParseInt(startStr, 10, 64); err == nil {
-		ret.start = time.Unix(startUnix/1000, 0)
-	}
-
-	return ret
 }
 
 func generateWord(seed time.Time, words []string) (string, error) {

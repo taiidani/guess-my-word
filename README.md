@@ -10,7 +10,15 @@ Inspiration was taken heavily from https://hryanjones.com/guess-my-word/.
 
 The Scrabble word list was obtained from https://sourceforge.net/projects/scrabbledict/.
 
-The web framework in use is Gin: https://gin-gonic.com
+The backend web framework in use is Gin: https://gin-gonic.com
+
+The static packaging library used for the compile is Pkger: https://github.com/markbates/pkger
+
+The frontend frameworks in use are:
+
+* Vue.js: https://vuejs.org/
+* Bootstrap: https://getbootstrap.com/
+* jQuery: https://jquery.com/
 
 ## Contributing
 

@@ -18,6 +18,7 @@ func HomeHandler(c *gin.Context) {
 	yesterday, _ := generateWord(tm, getWordList(mode))
 
 	c.HTML(200, "index.html", gin.H{
+		"debug":     gin.IsDebugging(),
 		"mode":      mode,
 		"yesterday": yesterday,
 	})
