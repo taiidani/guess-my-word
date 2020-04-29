@@ -21,6 +21,7 @@ let vm = new Vue({
     },
     methods: {
         guess: guess,
+        hint: hint,
     },
 });
 
@@ -136,6 +137,35 @@ function guess() {
         });
 
     this.word = "";
+}
+
+function hint() {
+    let state = this.state
+
+    // Validate that we have some guesses
+    if (state.before.length == 0 || state.after.length == 0) {
+        alert("You need to at least guess the before and after first!");
+        return
+    }
+
+    params = {
+        "before": state.before[0],
+        "after": state.after[state.after.length - 1],
+        "start": Math.floor(state.start.getTime() / 1000),
+        "mode": mode,
+    }
+
+    $.get("/hint?" + $.param(params))
+        .done(function (data) {
+            console.debug(data);
+
+            if (data.error != "") {
+                alert(data.error);
+                return;
+            }
+
+            alert("The word starts with: '" + data.word + "'");
+        });
 }
 
 function renderGuesses() {

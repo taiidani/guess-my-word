@@ -21,6 +21,7 @@ func AddHandlers(r *gin.Engine) {
 	r.Use(middlewareStandardHeaders())
 	r.GET("/", HomeHandler)
 	r.GET("/guess", GuessHandler)
+	r.GET("/hint", HintHandler)
 }
 
 func loadTemplate() (*template.Template, error) {

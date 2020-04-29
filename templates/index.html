@@ -58,6 +58,7 @@
 
             <button class="btn btn-primary" type="submit">Guess</button>
           </form>
+
           <p v-else>
             🎉 You guessed "{{"{{state.answer}}"}}" correctly with {{"{{state.guesses}}"}} tries in
             {{"{{guessMinutes}}"}}
@@ -73,6 +74,13 @@
             <span class="word">{{"{{ word }}"}}</span>
           </li>
         </ul>
+
+        <p></p>
+
+        <form v-on:submit.prevent="hint"
+          v-if="!state.answer && state.before.length > 0 && state.after.length > 0 && state.guesses > 15">
+          <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
+        </form>
       </div>
     </div>
 
