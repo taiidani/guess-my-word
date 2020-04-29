@@ -64,6 +64,11 @@
             {{"{{guessMinutes}}"}}
             minutes, {{"{{guessSeconds % 60}}"}} seconds. Come back tomorrow for another!
           </p>
+
+          <form v-on:submit.prevent="hint"
+            v-if="!state.answer && state.before.length > 0 && state.after.length > 0 && state.guesses > 15">
+            <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
+          </form>
         </p>
 
         <ul id="before" class="list-group">
@@ -74,13 +79,6 @@
             <span class="word">{{"{{ word }}"}}</span>
           </li>
         </ul>
-
-        <p></p>
-
-        <form v-on:submit.prevent="hint"
-          v-if="!state.answer && state.before.length > 0 && state.after.length > 0 && state.guesses > 15">
-          <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
-        </form>
       </div>
     </div>
 
