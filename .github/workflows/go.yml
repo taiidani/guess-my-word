@@ -22,14 +22,5 @@ jobs:
     - name: Test
       run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
 
-    - name: Send coverage to Coveralls
-      env:
-        COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        GO111MODULE=off go get github.com/mattn/goveralls
-        $(go env GOPATH)/bin/goveralls -coverprofile=coverage.txt -service=github
-
     - name: Send coverage to Codecov
-      # env:
-      #   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       run: bash <(curl -s https://codecov.io/bash) -Z -f coverage.txt
