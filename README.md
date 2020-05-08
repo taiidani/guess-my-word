@@ -1,5 +1,8 @@
 # Guess My Word
 
+![Go](https://github.com/taiidani/guess-my-word/workflows/Go/badge.svg)
+[![codecov](https://codecov.io/gh/taiidani/guess-my-word/branch/master/graph/badge.svg)](https://codecov.io/gh/taiidani/guess-my-word)
+
 This is a pet project based on original work done at https://hryanjones.com/guess-my-word/, after addicting me for a couple of weeks. It is a variant that pushes more of the logic to the backend, preventing any JavaScript-savvy individuals from spoiling themselves of the fun of guessing :)
 
 Currently a work in progress.
