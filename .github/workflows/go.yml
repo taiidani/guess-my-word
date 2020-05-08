@@ -20,7 +20,7 @@ jobs:
       run: go mod download
 
     - name: Test
-      run: go test -race -coverprofile=profile.cov ./...
+      run: go test -race -covermode=atomic -coverprofile=profile.cov ./...
 
     - name: Send coverage to Coveralls
       env:
@@ -28,3 +28,8 @@ jobs:
       run: |
         GO111MODULE=off go get github.com/mattn/goveralls
         $(go env GOPATH)/bin/goveralls -coverprofile=profile.cov -service=github
+
+    - name: Send coverage to Codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      run: bash <(curl -s https://codecov.io/bash)
