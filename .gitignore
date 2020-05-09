@@ -3,3 +3,7 @@ pkged.go
 public/assets/
 .vscode/
 **/.DS_Store
+
+# Authentication used for GCP
+# This is a default. Can override it with GOOGLE_APPLICATION_CREDENTIALS env var
+/auth.json

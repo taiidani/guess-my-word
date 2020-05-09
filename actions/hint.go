@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"guess_my_word/internal/words"
 	"strings"
 	"time"
 
@@ -43,7 +44,7 @@ func HintHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := generateWord(hint.Start, getWordList(hint.Mode))
+	word, err := words.GetForDay(c, hint.Start, hint.Mode)
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)

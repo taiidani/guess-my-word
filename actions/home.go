@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"guess_my_word/internal/words"
 	"strings"
 	"time"
 
@@ -15,7 +16,7 @@ func HomeHandler(c *gin.Context) {
 	}
 
 	tm := time.Now().UTC().AddDate(0, 0, -1)
-	yesterday, _ := generateWord(tm, getWordList(mode))
+	yesterday, _ := words.GetForDay(c, tm, mode)
 
 	c.HTML(200, "index.html", gin.H{
 		"debug":     gin.IsDebugging(),
