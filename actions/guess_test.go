@@ -168,6 +168,15 @@ func Test_GuessHandler(t *testing.T) {
 				Error:   "",
 			},
 		},
+		{
+			name: "Invalid request",
+			request: url.Values{
+				"start": {"bar"},
+			},
+			want: guessReply{
+				Error: ErrInvalidRequest,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -2,6 +2,7 @@ package actions
 
 import (
 	"guess_my_word/internal/words"
+	"log"
 	"strings"
 	"time"
 
@@ -21,6 +22,9 @@ type hintReply struct {
 }
 
 const (
+	// ErrInvalidRequest is emitted when the request payload is malformed
+	ErrInvalidRequest = "Invalid request format received"
+
 	// ErrEmptyBeforeAfter is emitted when the before/after have not been provided
 	ErrEmptyBeforeAfter = "You need to at least guess the before and after first!"
 )
@@ -32,8 +36,9 @@ func HintHandler(c *gin.Context) {
 
 	// Validate the guess
 	if err := c.ShouldBind(&hint); err != nil {
-		reply.Error = err.Error()
-	} else if len(strings.TrimSpace(hint.Before+hint.After)) == 0 {
+		log.Println("Invalid request received: ", err)
+		reply.Error = ErrInvalidRequest
+	} else if len(strings.TrimSpace(hint.Before)) == 0 || len(strings.TrimSpace(hint.After)) == 0 {
 		reply.Error = ErrEmptyBeforeAfter
 	} else if hint.Start.Unix() == 0 {
 		reply.Error = ErrInvalidStartTime

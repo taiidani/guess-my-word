@@ -2,6 +2,7 @@ package actions
 
 import (
 	"guess_my_word/internal/words"
+	"log"
 	"strings"
 	"time"
 
@@ -40,7 +41,8 @@ func GuessHandler(c *gin.Context) {
 
 	// Validate the guess
 	if err := c.ShouldBind(&guess); err != nil {
-		reply.Error = err.Error()
+		log.Println("Invalid request received: ", err)
+		reply.Error = ErrInvalidRequest
 	} else if len(strings.TrimSpace(guess.Word)) == 0 {
 		reply.Error = ErrEmptyGuess
 	} else if !words.Validate(c, guess.Word) {
