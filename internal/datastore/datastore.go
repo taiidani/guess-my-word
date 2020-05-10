@@ -14,6 +14,9 @@ const (
 	wordCollectionPrefix = "words/"
 )
 
+// Client represents a Datastore client
+type Client struct{}
+
 var (
 	// LocalOnly will not perform any datastore operations if true
 	// It will also not return any errors for Set operations
@@ -45,8 +48,13 @@ func init() {
 	}
 }
 
+// New instantiates a new Datastore client
+func New() *Client {
+	return &Client{}
+}
+
 // GetWord will retrieve a word for the given key
-func GetWord(ctx context.Context, key string, word interface{}) (err error) {
+func (c *Client) GetWord(ctx context.Context, key string, word interface{}) (err error) {
 	if LocalOnly {
 		return errors.New("Running in local mode. Data has not been retrieved")
 	}
@@ -62,7 +70,7 @@ func GetWord(ctx context.Context, key string, word interface{}) (err error) {
 }
 
 // SetWord will store a Word for the given key
-func SetWord(ctx context.Context, key string, word interface{}) error {
+func (c *Client) SetWord(ctx context.Context, key string, word interface{}) error {
 	if LocalOnly {
 		log.Println("Running in local mode. Data has not been stored")
 		return nil
