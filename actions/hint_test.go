@@ -1,55 +1,149 @@
 package actions
 
-import "testing"
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
+	"reflect"
+	"testing"
+)
 
-func Test_getWordHint(t *testing.T) {
-	type args struct {
-		h    hint
-		word string
-	}
+func Test_HintHandler(t *testing.T) {
+	router := setupRouter()
+
 	tests := []struct {
-		name string
-		args args
-		want string
+		name    string
+		request url.Values
+		want    hintReply
+		wantErr bool
 	}{
 		{
-			name: "1 character",
-			args: args{
-				h: hint{
-					After:  "zoo",
-					Before: "train",
-				},
-				word: "wave",
+			name: "Not even close",
+			request: url.Values{
+				"after":  {"apple"},
+				"before": {"zoo"},
+				"start":  {"1587930259"}, // generates "teth"
+				"mode":   {"hard"},
 			},
-			want: "w",
+			want: hintReply{
+				Word:  "t",
+				Error: "",
+			},
+		},
+		{
+			name: "1 character",
+			request: url.Values{
+				"after":  {"zoo"},
+				"before": {"train"},
+				"start":  {"1587930259"}, // generates "teth"
+				"mode":   {"hard"},
+			},
+			want: hintReply{
+				Word:  "t",
+				Error: "",
+			},
 		},
 		{
 			name: "2 characters",
-			args: args{
-				h: hint{
-					After:  "tear",
-					Before: "train",
-				},
-				word: "time",
+			request: url.Values{
+				"after":  {"tear"},
+				"before": {"train"},
+				"start":  {"1587930259"}, // generates "teth"
+				"mode":   {"hard"},
 			},
-			want: "ti",
+			want: hintReply{
+				Word:  "te",
+				Error: "",
+			},
 		},
 		{
 			name: "Almost there",
-			args: args{
-				h: hint{
-					After:  "tray",
-					Before: "trays",
-				},
-				word: "traybit",
+			request: url.Values{
+				"after":  {"belo"},
+				"before": {"belonging"},
+				"start":  {"1587930259"}, // generates "belong"
+				"mode":   {"default"},
 			},
-			want: "trayb",
+			want: hintReply{
+				Word:  "belon",
+				Error: "",
+			},
+		},
+		{
+			name: "Empty before",
+			request: url.Values{
+				"after":  {""},
+				"before": {"belonging"},
+				"start":  {"1587930259"},
+				"mode":   {"default"},
+			},
+			want: hintReply{
+				Word:  "",
+				Error: ErrEmptyBeforeAfter,
+			},
+		},
+		{
+			name: "Empty after",
+			request: url.Values{
+				"after":  {"belo"},
+				"before": {""},
+				"start":  {"1587930259"},
+				"mode":   {"default"},
+			},
+			want: hintReply{
+				Word:  "",
+				Error: ErrEmptyBeforeAfter,
+			},
+		},
+		{
+			name: "Empty both",
+			request: url.Values{
+				"after":  {""},
+				"before": {""},
+				"start":  {"1587930259"},
+				"mode":   {"default"},
+			},
+			want: hintReply{
+				Word:  "",
+				Error: ErrEmptyBeforeAfter,
+			},
+		},
+		{
+			name: "Invalid time",
+			request: url.Values{
+				"after":  {"belo"},
+				"before": {"belonging"},
+				"start":  {"0"}, // OMG WUT
+				"mode":   {"default"},
+			},
+			want: hintReply{
+				Word:  "",
+				Error: ErrInvalidStartTime,
+			},
+		},
+		{
+			name: "Invalid request",
+			request: url.Values{
+				"start": {"bar"},
+			},
+			want: hintReply{
+				Word:  "",
+				Error: ErrInvalidRequest,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getWordHint(tt.args.h, tt.args.word); got != tt.want {
-				t.Errorf("getWordHint() = %v, want %v", got, tt.want)
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest("GET", "/hint?"+tt.request.Encode(), nil)
+			router.ServeHTTP(w, req)
+
+			got := hintReply{}
+			json.Unmarshal(w.Body.Bytes(), &got)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("guess() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}

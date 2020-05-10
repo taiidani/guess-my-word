@@ -12,6 +12,7 @@ job "guess-my-word" {
     env {
       ADDR   = "0.0.0.0"
       GIN_MODE = "release"
+      GOOGLE_APPLICATION_CREDENTIALS = "/etc/guess-my-word/auth.json"
     }
 
     service {
