@@ -25,10 +25,9 @@
     <div class="row">
       <div class="col-md-12">
         <p>
-          This application hosts a daily word game, originally inspired by <a
-            href="https://hryanjones.com/guess-my-word/#">H Ryan Jones' "Guess My Word" web app</a>. Each guess will
-          inform you whether it falls before or after the daily word. Every day a new word will become guessable. Good
-          luck!
+          This application hosts a daily word game. Guessing using the form below will place your guess above or below
+          the box based on its place in the alphabet relative to today's word. Every day a new word will become
+          guessable. Good luck!
         </p>
       </div>
     </div>
@@ -47,28 +46,28 @@
         </ul>
 
         <p>
-          <form id="guesser" v-on:submit.prevent="guess" v-if="!state.answer">
-            <img id="between-logo" src="/assets/images/between.svg"
-              alt="Page Break by Arthur Shlain from the Noun Project" />
+        <form id="guesser" v-on:submit.prevent="guess" v-if="!state.answer">
+          <img id="between-logo" src="/assets/images/between.svg"
+            alt="Page Break by Arthur Shlain from the Noun Project" />
 
-            <label>
-              <input name="word" placeholder="Enter a word here" autocomplete="off" autocorrect="off"
-                autocapitalize="off" spellcheck="off" v-model="word" />
-            </label>
+          <label>
+            <input name="word" placeholder="Enter a word here" autocomplete="off" autocorrect="off" autocapitalize="off"
+              spellcheck="off" v-model="word" />
+          </label>
 
-            <button class="btn btn-primary" type="submit">Guess</button>
-          </form>
+          <button class="btn btn-primary" type="submit">Guess</button>
+        </form>
 
-          <p v-else>
-            🎉 You guessed "{{"{{state.answer}}"}}" correctly with {{"{{state.guesses}}"}} tries in
-            {{"{{guessMinutes}}"}}
-            minutes, {{"{{guessSeconds % 60}}"}} seconds. Come back tomorrow for another!
-          </p>
+        <p v-else>
+          🎉 You guessed "{{"{{state.answer}}"}}" correctly with {{"{{state.guesses}}"}} tries in
+          {{"{{guessMinutes}}"}}
+          minutes, {{"{{guessSeconds % 60}}"}} seconds. Come back tomorrow for another!
+        </p>
 
-          <form v-on:submit.prevent="hint"
-            v-if="!state.answer && state.before.length > 0 && state.after.length > 0 && state.guesses > 15">
-            <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
-          </form>
+        <form v-on:submit.prevent="hint"
+          v-if="!state.answer && state.before.length > 0 && state.after.length > 0 && state.guesses > 15">
+          <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
+        </form>
         </p>
 
         <ul id="before" class="list-group">
