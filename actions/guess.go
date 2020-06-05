@@ -57,6 +57,7 @@ func GuessHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
+	guess.Start = guess.Start.UTC()
 	word, err := words.GetForDay(c, guess.Start, guess.Mode)
 	if err != nil {
 		reply.Error = err.Error()

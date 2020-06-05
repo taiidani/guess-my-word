@@ -37,6 +37,7 @@ func init() {
 // GetForDay will return a word for the given day
 func GetForDay(ctx context.Context, tm time.Time, mode string) (string, error) {
 	key := mode + "/day/" + tm.Format("2006-01-02")
+	log.Println("Getting word for day at ", key)
 
 	// Grab the word from the datastore
 	word := Word{}
