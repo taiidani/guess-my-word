@@ -49,6 +49,7 @@ func HintHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
+	hint.Start = hint.Start.UTC()
 	word, err := words.GetForDay(c, hint.Start, hint.Mode)
 	if err != nil {
 		reply.Error = err.Error()
