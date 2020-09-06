@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guess
+  labels:
+    app: guess
+    tier: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: guess
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: guess
+        tier: app
+    spec:
+      containers:
+        - image: taiidani/guess-my-word:latest
+          args:
+            - "/usr/local/bin/guess-my-word"
+          name: guess
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3000
+          env:
+            - name: ADDR
+              value: "0.0.0.0"
+            - name: GIN_MODE
+              value: "release"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/etc/guess-my-word/auth.json"
+          ports:
+            - containerPort: 3000
+              name: guess
+          volumeMounts:
+            - name: google-app-credentials
+              mountPath: "/etc/guess-my-word/"
+              readOnly: true
+          resources:
+            limits:
+              cpu: "1.0"
+              memory: "128Mi"
+      volumes:
+        - name: google-app-credentials
+          secret:
+            secretName: google-application-credentials
