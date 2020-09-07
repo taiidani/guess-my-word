@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+    app:
+        image: taiidani/guess-my-word:latest
+        build: .
+        environment:
+            ADDR: "0.0.0.0"
+            GIN_MODE: "release"
+            GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/google-application-credentials"
+        secrets:
+            - google-application-credentials
+
+secrets:
+    google-application-credentials:
+        file: ./auth.json
