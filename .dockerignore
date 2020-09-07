@@ -1,4 +1,3 @@
-dist
 pkged.go
 Dockerfile
 docker-compose.yml
