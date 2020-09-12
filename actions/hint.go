@@ -14,6 +14,7 @@ type hint struct {
 	Before string    `form:"before"`
 	Mode   string    `form:"mode"`
 	Start  time.Time `form:"start" time_format:"unix"`
+	TZ     int       `form:"tz"`
 }
 
 type hintReply struct {
@@ -49,8 +50,7 @@ func HintHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	hint.Start = hint.Start.UTC()
-	word, err := words.GetForDay(c, hint.Start, hint.Mode)
+	word, err := words.GetForDay(c, convertUTCToUser(hint.Start, hint.TZ), hint.Mode)
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/pkger"
@@ -20,6 +21,7 @@ func AddHandlers(r *gin.Engine) {
 
 	r.Use(middlewareStandardHeaders())
 	r.GET("/", HomeHandler)
+	r.GET("/reveal", RevealHandler)
 	r.GET("/ping", PingHandler)
 	r.GET("/guess", GuessHandler)
 	r.GET("/hint", HintHandler)
@@ -73,4 +75,12 @@ func addHandlersStaticProduction(r *gin.Engine) {
 func addHandlersStaticPreProduction(r *gin.Engine) {
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/assets", "./assets")
+}
+
+// convertUTCToLocal will take a given time in UTC and convert it to a given user's timezone
+// TZ for PDT (-7:00) is a positive 420, so SUBTRACT that from the unix timestamp
+func convertUTCToUser(t time.Time, tz int) time.Time {
+	ret := t.In(time.FixedZone("User", tz*-1))
+	ret = ret.Add(time.Minute * -1 * time.Duration(tz))
+	return ret
 }

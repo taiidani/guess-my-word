@@ -76,9 +76,7 @@ func generateWord(seed time.Time, words []string) (string, error) {
 	if seed.Unix() == 0 {
 		return "", fmt.Errorf("Invalid timestamp for word")
 	}
-
-	day := seed.UTC()
-	return words[(day.Year()*day.YearDay())%len(words)], nil
+	return words[(seed.Year()*seed.YearDay())%len(words)], nil
 }
 
 func getWordList(mode string) []string {
