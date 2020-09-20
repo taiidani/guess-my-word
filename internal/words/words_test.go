@@ -16,6 +16,13 @@ func (m *mockStore) SetWord(ctx context.Context, key string, word interface{}) e
 	return nil
 }
 
+func TestNewWordStore(t *testing.T) {
+	w := NewWordStore()
+	if w == nil {
+		t.Error("Received nil for word instance")
+	}
+}
+
 func TestWordStore_GetForDay(t *testing.T) {
 	type fields struct {
 		storeClient Store
