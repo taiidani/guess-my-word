@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"guess_my_word/internal/words"
 	"log"
 	"strings"
 	"time"
@@ -49,7 +48,7 @@ func GuessHandler(c *gin.Context) {
 		reply.Error = ErrInvalidRequest
 	} else if len(strings.TrimSpace(guess.Word)) == 0 {
 		reply.Error = ErrEmptyGuess
-	} else if !words.Validate(c, guess.Word) {
+	} else if !wordStore.Validate(c, guess.Word) {
 		reply.Error = ErrInvalidWord
 	} else if guess.Start.Unix() == 0 {
 		reply.Error = ErrInvalidStartTime
@@ -61,7 +60,7 @@ func GuessHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := words.GetForDay(c, convertUTCToUser(guess.Start, guess.TZ), guess.Mode)
+	word, err := wordStore.GetForDay(c, convertUTCToUser(guess.Start, guess.TZ), guess.Mode)
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)

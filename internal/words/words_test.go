@@ -16,11 +16,10 @@ func (m *mockStore) SetWord(ctx context.Context, key string, word interface{}) e
 	return nil
 }
 
-func init() {
-	storeClient = &mockStore{}
-}
-
-func TestGetForDay(t *testing.T) {
+func TestWordStore_GetForDay(t *testing.T) {
+	type fields struct {
+		storeClient Store
+	}
 	type args struct {
 		ctx  context.Context
 		tm   time.Time
@@ -28,12 +27,14 @@ func TestGetForDay(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
+		fields  fields
 		args    args
 		want    string
 		wantErr bool
 	}{
 		{
-			name: "Date yesterday",
+			name:   "Date yesterday",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC),
@@ -42,7 +43,8 @@ func TestGetForDay(t *testing.T) {
 			want: "power",
 		},
 		{
-			name: "Date tweak yesterday",
+			name:   "Date tweak yesterday",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, -1),
@@ -51,7 +53,8 @@ func TestGetForDay(t *testing.T) {
 			want: "power",
 		},
 		{
-			name: "Unix yesterday",
+			name:   "Unix yesterday",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(1580083199, 0), // Sun Jan 26 23:59:59 2020 UTC
@@ -60,7 +63,8 @@ func TestGetForDay(t *testing.T) {
 			want: "power",
 		},
 		{
-			name: "Date today",
+			name:   "Date today",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
@@ -69,7 +73,24 @@ func TestGetForDay(t *testing.T) {
 			want: "tell",
 		},
 		{
-			name: "Date tweak today",
+			name:   "Date today TZ",
+			fields: fields{storeClient: &mockStore{}},
+			args: args{
+				ctx: context.Background(),
+				tm: time.Date(2020, time.January, 27, 2, 0, 0, 0, func() *time.Location {
+					ret, err := time.LoadLocation("America/Los_Angeles")
+					if err != nil {
+						t.Fatal("Test machine timezone data not populated")
+					}
+					return ret
+				}()),
+				mode: "default",
+			},
+			want: "tell",
+		},
+		{
+			name:   "Date tweak today",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, 1),
@@ -78,16 +99,18 @@ func TestGetForDay(t *testing.T) {
 			want: "tell",
 		},
 		{
-			name: "Unix today",
+			name:   "Unix today",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(1580083201, 0), // Mon Jan 27 00:00:01 2020 UTC
 				mode: "default",
 			},
-			want: "tell",
+			want: "power",
 		},
 		{
-			name: "Hard mode date today",
+			name:   "Hard mode date today",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
@@ -96,7 +119,8 @@ func TestGetForDay(t *testing.T) {
 			want: "damans",
 		},
 		{
-			name: "Unix OMG ERROR",
+			name:   "Unix OMG ERROR",
+			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(0, 0),
@@ -108,7 +132,11 @@ func TestGetForDay(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := GetForDay(tt.args.ctx, tt.args.tm, tt.args.mode)
+			w := &WordStore{
+				storeClient: tt.fields.storeClient,
+			}
+
+			got, err := w.GetForDay(tt.args.ctx, tt.args.tm, tt.args.mode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetForDay() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -120,7 +148,7 @@ func TestGetForDay(t *testing.T) {
 	}
 }
 
-func TestValidate(t *testing.T) {
+func TestWordStore_Validate(t *testing.T) {
 	type args struct {
 		ctx  context.Context
 		word string
@@ -149,7 +177,9 @@ func TestValidate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Validate(tt.args.ctx, tt.args.word); got != tt.want {
+			w := WordStore{}
+
+			if got := w.Validate(tt.args.ctx, tt.args.word); got != tt.want {
 				t.Errorf("Validate() = %v, want %v", got, tt.want)
 			}
 		})

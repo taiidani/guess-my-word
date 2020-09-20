@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"guess_my_word/internal/words"
 	"log"
 	"time"
 
@@ -54,7 +53,7 @@ func RevealHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := words.GetForDay(c, reveal.dateUser, reveal.Mode)
+	word, err := wordStore.GetForDay(c, reveal.dateUser, reveal.Mode)
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)

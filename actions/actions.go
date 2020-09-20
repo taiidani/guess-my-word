@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"context"
+	"guess_my_word/internal/words"
 	"html/template"
 	"io/ioutil"
 	"os"
@@ -11,8 +13,17 @@ import (
 	"github.com/markbates/pkger"
 )
 
+type wordClient interface {
+	Validate(context.Context, string) bool
+	GetForDay(context.Context, time.Time, string) (string, error)
+}
+
+var wordStore wordClient
+
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r *gin.Engine) {
+	wordStore = words.NewWordStore()
+
 	if gin.IsDebugging() {
 		addHandlersStaticPreProduction(r)
 	} else {
