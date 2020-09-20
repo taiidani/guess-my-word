@@ -103,10 +103,10 @@ func TestWordStore_GetForDay(t *testing.T) {
 			fields: fields{storeClient: &mockStore{}},
 			args: args{
 				ctx:  context.Background(),
-				tm:   time.Unix(1580083201, 0), // Mon Jan 27 00:00:01 2020 UTC
+				tm:   time.Unix(1580083201, 0).UTC(), // Mon Jan 27 00:00:01 2020 UTC
 				mode: "default",
 			},
-			want: "power",
+			want: "tell",
 		},
 		{
 			name:   "Hard mode date today",
