@@ -22,6 +22,7 @@ let vm = new Vue({
     methods: {
         guess: guess,
         hint: hint,
+        reveal: reveal,
     },
 });
 
@@ -69,8 +70,8 @@ function loadState() {
     // Having this logic client-side allows a user to keep guessing their word even after
     // a new word has been rotated in. As long as they do not refresh their page their
     // state's "Start" property will lock them to the same day.
-    if (incomingState.start.getUTCDate() == state.start.getUTCDate()
-        && incomingState.start.getUTCMonth() == state.start.getUTCMonth()) {
+    if (incomingState.start.getDate() == state.start.getDate()
+        && incomingState.start.getMonth() == state.start.getMonth()) {
         state = incomingState;
     }
 
@@ -101,7 +102,12 @@ function guess() {
     // Populate and track the request while disabling submissions
     requestStart = new Date()
     $("form#guesser button").attr("disabled", "disabled")
-    params = { "word": word, "start": Math.floor(state.start.getTime() / 1000), "mode": mode }
+    params = {
+        "word": word,
+        "start": Math.floor(state.start.getTime() / 1000),
+        "tz": state.start.getTimezoneOffset(),
+        "mode": mode,
+    }
     $.get("/guess?" + $.param(params))
         .done(function (data) {
             console.debug(data);
@@ -152,6 +158,7 @@ function hint() {
         "before": state.before[0],
         "after": state.after[state.after.length - 1],
         "start": Math.floor(state.start.getTime() / 1000),
+        "tz": state.start.getTimezoneOffset(),
         "mode": mode,
     }
 
@@ -165,6 +172,29 @@ function hint() {
             }
 
             alert("The word starts with: '" + data.word + "'");
+        });
+}
+
+
+function reveal() {
+    dt = new Date()
+
+    params = {
+        "date": Math.floor(dt.getTime() / 1000) - (24 * 60 * 60), // Subtract 1 day
+        "tz": dt.getTimezoneOffset(),
+        "mode": mode,
+    }
+
+    $.get("/reveal?" + $.param(params))
+        .done(function (data) {
+            console.debug(data);
+
+            if (data.error != "") {
+                alert(data.error);
+                return;
+            }
+
+            document.getElementById("reveal").innerText = data.word;
         });
 }
 

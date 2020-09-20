@@ -37,7 +37,7 @@ Start the application in development mode with:
 make && ./bin/guess-my-word
 ```
 
-Then view the website at http://127.0.0.1.
+Then view the website at http://127.0.0.1:3000.
 
 Dev away!
 
