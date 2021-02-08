@@ -1,4 +1,4 @@
-FROM golang:1.15.7-alpine
+FROM golang:1.15.8-alpine
 
 # Build the app, dependencies first
 RUN apk add --no-cache git
