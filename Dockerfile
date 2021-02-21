@@ -24,3 +24,4 @@ COPY --from=0 /app/main /app
 
 EXPOSE 3000
 ENTRYPOINT [ "/app" ]
+LABEL org.opencontainers.image.source=https://github.com/taiidani/guess-my-word
