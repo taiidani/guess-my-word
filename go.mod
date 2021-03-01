@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.77.0 // indirect
-	cloud.google.com/go/firestore v1.4.0
+	cloud.google.com/go/firestore v1.5.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/gobuffalo/here v0.6.2 // indirect
@@ -18,7 +18,5 @@ require (
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/net v0.0.0-20210220033124-5f55cee0dc0d // indirect
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93 // indirect
-	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect
-	google.golang.org/genproto v0.0.0-20210219173056-d891e3cb3b5b // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
