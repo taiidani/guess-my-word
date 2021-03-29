@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"guess_my_word/actions/test"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +24,7 @@ func (m *mockWordStore) GetForDay(ctx context.Context, tm time.Time, mode string
 func setupRouter() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.Default()
-	AddHandlers(r)
+
+	AddHandlers(r, test.Templates, test.Assets)
 	return r
 }

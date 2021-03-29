@@ -13,17 +13,17 @@ func Test_StaticHandler(t *testing.T) {
 
 	t.Run("CSS", func(tt *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/assets/css/application.css", nil)
+		req, _ := http.NewRequest("GET", "/assets/test.css", nil)
 		router.ServeHTTP(w, req)
 
-		if !strings.Contains(w.Body.String(), "text-decoration: underline;") {
+		if !strings.Contains(w.Body.String(), "background-color: white;") {
 			t.Error("Output did not contain expected phrase")
 		}
 	})
 
 	t.Run("JS", func(tt *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/assets/js/application.js", nil)
+		req, _ := http.NewRequest("GET", "/assets/test.js", nil)
 		router.ServeHTTP(w, req)
 
 		if !strings.Contains(w.Body.String(), "return") {
@@ -33,7 +33,7 @@ func Test_StaticHandler(t *testing.T) {
 
 	t.Run("SVG", func(tt *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/assets/images/between.svg", nil)
+		req, _ := http.NewRequest("GET", "/assets/images/test.svg", nil)
 		router.ServeHTTP(w, req)
 
 		if !strings.Contains(w.Body.String(), "xmlns") {
@@ -43,7 +43,7 @@ func Test_StaticHandler(t *testing.T) {
 
 	t.Run("PNG", func(tt *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/assets/images/favicon.png", nil)
+		req, _ := http.NewRequest("GET", "/assets/images/test.png", nil)
 		router.ServeHTTP(w, req)
 
 		if !strings.Contains(w.Body.String(), "PNG") {
@@ -53,7 +53,7 @@ func Test_StaticHandler(t *testing.T) {
 
 	t.Run("Error on valid directory, not file", func(tt *testing.T) {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest("GET", "/assets/images/", nil)
+		req, _ := http.NewRequest("GET", "/assets/images", nil)
 		router.ServeHTTP(w, req)
 
 		if w.Code != 400 {

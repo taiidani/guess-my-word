@@ -2,15 +2,14 @@ package actions
 
 import (
 	"context"
+	"fmt"
 	"guess_my_word/internal/words"
 	"html/template"
-	"io/ioutil"
-	"os"
-	"strings"
+	"io"
+	"io/fs"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/pkger"
 )
 
 type wordClient interface {
@@ -21,13 +20,16 @@ type wordClient interface {
 var wordStore wordClient
 
 // AddHandlers will add the application handlers to the HTTP server
-func AddHandlers(r *gin.Engine) {
+func AddHandlers(r *gin.Engine, templates fs.FS, assets fs.FS) (err error) {
 	wordStore = words.NewWordStore()
 
 	if gin.IsDebugging() {
-		addHandlersStaticPreProduction(r)
+		err = addHandlersStaticPreProduction(r)
 	} else {
-		addHandlersStaticProduction(r)
+		err = addHandlersStaticProduction(r, templates, assets)
+	}
+	if err != nil {
+		return fmt.Errorf("could not register static handlers: %w", err)
 	}
 
 	r.Use(middlewareStandardHeaders())
@@ -36,27 +38,28 @@ func AddHandlers(r *gin.Engine) {
 	r.GET("/ping", PingHandler)
 	r.GET("/guess", GuessHandler)
 	r.GET("/hint", HintHandler)
+	return nil
 }
 
-func loadTemplate() (*template.Template, error) {
+func loadTemplate(templates fs.FS) (*template.Template, error) {
 	t := template.New("")
 
-	err := pkger.Walk("/templates", func(name string, info os.FileInfo, err error) error {
+	err := fs.WalkDir(templates, "templates", func(name string, info fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		if info.IsDir() || !strings.HasSuffix(name, ".html") {
+		if info.IsDir() {
 			return nil
 		}
 
-		file, err := pkger.Open(name)
+		file, err := templates.Open(name)
 		if err != nil {
 			return err
 		}
 		defer file.Close()
 
-		h, err := ioutil.ReadAll(file)
+		h, err := io.ReadAll(file)
 		if err != nil {
 			return err
 		}
@@ -71,21 +74,21 @@ func loadTemplate() (*template.Template, error) {
 	return t, err
 }
 
-func addHandlersStaticProduction(r *gin.Engine) {
-	pkger.Include("/templates")
-	t, err := loadTemplate()
+func addHandlersStaticProduction(r *gin.Engine, templates, assets fs.FS) error {
+	t, err := loadTemplate(templates)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not load templates: %w", err)
 	}
 	r.SetHTMLTemplate(t)
 
-	pkger.Include("/assets")
-	r.GET("/assets/*filepath", StaticHandler)
+	r.GET("/assets/*filepath", newStaticHandler(assets))
+	return nil
 }
 
-func addHandlersStaticPreProduction(r *gin.Engine) {
+func addHandlersStaticPreProduction(r *gin.Engine) error {
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/assets", "./assets")
+	return nil
 }
 
 // convertUTCToLocal will take a given time in UTC and convert it to a given user's timezone

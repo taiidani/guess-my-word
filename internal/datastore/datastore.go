@@ -56,7 +56,7 @@ func New() *Client {
 // GetWord will retrieve a word for the given key
 func (c *Client) GetWord(ctx context.Context, key string, word interface{}) (err error) {
 	if LocalOnly {
-		return errors.New("Running in local mode. Data has not been retrieved")
+		return errors.New("running in local mode. Data has not been retrieved")
 	}
 
 	doc := client.Doc(wordCollectionPrefix + key)

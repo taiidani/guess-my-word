@@ -15,8 +15,6 @@ The Scrabble word list was obtained from https://sourceforge.net/projects/scrabb
 
 The backend web framework in use is Gin: https://gin-gonic.com
 
-The static packaging library used for the compile is Pkger: https://github.com/markbates/pkger
-
 The frontend frameworks in use are:
 
 * Vue.js: https://vuejs.org/
@@ -29,7 +27,7 @@ Persistence is being enabled using the Google Cloud Platform Firestore engine: h
 
 The application requires the following to be configured:
 
-* Go 1.11+ installed
+* Go 1.16+ installed
 
 Start the application in development mode with:
 
