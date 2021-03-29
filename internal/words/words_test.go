@@ -3,6 +3,7 @@ package words
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 )
@@ -141,6 +142,8 @@ func TestWordStore_GetForDay(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := &WordStore{
 				storeClient: tt.fields.storeClient,
+				scrabble:    strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+				words:       strings.Split(strings.TrimSpace(wordList), "\n"),
 			}
 
 			got, err := w.GetForDay(tt.args.ctx, tt.args.tm, tt.args.mode)
@@ -184,7 +187,9 @@ func TestWordStore_Validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := WordStore{}
+			w := WordStore{
+				scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+			}
 
 			if got := w.Validate(tt.args.ctx, tt.args.word); got != tt.want {
 				t.Errorf("Validate() = %v, want %v", got, tt.want)
