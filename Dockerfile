@@ -1,4 +1,4 @@
-FROM golang:1.16.0-alpine AS base
+FROM golang:1.16.2-alpine AS base
 
 # Build the app, dependencies first
 RUN apk add --no-cache git
@@ -16,7 +16,7 @@ FROM base AS test
 RUN go test ./...
 
 # ---
-FROM alpine:3.13.2 AS dist
+FROM alpine:3.13.3 AS dist
 
 # Dependencies
 RUN apk add --no-cache ca-certificates
