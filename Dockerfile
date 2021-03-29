@@ -16,7 +16,7 @@ FROM base AS test
 RUN go test ./...
 
 # ---
-FROM alpine:3.13.2 AS dist
+FROM alpine:3.13.3 AS dist
 
 # Dependencies
 RUN apk add --no-cache ca-certificates
