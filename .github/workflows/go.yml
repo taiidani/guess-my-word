@@ -17,6 +17,14 @@ jobs:
       - name: Get dependencies
         run: go mod download
 
+      - name: Vet
+        run: go vet ./...
+
+      - name: Lint
+        run: |
+          go get honnef.co/go/tools/cmd/staticcheck
+          staticcheck -tests ./...
+
       - name: Test
         run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
 
