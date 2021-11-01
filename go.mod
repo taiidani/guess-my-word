@@ -3,7 +3,7 @@ module guess_my_word
 go 1.16
 
 require (
-	cloud.google.com/go/firestore v1.6.0
+	cloud.google.com/go/firestore v1.6.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
