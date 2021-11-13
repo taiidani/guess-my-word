@@ -7,10 +7,8 @@ services:
         environment:
             ADDR: "0.0.0.0"
             GIN_MODE: "release"
-            GOOGLE_APPLICATION_CREDENTIALS: "/run/secrets/google-application-credentials"
-        secrets:
-            - google-application-credentials
+            REDIS_URL: "redis:6379"
 
-secrets:
-    google-application-credentials:
-        file: ./auth.json
+    redis:
+        image: redis:6
+        ports: ["127.0.0.1:6379:6379"]

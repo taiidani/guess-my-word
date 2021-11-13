@@ -2,20 +2,11 @@ package words
 
 import (
 	"context"
-	"errors"
+	"guess_my_word/internal/datastore"
 	"strings"
 	"testing"
 	"time"
 )
-
-type mockStore struct{}
-
-func (m *mockStore) GetWord(ctx context.Context, key string, word interface{}) error {
-	return errors.New("Not happening today")
-}
-func (m *mockStore) SetWord(ctx context.Context, key string, word interface{}) error {
-	return nil
-}
 
 func TestNewWordStore(t *testing.T) {
 	w := NewWordStore()
@@ -42,7 +33,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 	}{
 		{
 			name:   "Date yesterday",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC),
@@ -52,7 +43,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Date tweak yesterday",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, -1),
@@ -62,7 +53,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Unix yesterday",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(1580083199, 0), // Sun Jan 26 23:59:59 2020 UTC
@@ -72,7 +63,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Date today",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
@@ -82,7 +73,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Date today TZ",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx: context.Background(),
 				tm: time.Date(2020, time.January, 27, 2, 0, 0, 0, func() *time.Location {
@@ -98,7 +89,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Date tweak today",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, 1),
@@ -108,7 +99,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Unix today",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(1580083201, 0).UTC(), // Mon Jan 27 00:00:01 2020 UTC
@@ -118,7 +109,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Hard mode date today",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
@@ -128,7 +119,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		},
 		{
 			name:   "Unix OMG ERROR",
-			fields: fields{storeClient: &mockStore{}},
+			fields: fields{storeClient: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(0, 0),

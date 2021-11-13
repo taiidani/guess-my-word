@@ -21,13 +21,13 @@ The frontend frameworks in use are:
 * Bootstrap: https://getbootstrap.com/
 * jQuery: https://jquery.com/
 
-Persistence is being enabled using the Google Cloud Platform Firestore engine: https://console.cloud.google.com/firestore
+Persistence is being enabled using a Redis backend.
 
 ## Contributing
 
 The application requires the following to be configured:
 
-* Go 1.16+ installed
+* Go 1.17+ installed
 
 Start the application in development mode with:
 
@@ -41,10 +41,9 @@ Dev away!
 
 ### Persistence
 
-By default the application runs in "Local Mode" and will not persist any of the data (such as generated words). If you need to test the persistence options:
+By default the application runs in "Local Mode" and will not persist any of the data (such as generated words). If you need to test the persistence options you may point the application at a local Redis instance:
 
-* Generate a [Google Cloud Platform](https://console.cloud.google.com/firestore) project using Firestore Native Mode
-* Create a service account for your project, then download its JSON credentials to an "auth.json" file at the root of this directory
-* Set an environment variable in your shell of `GOOGLE_APPLICATION_PROJECT_ID` to the ID of your GCP project.
-
-This should begin generating collections in your Firestore installation upon first pageload.
+```sh
+docker-compose up -d redis
+make && REDIS_URL=127.0.0.1:6379 ./bin/guess-my-word
+```

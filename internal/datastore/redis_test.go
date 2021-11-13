@@ -5,20 +5,16 @@ import (
 	"testing"
 )
 
-func init() {
-	LocalOnly = true
-}
-
-func TestClient_GetWord(t *testing.T) {
+func TestRedisClient_GetWord(t *testing.T) {
 	type args struct {
-		ctx  context.Context
-		key  string
-		word interface{}
+		ctx context.Context
+		key string
 	}
 	tests := []struct {
 		name    string
-		c       *Client
+		c       *RedisClient
 		args    args
+		want    string
 		wantErr bool
 	}{
 		{
@@ -27,28 +23,34 @@ func TestClient_GetWord(t *testing.T) {
 				ctx: context.Background(),
 				key: "test",
 			},
+			c:       &RedisClient{}, // No client, therefore localOnly
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{}
-			if err := c.GetWord(tt.args.ctx, tt.args.key, tt.args.word); (err != nil) != tt.wantErr {
+			c := tt.c
+			got, err := c.GetWord(tt.args.ctx, tt.args.key)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.GetWord() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if got != tt.want {
+				t.Errorf("Client.GetWord() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestClient_SetWord(t *testing.T) {
+func TestRedisClient_SetWord(t *testing.T) {
 	type args struct {
 		ctx  context.Context
 		key  string
-		word interface{}
+		word string
 	}
 	tests := []struct {
 		name    string
-		c       *Client
+		c       *RedisClient
 		args    args
 		wantErr bool
 	}{
@@ -57,11 +59,13 @@ func TestClient_SetWord(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 			},
+			c:       &RedisClient{}, // No client, therefore localOnly
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{}
+			c := tt.c
 			if err := c.SetWord(tt.args.ctx, tt.args.key, tt.args.word); (err != nil) != tt.wantErr {
 				t.Errorf("Client.SetWord() error = %v, wantErr %v", err, tt.wantErr)
 			}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/datastore"
 	"log"
+	"os"
 	"strings"
 	"time"
 )
@@ -25,8 +26,8 @@ type (
 
 	// Store represents the internal datastore for the words package
 	Store interface {
-		GetWord(ctx context.Context, key string, word interface{}) error
-		SetWord(ctx context.Context, key string, word interface{}) error
+		GetWord(ctx context.Context, key string) (string, error)
+		SetWord(ctx context.Context, key string, word string) error
 	}
 )
 
@@ -43,7 +44,7 @@ var (
 // NewWordStore will return an instance of the word generator
 func NewWordStore() *WordStore {
 	return &WordStore{
-		storeClient: datastore.New(),
+		storeClient: datastore.NewRedis(os.Getenv("REDIS_ADDR")),
 		scrabble:    strings.Split(strings.TrimSpace(scrabbleList), "\n"),
 		words:       strings.Split(strings.TrimSpace(wordList), "\n"),
 	}
@@ -56,8 +57,9 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (s
 	log.Println("Getting word for day at ", key)
 
 	// Grab the word from the datastore
+	var err error
 	word := Word{}
-	err := w.storeClient.GetWord(ctx, key, &word)
+	word.Value, err = w.storeClient.GetWord(ctx, key)
 	if err != nil {
 		// Generate a new word
 		log.Printf("Encountered error '%s'. Generating new word for key '%s'", err, key)
@@ -66,9 +68,9 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (s
 			return word.Value, err
 		}
 
-		// And store it
+		// And store it if we're able
 		log.Printf("Storing generated word '%s' at key '%s'", word.Value, key)
-		err = w.storeClient.SetWord(ctx, key, word)
+		err = w.storeClient.SetWord(ctx, key, word.Value)
 		if err != nil {
 			log.Printf("Encountered error storing new word '%s' at key '%s': %s", word.Value, key, err)
 		}
