@@ -3,10 +3,12 @@ package actions
 import (
 	"context"
 	"fmt"
+	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/words"
 	"html/template"
 	"io"
 	"io/fs"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,10 +21,12 @@ type wordClient interface {
 
 var wordStore wordClient
 
+func init() {
+	wordStore = words.NewWordStore(datastore.NewRedis(os.Getenv("REDIS_ADDR")))
+}
+
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r *gin.Engine, templates fs.FS, assets fs.FS) (err error) {
-	wordStore = words.NewWordStore()
-
 	if gin.IsDebugging() {
 		err = addHandlersStaticPreProduction(r)
 	} else {

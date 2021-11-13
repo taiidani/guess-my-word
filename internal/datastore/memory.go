@@ -31,7 +31,7 @@ func (c *MemoryClient) GetWord(ctx context.Context, key string) (string, error) 
 // SetWord will store a Word for the given key
 func (c *MemoryClient) SetWord(ctx context.Context, key string, word string) error {
 	if c.Data == nil {
-		return fmt.Errorf("Running in local mode. Data has not been stored")
+		return fmt.Errorf("running in local mode. Data has not been stored")
 	}
 
 	c.Data[key] = word
