@@ -44,7 +44,7 @@ func (c *RedisClient) GetWord(ctx context.Context, key string) (string, error) {
 // SetWord will store a Word for the given key
 func (c *RedisClient) SetWord(ctx context.Context, key string, word string) error {
 	if c.client == nil {
-		return fmt.Errorf("Running in local mode. Data has not been stored")
+		return fmt.Errorf("running in local mode. Data has not been stored")
 	}
 
 	return c.client.Set(ctx, wordCollectionPrefix+key, word, time.Hour*24*7).Err()
