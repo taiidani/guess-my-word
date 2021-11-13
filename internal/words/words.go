@@ -4,9 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"guess_my_word/internal/datastore"
 	"log"
-	"os"
 	"strings"
 	"time"
 )
@@ -42,9 +40,9 @@ var (
 )
 
 // NewWordStore will return an instance of the word generator
-func NewWordStore() *WordStore {
+func NewWordStore(store Store) *WordStore {
 	return &WordStore{
-		storeClient: datastore.NewRedis(os.Getenv("REDIS_ADDR")),
+		storeClient: store,
 		scrabble:    strings.Split(strings.TrimSpace(scrabbleList), "\n"),
 		words:       strings.Split(strings.TrimSpace(wordList), "\n"),
 	}

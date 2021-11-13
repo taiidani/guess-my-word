@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewWordStore(t *testing.T) {
-	w := NewWordStore()
+	w := NewWordStore(nil)
 	if w == nil {
 		t.Error("Received nil for word instance")
 	}
