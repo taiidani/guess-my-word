@@ -52,7 +52,7 @@ hr {
   color: #111;
 }
 
-#after li.placeholder, #before li.placeholder {
+#after li.no-guesses, #before li.no-guesses {
   font-size: 1em !important;
   color: #999 !important;
 }

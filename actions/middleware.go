@@ -9,9 +9,9 @@ import (
 func middlewareStandardHeaders() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		csp := []string{
-			`default-src 'self'`,
+			`default-src 'self' cdn.jsdelivr.net`,
 			`script-src 'self' *.jquery.com cdn.jsdelivr.net 'unsafe-eval'`,
-			`style-src 'self' *.bootstrapcdn.com`,
+			`style-src 'self' cdn.jsdelivr.net`,
 			`frame-ancestors 'none'`,
 			`form-action 'self'`,
 			`base-uri 'self'`,
