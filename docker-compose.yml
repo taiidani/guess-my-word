@@ -6,9 +6,8 @@ services:
         build: .
         environment:
             ADDR: "0.0.0.0"
-            GIN_MODE: "release"
             REDIS_URL: "redis:6379"
 
     redis:
         image: redis:6
-        ports: ["127.0.0.1:6379:6379"]
+        ports: [ "127.0.0.1:6379:6379" ]

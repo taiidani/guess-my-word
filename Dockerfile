@@ -24,6 +24,7 @@ RUN apk add --no-cache ca-certificates
 # Add pre-built application
 COPY --from=base /app/main /app
 
+ENV GIN_MODE="release"
 EXPOSE 3000
 ENTRYPOINT [ "/app" ]
 LABEL org.opencontainers.image.source=https://github.com/taiidani/guess-my-word
