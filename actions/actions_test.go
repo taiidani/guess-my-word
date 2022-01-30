@@ -6,6 +6,7 @@ import (
 
 	"guess_my_word/actions/test"
 	"guess_my_word/internal/datastore"
+	"guess_my_word/internal/model"
 	"guess_my_word/internal/words"
 
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,18 @@ import (
 
 type mockWordStore struct {
 	mockValidate  func(context.Context, string) bool
-	mockGetForDay func(context.Context, time.Time, string) (string, error)
+	mockGetForDay func(context.Context, time.Time, string) (model.Word, error)
 }
 
 func init() {
-	wordStore = words.NewWordStore(datastore.NewMemory())
+	dataStore = datastore.NewMemory()
+	wordStore = words.NewWordStore(dataStore)
 }
 
 func (m *mockWordStore) Validate(ctx context.Context, word string) bool {
 	return m.mockValidate(ctx, word)
 }
-func (m *mockWordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (string, error) {
+func (m *mockWordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
 	return m.mockGetForDay(ctx, tm, mode)
 }
 

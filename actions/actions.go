@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"guess_my_word/internal/datastore"
+	"guess_my_word/internal/model"
 	"guess_my_word/internal/words"
 	"html/template"
 	"io"
@@ -16,13 +17,15 @@ import (
 
 type wordClient interface {
 	Validate(context.Context, string) bool
-	GetForDay(context.Context, time.Time, string) (string, error)
+	GetForDay(context.Context, time.Time, string) (model.Word, error)
 }
 
+var dataStore words.Store
 var wordStore wordClient
 
 func init() {
-	wordStore = words.NewWordStore(datastore.NewRedis(os.Getenv("REDIS_ADDR")))
+	dataStore = datastore.NewRedis(os.Getenv("REDIS_ADDR"))
+	wordStore = words.NewWordStore(dataStore)
 }
 
 // AddHandlers will add the application handlers to the HTTP server

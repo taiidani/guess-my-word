@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"guess_my_word/internal/model"
 	"log"
 	"strings"
 	"time"
@@ -9,10 +10,11 @@ import (
 )
 
 type guess struct {
-	Word  string    `form:"word"`
-	Mode  string    `form:"mode"`
-	Start time.Time `form:"start" time_format:"unix"`
-	TZ    int       `form:"tz"`
+	Guesses int       `form:"guesses"`
+	Word    string    `form:"word"`
+	Mode    string    `form:"mode"`
+	Start   time.Time `form:"start" time_format:"unix"`
+	TZ      int       `form:"tz"`
 }
 
 type guessReply struct {
@@ -60,7 +62,8 @@ func GuessHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, convertUTCToUser(guess.Start, guess.TZ), guess.Mode)
+	tm := convertUTCToUser(guess.Start, guess.TZ)
+	word, err := wordStore.GetForDay(c, tm, guess.Mode)
 	if err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)
@@ -68,7 +71,7 @@ func GuessHandler(c *gin.Context) {
 	}
 
 	if reply.Error == "" {
-		switch strings.Compare(reply.Guess, word) {
+		switch strings.Compare(reply.Guess, word.Value) {
 		case -1:
 			reply.After = true
 		case 1:
@@ -76,6 +79,16 @@ func GuessHandler(c *gin.Context) {
 		case 0:
 			reply.Correct = true
 		}
+	}
+
+	if reply.Correct {
+		word.Guesses = append(word.Guesses, model.Guess{
+			Count: guess.Guesses,
+		})
+
+		// TODO: Centralize this key logic
+		key := guess.Mode + "/day/" + tm.Format("2006-01-02")
+		dataStore.SetWord(c, key, word)
 	}
 
 	c.JSON(200, reply)

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"guess_my_word/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -19,25 +20,25 @@ func TestRevealHandler(t *testing.T) {
 	tests := []struct {
 		name          string
 		args          args
-		mockGetForDay func(ctx context.Context, tm time.Time, mode string) (string, error)
+		mockGetForDay func(ctx context.Context, tm time.Time, mode string) (model.Word, error)
 		want          revealReply
 		wantCode      int
 	}{
 		{
 			name: "success",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (string, error) {
-				return "theword", nil
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
 				request: "/reveal",
 			},
-			want:     revealReply{Word: "theword"},
+			want:     revealReply{Word: model.Word{Value: "theword"}},
 			wantCode: 200,
 		},
 		{
 			name: "error-invalid-request",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (string, error) {
-				return "theword", nil
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
 				request: "/reveal?date=notAValidUnixTimestamp",
@@ -47,8 +48,8 @@ func TestRevealHandler(t *testing.T) {
 		},
 		{
 			name: "error-invalid-date",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (string, error) {
-				return "theword", nil
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
 				request: "/reveal?date=0",
@@ -58,8 +59,8 @@ func TestRevealHandler(t *testing.T) {
 		},
 		{
 			name: "error-too-early",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (string, error) {
-				return "theword", nil
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
 				request: fmt.Sprintf("/reveal?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
@@ -69,8 +70,8 @@ func TestRevealHandler(t *testing.T) {
 		},
 		{
 			name: "error-getword",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (string, error) {
-				return "", errors.New("ohnoes")
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{}, errors.New("ohnoes")
 			},
 			args: args{
 				request: "/reveal",

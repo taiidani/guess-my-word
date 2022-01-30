@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"guess_my_word/internal/model"
 	"log"
 	"time"
 
@@ -15,8 +16,8 @@ type reveal struct {
 }
 
 type revealReply struct {
-	Word  string `json:"word"`
-	Error string `json:"error,omitempty"`
+	Word  model.Word `json:"word"`
+	Error string     `json:"error,omitempty"`
 }
 
 // ErrRevealToday is emitted when the reveal request is for a current or future word
@@ -51,6 +52,8 @@ func RevealHandler(c *gin.Context) {
 		c.JSON(200, reply)
 		return
 	}
+
+	reveal.dateUser.Add(time.Hour + 24)
 
 	// Generate the word for the day
 	word, err := wordStore.GetForDay(c, reveal.dateUser, reveal.Mode)

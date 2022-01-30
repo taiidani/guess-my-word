@@ -56,7 +56,7 @@ func HintHandler(c *gin.Context) {
 		return
 	}
 
-	reply.Word = getWordHint(hint, word)
+	reply.Word = getWordHint(hint, word.Value)
 
 	c.JSON(200, reply)
 }

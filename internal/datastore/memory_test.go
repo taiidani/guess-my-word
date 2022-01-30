@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"context"
+	"guess_my_word/internal/model"
 	"reflect"
 	"testing"
 )
@@ -15,7 +16,7 @@ func TestMemoryClient_GetWord(t *testing.T) {
 		name    string
 		c       *MemoryClient
 		args    args
-		want    string
+		want    model.Word
 		wantErr bool
 	}{
 		{
@@ -24,10 +25,10 @@ func TestMemoryClient_GetWord(t *testing.T) {
 				ctx: context.Background(),
 				key: "test",
 			},
-			c: &MemoryClient{Data: map[string]string{
-				"test": "value",
+			c: &MemoryClient{Data: map[string]model.Word{
+				"test": {Value: "value"},
 			}},
-			want: "value",
+			want: model.Word{Value: "value"},
 		},
 		{
 			name: "not-found",
@@ -56,7 +57,7 @@ func TestMemoryClient_GetWord(t *testing.T) {
 				t.Errorf("Client.GetWord() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if got != tt.want {
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Client.GetWord() got = %v, want %v", got, tt.want)
 			}
 		})
@@ -67,13 +68,13 @@ func TestMemoryClient_SetWord(t *testing.T) {
 	type args struct {
 		ctx  context.Context
 		key  string
-		word string
+		word model.Word
 	}
 	tests := []struct {
 		name    string
 		c       *MemoryClient
 		args    args
-		want    map[string]string
+		want    map[string]model.Word
 		wantErr bool
 	}{
 		{
@@ -81,10 +82,10 @@ func TestMemoryClient_SetWord(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				key:  "test",
-				word: "value",
+				word: model.Word{Value: "value"},
 			},
 			c:    NewMemory(),
-			want: map[string]string{"test": "value"},
+			want: map[string]model.Word{"test": {Value: "value"}},
 		},
 		{
 			name: "Local mode test",

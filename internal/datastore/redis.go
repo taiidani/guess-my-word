@@ -2,8 +2,10 @@ package datastore
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"guess_my_word/internal/model"
 	"log"
 	"time"
 
@@ -32,20 +34,31 @@ func NewRedis(addr string) *RedisClient {
 }
 
 // GetWord will retrieve a word for the given key
-func (c *RedisClient) GetWord(ctx context.Context, key string) (string, error) {
+func (c *RedisClient) GetWord(ctx context.Context, key string) (model.Word, error) {
 	if c.client == nil {
-		return "", errors.New("running in local mode. Data has not been retrieved")
+		return model.Word{}, errors.New("running in local mode. Data has not been retrieved")
 	}
 
+	ret := model.Word{}
 	doc := c.client.Get(ctx, wordCollectionPrefix+key)
-	return doc.Val(), doc.Err()
+	if doc.Err() != nil {
+		return ret, doc.Err()
+	}
+
+	err := json.Unmarshal([]byte(doc.Val()), &ret)
+	return ret, err
 }
 
 // SetWord will store a Word for the given key
-func (c *RedisClient) SetWord(ctx context.Context, key string, word string) error {
+func (c *RedisClient) SetWord(ctx context.Context, key string, word model.Word) error {
 	if c.client == nil {
 		return fmt.Errorf("running in local mode. Data has not been stored")
 	}
 
-	return c.client.Set(ctx, wordCollectionPrefix+key, word, time.Hour*24*7).Err()
+	set, err := json.Marshal(word)
+	if err != nil {
+		return err
+	}
+
+	return c.client.Set(ctx, wordCollectionPrefix+key, set, time.Hour*24*7).Err()
 }

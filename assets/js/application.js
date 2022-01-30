@@ -103,6 +103,7 @@ function guess() {
     requestStart = new Date()
     $("form#guesser button").attr("disabled", "disabled")
     params = {
+        "guesses": state.guesses,
         "word": word,
         "start": Math.floor(state.start.getTime() / 1000),
         "tz": state.start.getTimezoneOffset(),
@@ -194,7 +195,24 @@ function reveal() {
                 return;
             }
 
-            document.getElementById("reveal").innerText = data.word;
+            txt = "Word: " + data.word.Value + "<br/>";
+            if (data.word.Guesses != null && data.word.Guesses.length > 0) {
+                guessCount = 0;
+                bestRun = 999;
+                data.word.Guesses.each((item) => {
+                    guessCount += item.Count;
+                    if (item.Count < bestRun) {
+                        bestRun = item.Count;
+                    }
+                });
+                avgCount = guessCount / data.word.Guesses.length;
+
+                txt += "Completions: " + data.word.Guesses.length + "<br/>";
+                txt += "Best Run: " + bestRun + "<br/>";
+                txt += "Average Run: " + avgCount + "<br/>";
+            }
+
+            document.getElementById("reveal").innerHTML = txt;
         });
 }
 

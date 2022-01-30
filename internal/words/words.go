@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"guess_my_word/internal/model"
 	"log"
 	"strings"
 	"time"
@@ -17,15 +18,10 @@ type (
 		words       []string
 	}
 
-	// Word defines information about a given key's word
-	Word struct {
-		Value string
-	}
-
 	// Store represents the internal datastore for the words package
 	Store interface {
-		GetWord(ctx context.Context, key string) (string, error)
-		SetWord(ctx context.Context, key string, word string) error
+		GetWord(ctx context.Context, key string) (model.Word, error)
+		SetWord(ctx context.Context, key string, word model.Word) error
 	}
 )
 
@@ -50,31 +46,29 @@ func NewWordStore(store Store) *WordStore {
 
 // GetForDay will return a word for the given day
 // This func is timezone agnostic. It will only consider the current local date
-func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (string, error) {
+func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
 	key := mode + "/day/" + tm.Format("2006-01-02")
 	log.Println("Getting word for day at ", key)
 
 	// Grab the word from the datastore
-	var err error
-	word := Word{}
-	word.Value, err = w.storeClient.GetWord(ctx, key)
+	word, err := w.storeClient.GetWord(ctx, key)
 	if err != nil {
 		// Generate a new word
 		log.Printf("Encountered error '%s'. Generating new word for key '%s'", err, key)
 		word.Value, err = w.generateWord(tm, w.getWordList(mode))
 		if err != nil {
-			return word.Value, err
+			return word, err
 		}
 
 		// And store it if we're able
-		log.Printf("Storing generated word '%s' at key '%s'", word.Value, key)
-		err = w.storeClient.SetWord(ctx, key, word.Value)
+		log.Printf("Storing generated word '%v' at key '%s'", word, key)
+		err = w.storeClient.SetWord(ctx, key, word)
 		if err != nil {
-			log.Printf("Encountered error storing new word '%s' at key '%s': %s", word.Value, key, err)
+			log.Printf("Encountered error storing new word '%v' at key '%s': %s", word, key, err)
 		}
 	}
 
-	return word.Value, err
+	return word, err
 }
 
 // Validate will confirm if a given word is valid
