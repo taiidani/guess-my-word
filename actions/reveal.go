@@ -16,7 +16,7 @@ type reveal struct {
 
 type revealReply struct {
 	Word  string `json:"word"`
-	Error string `json:"error"`
+	Error string `json:"error,omitempty"`
 }
 
 // ErrRevealToday is emitted when the reveal request is for a current or future word

@@ -18,7 +18,7 @@ type hint struct {
 
 type hintReply struct {
 	Word  string `json:"word"`
-	Error string `json:"error"`
+	Error string `json:"error,omitempty"`
 }
 
 const (

@@ -20,7 +20,7 @@ type guessReply struct {
 	Correct bool   `json:"correct"`
 	After   bool   `json:"after"`
 	Before  bool   `json:"before"`
-	Error   string `json:"error"`
+	Error   string `json:"error,omitempty"`
 }
 
 const (

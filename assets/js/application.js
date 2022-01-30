@@ -112,7 +112,7 @@ function guess() {
         .done(function (data) {
             console.debug(data);
 
-            if (data.error != "") {
+            if (data.error) {
                 alert(data.error);
                 return;
             }
@@ -166,7 +166,7 @@ function hint() {
         .done(function (data) {
             console.debug(data);
 
-            if (data.error != "") {
+            if (data.error) {
                 alert(data.error);
                 return;
             }
@@ -189,7 +189,7 @@ function reveal() {
         .done(function (data) {
             console.debug(data);
 
-            if (data.error != "") {
+            if (data.error) {
                 alert(data.error);
                 return;
             }
