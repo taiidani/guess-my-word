@@ -199,7 +199,7 @@ function reveal() {
             if (data.word.Guesses != null && data.word.Guesses.length > 0) {
                 guessCount = 0;
                 bestRun = 999;
-                data.word.Guesses.each((item) => {
+                data.word.Guesses.forEach((item) => {
                     guessCount += item.Count;
                     if (item.Count < bestRun) {
                         bestRun = item.Count;
