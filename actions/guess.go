@@ -1,9 +1,12 @@
 package actions
 
 import (
+	"context"
+	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
 	"log"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,11 +21,12 @@ type guess struct {
 }
 
 type guessReply struct {
-	Guess   string `json:"guess"`
-	Correct bool   `json:"correct"`
-	After   bool   `json:"after"`
-	Before  bool   `json:"before"`
-	Error   string `json:"error,omitempty"`
+	Guess   string     `json:"guess"`
+	Correct bool       `json:"correct"`
+	After   bool       `json:"after"`
+	Before  bool       `json:"before"`
+	Word    model.Word `json:"word"`
+	Error   string     `json:"error,omitempty"`
 }
 
 const (
@@ -38,6 +42,8 @@ const (
 	// ErrEmptyGuess is emitted when the guess provided was empty
 	ErrEmptyGuess = "Guess must not be empty"
 )
+
+var guessMutex = sync.Mutex{}
 
 // GuessHandler is an API handler to process a user's guess.
 func GuessHandler(c *gin.Context) {
@@ -61,13 +67,27 @@ func GuessHandler(c *gin.Context) {
 		return
 	}
 
-	// Generate the word for the day
-	tm := convertUTCToUser(guess.Start, guess.TZ)
-	word, err := wordStore.GetForDay(c, tm, guess.Mode)
-	if err != nil {
+	if err := guessHandlerReply(c, &guess, &reply); err != nil {
 		reply.Error = err.Error()
 		c.JSON(500, reply)
 		return
+	}
+
+	c.JSON(200, reply)
+}
+
+func guessHandlerReply(ctx context.Context, guess *guess, reply *guessReply) error {
+	// Only one guess operation may happen simultaneously
+	// This allows us to get the Word then modify it with new data without overriding anyone
+	// else's contributions
+	guessMutex.Lock()
+	defer guessMutex.Unlock()
+
+	// Generate the word for the day
+	tm := convertUTCToUser(guess.Start, guess.TZ)
+	word, err := wordStore.GetForDay(ctx, tm, guess.Mode)
+	if err != nil {
+		return err
 	}
 
 	if reply.Error == "" {
@@ -83,13 +103,15 @@ func GuessHandler(c *gin.Context) {
 
 	if reply.Correct {
 		word.Guesses = append(word.Guesses, model.Guess{
-			Count: guess.Guesses,
+			// Increment by one, as the guess we're receiving right now has not been counted yet
+			Count: guess.Guesses + 1,
 		})
 
-		// TODO: Centralize this key logic
-		key := guess.Mode + "/day/" + tm.Format("2006-01-02")
-		dataStore.SetWord(c, key, word)
+		dataStore.SetWord(ctx, datastore.WordKey(guess.Mode, tm), word)
 	}
 
-	c.JSON(200, reply)
+	// Storing a copy of word for today in the reply, BUT clearing the value -- no spoilers!
+	reply.Word = word
+	reply.Word.Value = ""
+	return nil
 }

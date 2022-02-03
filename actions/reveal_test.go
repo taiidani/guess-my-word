@@ -30,7 +30,7 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/reveal",
+				request: "/api/reveal",
 			},
 			want:     revealReply{Word: model.Word{Value: "theword"}},
 			wantCode: 200,
@@ -41,7 +41,7 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/reveal?date=notAValidUnixTimestamp",
+				request: "/api/reveal?date=notAValidUnixTimestamp",
 			},
 			want:     revealReply{Error: ErrInvalidRequest},
 			wantCode: 200,
@@ -52,7 +52,7 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/reveal?date=0",
+				request: "/api/reveal?date=0",
 			},
 			want:     revealReply{Error: ErrInvalidStartTime},
 			wantCode: 200,
@@ -63,7 +63,7 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: fmt.Sprintf("/reveal?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
+				request: fmt.Sprintf("/api/reveal?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
 			},
 			want:     revealReply{Error: ErrRevealToday},
 			wantCode: 200,
@@ -74,7 +74,7 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{}, errors.New("ohnoes")
 			},
 			args: args{
-				request: "/reveal",
+				request: "/api/reveal",
 			},
 			want:     revealReply{Error: "ohnoes"},
 			wantCode: 500,

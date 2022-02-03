@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"guess_my_word/actions/test"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/words"
@@ -33,6 +32,6 @@ func setupRouter() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.Default()
 
-	AddHandlers(r, test.Templates, test.Assets)
+	AddHandlers(r)
 	return r
 }

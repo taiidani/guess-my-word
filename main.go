@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"embed"
 	"fmt"
 	"guess_my_word/actions"
 	"net/http"
@@ -13,18 +12,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//go:embed templates/*.html
-var templates embed.FS
-
-//go:embed assets
-var assets embed.FS
-
 const defaultAddress = ":3000"
 
 func main() {
 	r := gin.Default()
 
-	if err := actions.AddHandlers(r, templates, assets); err != nil {
+	if err := actions.AddHandlers(r); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

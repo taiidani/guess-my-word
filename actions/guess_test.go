@@ -2,6 +2,7 @@ package actions
 
 import (
 	"encoding/json"
+	"guess_my_word/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -61,6 +62,7 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
+				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -121,6 +123,7 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
+				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -136,6 +139,7 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
+				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -151,6 +155,7 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
+				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -166,6 +171,7 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
+				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -181,7 +187,7 @@ func Test_GuessHandler(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequest("GET", "/guess?"+tt.request.Encode(), nil)
+			req, _ := http.NewRequest("GET", "/api/guess?"+tt.request.Encode(), nil)
 			router.ServeHTTP(w, req)
 
 			got := guessReply{}
