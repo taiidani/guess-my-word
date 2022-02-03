@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/model"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -15,6 +16,7 @@ import (
 // RedisClient represents a Redis based Datastore client
 type RedisClient struct {
 	client *redis.Client
+	mutex  sync.Mutex
 }
 
 // NewRedis instantiates a new client
@@ -30,7 +32,7 @@ func NewRedis(addr string) *RedisClient {
 		client = nil
 	}
 
-	return &RedisClient{client: client}
+	return &RedisClient{client: client, mutex: sync.Mutex{}}
 }
 
 // GetWord will retrieve a word for the given key
@@ -51,6 +53,9 @@ func (c *RedisClient) GetWord(ctx context.Context, key string) (model.Word, erro
 
 // SetWord will store a Word for the given key
 func (c *RedisClient) SetWord(ctx context.Context, key string, word model.Word) error {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
 	if c.client == nil {
 		return fmt.Errorf("running in local mode. Data has not been stored")
 	}

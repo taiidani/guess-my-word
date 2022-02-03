@@ -12,7 +12,7 @@ jobs:
       - name: Pull Cache
         run: docker pull ghcr.io/${GITHUB_REPOSITORY}:latest || echo "Cache not found"
       - name: Build Image
-        run: docker build . --tag ghcr.io/${GITHUB_REPOSITORY}:latest --cache-from ghcr.io/${GITHUB_REPOSITORY}:latest
+        run: docker build . --tag ghcr.io/${GITHUB_REPOSITORY}:latest --target dist --cache-from ghcr.io/${GITHUB_REPOSITORY}:latest
       - name: Push Image
         if: ${{ github.ref == 'refs/heads/main' }}
         run: docker push ghcr.io/${GITHUB_REPOSITORY}:latest

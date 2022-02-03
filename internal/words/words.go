@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
+	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
 	"log"
 	"strings"
@@ -47,7 +48,7 @@ func NewWordStore(store Store) *WordStore {
 // GetForDay will return a word for the given day
 // This func is timezone agnostic. It will only consider the current local date
 func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
-	key := mode + "/day/" + tm.Format("2006-01-02")
+	key := datastore.WordKey(mode, tm)
 	log.Println("Getting word for day at ", key)
 
 	// Grab the word from the datastore
