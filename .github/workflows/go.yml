@@ -5,10 +5,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Go 1.16
+      - name: Set up Go 1.17
         uses: actions/setup-go@v2.1.5
         with:
-          go-version: 1.16
+          go-version: 1.17
         id: go
 
       - name: Check out code into the Go module directory
@@ -26,7 +26,4 @@ jobs:
           staticcheck -tests ./...
 
       - name: Test
-        run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
-
-      - name: Send coverage to Codecov
-        run: bash <(curl -s https://codecov.io/bash) -Z -f coverage.txt
+        run: go test -race -covermode=atomic -cover ./...
