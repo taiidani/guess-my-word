@@ -19,7 +19,7 @@ The frontend frameworks in use are:
 
 * Vue.js: https://vuejs.org/
 * Bootstrap: https://getbootstrap.com/
-* jQuery: https://jquery.com/
+* Browserify: https://browserify.org/
 
 Persistence is being enabled using a Redis backend.
 
@@ -27,15 +27,28 @@ Persistence is being enabled using a Redis backend.
 
 The application requires the following to be configured:
 
-* Go 1.17+ installed
+* Go installed, matching the version in the `go.mod` file.
+
+Start the Redis backend with:
+
+```sh
+docker-compose up -d redis
+```
 
 Start the application in development mode with:
 
-```
-make && ./bin/guess-my-word
+```sh
+go run main.go
 ```
 
-Then view the website at http://127.0.0.1:3000.
+Then start the frontend with:
+
+```sh
+cd web
+npm run dev
+```
+
+Then view the website at http://localhost:8080.
 
 Dev away!
 
@@ -45,5 +58,5 @@ By default the application runs in "Local Mode" and will not persist any of the 
 
 ```sh
 docker-compose up -d redis
-make && REDIS_URL=127.0.0.1:6379 ./bin/guess-my-word
+make && REDIS_ADDR=127.0.0.1:6379 ./bin/guess-my-word
 ```
