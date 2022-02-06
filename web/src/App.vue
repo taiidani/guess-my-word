@@ -40,20 +40,28 @@ export default {
   components: { Footer, Guesser },
   name: "App",
   data() {
-    // Extract the mode from the query parameters
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get("mode");
-
-    // Hack as this component doesn't have access to the body element
-    if (mode == "hard") {
-      document.body.classList.add("mode-hard");
-    }
-
     return {
-      mode: mode,
+      mode: getMode(),
     };
   },
 };
+
+function getMode() {
+  // Extract the mode from the query parameters
+  const params = new URLSearchParams(window.location.search);
+  var mode = params.get("mode");
+
+  if (mode == null) {
+    mode = "default";
+  }
+
+  // Hack as this component doesn't have access to the body element
+  if (mode == "hard") {
+    document.body.classList.add("mode-hard");
+  }
+
+  return mode;
+}
 </script>
 
 <style>
