@@ -41,7 +41,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC),
 				mode: "default",
 			},
-			want: model.Word{Value: "power"},
+			want: model.Word{Day: "2020-01-26", Value: "power"},
 		},
 		{
 			name:   "Date tweak yesterday",
@@ -51,7 +51,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, -1),
 				mode: "default",
 			},
-			want: model.Word{Value: "power"},
+			want: model.Word{Day: "2020-01-26", Value: "power"},
 		},
 		{
 			name:   "Unix yesterday",
@@ -61,7 +61,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Unix(1580083199, 0), // Sun Jan 26 23:59:59 2020 UTC
 				mode: "default",
 			},
-			want: model.Word{Value: "power"},
+			want: model.Word{Day: "2020-01-26", Value: "power"},
 		},
 		{
 			name:   "Date today",
@@ -71,7 +71,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
 				mode: "default",
 			},
-			want: model.Word{Value: "tell"},
+			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Date today TZ",
@@ -87,7 +87,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				}()),
 				mode: "default",
 			},
-			want: model.Word{Value: "tell"},
+			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Date tweak today",
@@ -97,7 +97,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, 1),
 				mode: "default",
 			},
-			want: model.Word{Value: "tell"},
+			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Unix today",
@@ -107,7 +107,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Unix(1580083201, 0).UTC(), // Mon Jan 27 00:00:01 2020 UTC
 				mode: "default",
 			},
-			want: model.Word{Value: "tell"},
+			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Hard mode date today",
@@ -117,7 +117,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
 				mode: "hard",
 			},
-			want: model.Word{Value: "damans"},
+			want: model.Word{Day: "2020-01-27", Value: "damans"},
 		},
 		{
 			name:   "Unix OMG ERROR",

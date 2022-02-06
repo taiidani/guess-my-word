@@ -27,10 +27,11 @@ func init() {
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r *gin.Engine) (err error) {
 	r.Use(middlewareStandardHeaders())
-	r.GET("/api/reveal", RevealHandler)
+	r.GET("/api/stats", StatsHandler)
 	r.GET("/ping", PingHandler)
 	r.GET("/api/guess", GuessHandler)
 	r.GET("/api/hint", HintHandler)
+	r.GET("/api/seed", SeedHandler)
 	return nil
 }
 

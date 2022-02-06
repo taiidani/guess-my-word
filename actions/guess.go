@@ -21,12 +21,11 @@ type guess struct {
 }
 
 type guessReply struct {
-	Guess   string     `json:"guess"`
-	Correct bool       `json:"correct"`
-	After   bool       `json:"after"`
-	Before  bool       `json:"before"`
-	Word    model.Word `json:"word"`
-	Error   string     `json:"error,omitempty"`
+	Guess   string `json:"guess"`
+	Correct bool   `json:"correct"`
+	After   bool   `json:"after"`
+	Before  bool   `json:"before"`
+	Error   string `json:"error,omitempty"`
 }
 
 const (
@@ -110,8 +109,5 @@ func guessHandlerReply(ctx context.Context, guess *guess, reply *guessReply) err
 		dataStore.SetWord(ctx, datastore.WordKey(guess.Mode, tm), word)
 	}
 
-	// Storing a copy of word for today in the reply, BUT clearing the value -- no spoilers!
-	reply.Word = word
-	reply.Word.Value = ""
 	return nil
 }

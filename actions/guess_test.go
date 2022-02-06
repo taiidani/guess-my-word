@@ -2,7 +2,6 @@ package actions
 
 import (
 	"encoding/json"
-	"guess_my_word/internal/model"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -62,7 +61,6 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
-				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -123,7 +121,6 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
-				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -139,7 +136,6 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
-				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -155,7 +151,6 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
-				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{
@@ -171,7 +166,6 @@ func Test_GuessHandler(t *testing.T) {
 				After:   false,
 				Before:  false,
 				Error:   "",
-				Word:    model.Word{Guesses: []model.Guess{{Count: 1}}},
 			},
 		},
 		{

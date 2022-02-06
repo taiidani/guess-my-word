@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func TestRevealHandler(t *testing.T) {
+func TestStatsHandler(t *testing.T) {
 	type args struct {
 		request string
 	}
@@ -21,7 +21,7 @@ func TestRevealHandler(t *testing.T) {
 		name          string
 		args          args
 		mockGetForDay func(ctx context.Context, tm time.Time, mode string) (model.Word, error)
-		want          revealReply
+		want          statsReply
 		wantCode      int
 	}{
 		{
@@ -30,9 +30,9 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/api/reveal",
+				request: "/api/stats",
 			},
-			want:     revealReply{Word: model.Word{Value: "theword"}},
+			want:     statsReply{Word: model.Word{Value: "theword"}},
 			wantCode: 200,
 		},
 		{
@@ -41,9 +41,9 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/api/reveal?date=notAValidUnixTimestamp",
+				request: "/api/stats?date=notAValidUnixTimestamp",
 			},
-			want:     revealReply{Error: ErrInvalidRequest},
+			want:     statsReply{Error: ErrInvalidRequest},
 			wantCode: 200,
 		},
 		{
@@ -52,9 +52,9 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/api/reveal?date=0",
+				request: "/api/stats?date=0",
 			},
-			want:     revealReply{Error: ErrInvalidStartTime},
+			want:     statsReply{Error: ErrInvalidStartTime},
 			wantCode: 200,
 		},
 		{
@@ -63,9 +63,9 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: fmt.Sprintf("/api/reveal?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
+				request: fmt.Sprintf("/api/stats?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
 			},
-			want:     revealReply{Error: ErrRevealToday},
+			want:     statsReply{Error: ErrRevealToday},
 			wantCode: 200,
 		},
 		{
@@ -74,9 +74,9 @@ func TestRevealHandler(t *testing.T) {
 				return model.Word{}, errors.New("ohnoes")
 			},
 			args: args{
-				request: "/api/reveal",
+				request: "/api/stats",
 			},
-			want:     revealReply{Error: "ohnoes"},
+			want:     statsReply{Error: "ohnoes"},
 			wantCode: 500,
 		},
 	}
@@ -91,7 +91,7 @@ func TestRevealHandler(t *testing.T) {
 			req, _ := http.NewRequest("GET", tt.args.request, nil)
 			router.ServeHTTP(w, req)
 
-			var response revealReply
+			var response statsReply
 			if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
 				t.Error("Unable to unmarshal response body: ", w.Body.String())
 			} else if w.Code != tt.wantCode {

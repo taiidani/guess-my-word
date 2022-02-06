@@ -1,11 +1,9 @@
 <template>
   <div>
-    <template v:if="day.word == 'huh">
-      <div><strong>Word:</strong> {{ day.word }}</div>
-    </template>
+    <div v-if="day.word"><strong>Word:</strong> {{ day.word }}</div>
     <div><strong>Completions:</strong> {{ day.completions }}</div>
     <div><strong>Best Run:</strong> {{ day.bestRun }}</div>
-    <div><strong>Average Run:</strong> {{ day.avgRun }}</div>
+    <div><strong>Average Run:</strong> {{ Math.floor(day.avgRun) }}</div>
   </div>
 </template>
 

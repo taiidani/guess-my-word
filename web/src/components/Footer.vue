@@ -7,12 +7,12 @@
           <stats v-bind:day="yesterday"></stats>
         </div>
       </div>
-      <!-- <div class="col">
+      <div class="col">
         <div class="p-3">
           <h5><i class="bi bi-bar-chart-fill"></i> Today's Stats</h5>
           <stats v-bind:day="today"></stats>
         </div>
-      </div> -->
+      </div>
       <div class="col">
         <div class="p-3">
           <h5><i class="bi bi-speedometer"></i> Difficulty</h5>
@@ -55,7 +55,10 @@ export default {
   name: "Footer",
   props: ["mode"],
   data() {
-    reveal(this.mode);
+    stats(this.mode);
+    window.setInterval(() => {
+      stats(this.mode);
+    }, 60 * 1000);
 
     return {
       yesterday: yesterday,
@@ -64,7 +67,7 @@ export default {
   },
 };
 
-function reveal(mode) {
+function stats(mode) {
   const dt = new Date();
 
   const params = new URLSearchParams({
@@ -73,7 +76,7 @@ function reveal(mode) {
     mode: mode,
   });
 
-  fetch("/api/reveal?" + params.toString())
+  fetch("/api/stats?" + params.toString())
     .then((response) => response.json())
     .then((data) => {
       console.debug(data);
@@ -83,11 +86,16 @@ function reveal(mode) {
         return;
       }
 
-      const stats = analyzeStats(data.word.guesses);
+      var stats = analyzeStats(data.word.guesses);
       yesterday.word = data.word.value;
       yesterday.completions = stats.completions;
       yesterday.bestRun = stats.bestRun;
       yesterday.avgRun = stats.avgRun;
+
+      stats = analyzeStats(data.today.guesses);
+      today.completions = stats.completions;
+      today.bestRun = stats.bestRun;
+      today.avgRun = stats.avgRun;
     });
 }
 
