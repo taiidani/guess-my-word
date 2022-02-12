@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func TestStatsHandler(t *testing.T) {
+func Test_wsHandler(t *testing.T) {
 	type args struct {
 		request string
 	}
@@ -25,26 +25,15 @@ func TestStatsHandler(t *testing.T) {
 		wantCode      int
 	}{
 		{
-			name: "success",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
-				return model.Word{Value: "theword"}, nil
-			},
-			args: args{
-				request: "/api/stats",
-			},
-			want:     statsReply{Word: model.Word{Value: "theword"}},
-			wantCode: 200,
-		},
-		{
 			name: "error-invalid-request",
 			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/api/stats?date=notAValidUnixTimestamp",
+				request: "/api/ws?date=notAValidUnixTimestamp",
 			},
 			want:     statsReply{Error: ErrInvalidRequest},
-			wantCode: 200,
+			wantCode: 400,
 		},
 		{
 			name: "error-invalid-date",
@@ -52,10 +41,10 @@ func TestStatsHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: "/api/stats?date=0",
+				request: "/api/ws?date=0",
 			},
 			want:     statsReply{Error: ErrInvalidStartTime},
-			wantCode: 200,
+			wantCode: 400,
 		},
 		{
 			name: "error-too-early",
@@ -63,21 +52,10 @@ func TestStatsHandler(t *testing.T) {
 				return model.Word{Value: "theword"}, nil
 			},
 			args: args{
-				request: fmt.Sprintf("/api/stats?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
+				request: fmt.Sprintf("/api/ws?date=%d", time.Now().AddDate(0, 0, 1).Unix()),
 			},
 			want:     statsReply{Error: ErrRevealToday},
-			wantCode: 200,
-		},
-		{
-			name: "error-getword",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
-				return model.Word{}, errors.New("ohnoes")
-			},
-			args: args{
-				request: "/api/stats",
-			},
-			want:     statsReply{Error: "ohnoes"},
-			wantCode: 500,
+			wantCode: 400,
 		},
 	}
 	for _, tt := range tests {
@@ -98,6 +76,54 @@ func TestStatsHandler(t *testing.T) {
 				t.Errorf("Response Code = %d; wantCode %d", w.Code, tt.wantCode)
 			} else if !reflect.DeepEqual(response, tt.want) {
 				t.Errorf("Response = %#v; want %#v", response, tt.want)
+			}
+		})
+	}
+}
+
+func Test_wsHandlerLoop(t *testing.T) {
+	type args struct {
+		ctx     context.Context
+		request stats
+	}
+	tests := []struct {
+		name          string
+		args          args
+		mockGetForDay func(ctx context.Context, tm time.Time, mode string) (model.Word, error)
+		want          statsReply
+	}{
+		{
+			name: "success",
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{Value: "theword"}, nil
+			},
+			args: args{request: stats{}},
+			want: statsReply{Word: model.Word{Value: "theword"}},
+		},
+		{
+			name: "error-getword",
+			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+				return model.Word{}, errors.New("ohnoes")
+			},
+			args: args{
+				request: stats{},
+			},
+			want: statsReply{Error: "ohnoes"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			wordStore = &mockWordStore{
+				mockGetForDay: tt.mockGetForDay,
+			}
+
+			if tt.args.ctx == nil {
+				tt.args.ctx = context.Background()
+			}
+
+			got := wsStatsHandlerLoop(tt.args.ctx, tt.args.request)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("wsStatsHandlerLoop() = %#v; want %#v", got, tt.want)
 			}
 		})
 	}

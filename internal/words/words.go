@@ -49,7 +49,7 @@ func NewWordStore(store Store) *WordStore {
 // This func is timezone agnostic. It will only consider the current local date
 func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
 	key := datastore.WordKey(mode, tm)
-	log.Println("Getting word for day at", key)
+	// log.Println("Getting word for day at", key)
 
 	// Grab the word from the datastore
 	word, err := w.storeClient.GetWord(ctx, key)

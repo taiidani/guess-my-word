@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis/v8 v8.11.4
+	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
