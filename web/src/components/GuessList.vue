@@ -2,10 +2,15 @@
   <div>
     <ul v-bind:class="classes">
       <li class="list-group-item guess no-guesses" v-if="!list.length">
-        <span class="word">No guesses {{ name }} the word</span>
+        <span>No guesses {{ name }} the word</span>
       </li>
-      <li class="list-group-item guess" v-for="word in list" :key="word">
-        <span class="word">{{ word }}</span>
+      <li
+        class="list-group-item guess"
+        v-for="word in formattedList"
+        :key="word.found + word.remaining"
+      >
+        <span class="found">{{ word.found }}</span
+        ><span>{{ word.remaining }}</span>
       </li>
     </ul>
   </div>
@@ -14,11 +19,32 @@
 <script>
 export default {
   name: "GuessList",
-  props: ["list", "name"],
+  props: ["list", "name", "known"],
   data() {
     return {
       classes: "list-group " + this.name,
     };
+  },
+  computed: {
+    formattedList: function () {
+      var newList = [];
+      this.list.forEach((item) => {
+        var newItem = { found: "", remaining: "" };
+
+        const searchLength = Math.min(item.length, this.known.length);
+        for (var i = 0; i <= searchLength; i++) {
+          if (item[i] != this.known[i] || i == searchLength) {
+            newItem.found = item.slice(0, i);
+            break;
+          }
+        }
+
+        newItem.remaining = item.slice(newItem.found.length);
+        newList.push(newItem);
+      });
+
+      return newList;
+    },
   },
 };
 </script>
@@ -43,5 +69,10 @@ export default {
 li.no-guesses {
   font-size: 1em !important;
   color: #999 !important;
+}
+
+span.found {
+  text-decoration: underline;
+  background-color: #eef;
 }
 </style>

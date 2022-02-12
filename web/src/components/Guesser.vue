@@ -1,11 +1,15 @@
 <template>
   <div class="row">
     <div class="col-md-12">
-      <guess-list name="before" v-bind:list="state.before" />
+      <guess-list
+        name="before"
+        v-bind:list="state.before"
+        v-bind:known="known"
+      />
 
       <guess-form v-bind:mode="mode" v-bind:state="state" />
 
-      <guess-list name="after" v-bind:list="state.after" />
+      <guess-list name="after" v-bind:list="state.after" v-bind:known="known" />
     </div>
   </div>
 </template>
@@ -22,6 +26,26 @@ export default {
     return {
       state: loadState(this.mode),
     };
+  },
+  computed: {
+    // The letters currently known
+    known: function () {
+      var found = 0;
+      if (this.state.after.length == 0 || this.state.before.length == 0) {
+        return "";
+      }
+
+      var above = this.state.before[this.state.before.length - 1];
+      var below = this.state.after[0];
+
+      for (var i = 0; i < Math.max(above.length, below.length); i++) {
+        if (above[i] != below[i]) {
+          return above.slice(0, i);
+        }
+      }
+
+      return "";
+    },
   },
 };
 
