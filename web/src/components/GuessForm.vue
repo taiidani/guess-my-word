@@ -152,11 +152,11 @@ function hint() {
   }
 
   const params = new URLSearchParams({
-    before: state.before[0],
-    after: state.after[state.after.length - 1],
+    before: state.after[0],
+    after: state.before[state.before.length - 1],
     start: Math.floor(state.start.getTime() / 1000),
     tz: state.start.getTimezoneOffset(),
-    mode: mode,
+    mode: this.mode,
   });
 
   fetch("/api/hint?" + params.toString())
