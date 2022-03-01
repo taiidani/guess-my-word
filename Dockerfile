@@ -7,7 +7,7 @@ RUN npm install --frozen-lockfile
 COPY web/ /app
 RUN npm run build
 
-FROM golang:1.17.6-alpine AS base
+FROM golang:1.17.7-alpine AS base
 
 # Build the app, dependencies first
 RUN apk add --no-cache git
