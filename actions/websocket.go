@@ -5,6 +5,7 @@ import (
 	"guess_my_word/internal/model"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ var wsupgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 
 		allowedHosts := []string{
-			"guess.taiidani.com",
+			os.Getenv("ORIGIN"),
 			"localhost", "localhost:3000",
 			"127.0.0.1", "127.0.0.1:3000",
 		}
