@@ -5,6 +5,7 @@ import (
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/words"
+	"log"
 	"os"
 	"time"
 
@@ -20,7 +21,13 @@ var dataStore words.Store
 var wordStore wordClient
 
 func init() {
-	dataStore = datastore.NewRedis(os.Getenv("REDIS_ADDR"))
+	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
+		dataStore = datastore.NewRedis(addr)
+	} else {
+		log.Println("WARNING: No REDIS_ADDR env var set. Falling back upon in-memory store")
+		dataStore = datastore.NewMemory()
+	}
+
 	wordStore = words.NewWordStore(dataStore)
 }
 
