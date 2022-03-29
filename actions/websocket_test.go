@@ -3,7 +3,6 @@ package actions
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"guess_my_word/internal/model"
 	"net/http"
@@ -76,54 +75,6 @@ func Test_wsHandler(t *testing.T) {
 				t.Errorf("Response Code = %d; wantCode %d", w.Code, tt.wantCode)
 			} else if !reflect.DeepEqual(response, tt.want) {
 				t.Errorf("Response = %#v; want %#v", response, tt.want)
-			}
-		})
-	}
-}
-
-func Test_wsHandlerLoop(t *testing.T) {
-	type args struct {
-		ctx     context.Context
-		request stats
-	}
-	tests := []struct {
-		name          string
-		args          args
-		mockGetForDay func(ctx context.Context, tm time.Time, mode string) (model.Word, error)
-		want          statsReply
-	}{
-		{
-			name: "success",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
-				return model.Word{Value: "theword"}, nil
-			},
-			args: args{request: stats{}},
-			want: statsReply{Word: model.Word{Value: "theword"}},
-		},
-		{
-			name: "error-getword",
-			mockGetForDay: func(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
-				return model.Word{}, errors.New("ohnoes")
-			},
-			args: args{
-				request: stats{},
-			},
-			want: statsReply{Error: "ohnoes"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			wordStore = &mockWordStore{
-				mockGetForDay: tt.mockGetForDay,
-			}
-
-			if tt.args.ctx == nil {
-				tt.args.ctx = context.Background()
-			}
-
-			got := wsStatsHandlerLoop(tt.args.ctx, tt.args.request)
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("wsStatsHandlerLoop() = %#v; want %#v", got, tt.want)
 			}
 		})
 	}

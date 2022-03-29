@@ -50,37 +50,24 @@ let today = {
   avgRun: 0,
 };
 
-let conn = null;
-
 export default {
   components: { Stats, Difficulty },
   name: "Footer",
   props: ["mode"],
   data() {
-    statsWs(this.mode);
+    window.setInterval(() => {
+      refreshStats(this.mode);
+    }, 60000);
+    refreshStats(this.mode);
 
     return {
       yesterday: yesterday,
       today: today,
     };
   },
-  destroyed: function () {
-    // Close any open websocket connections
-    if (conn instanceof WebSocket) {
-      console.debug("Closing websocket connection:", conn);
-      conn.close();
-      conn = null;
-    }
-  },
 };
 
-function statsWs(mode) {
-  if (conn instanceof WebSocket) {
-    console.debug("WebSocket already registered. Skipping creation");
-    return;
-  }
-
-  // Open a new websocket connection
+function refreshStats(mode) {
   const dt = new Date();
   const params = new URLSearchParams({
     date: Math.floor(dt.getTime() / 1000) - 24 * 60 * 60, // Subtract 1 day
@@ -88,47 +75,30 @@ function statsWs(mode) {
     mode: mode,
   });
 
-  let protocol = "wss:";
-  if (window.location.protocol == "http:") {
-    protocol = "ws:";
-  }
+  fetch("/api/stats?" + params.toString())
+    .then((response) => response.json())
+    .then((data) => {
+      console.debug(data);
 
-  const host =
-    protocol + "//" + window.location.host + "/api/ws?" + params.toString();
-  console.debug("Attempting WebSocket connection to", host);
-  conn = new WebSocket(host);
+      if (data.error) {
+        console.error(data.error);
+        return;
+      }
 
-  conn.onerror = function (err) {
-    console.error("WebSocket connection error: ", err);
-  };
+      var stats = analyzeStats(data.word.guesses);
+      yesterday.word = data.word.value;
+      yesterday.completions = stats.completions;
+      yesterday.bestRun = stats.bestRun;
+      yesterday.avgRun = stats.avgRun;
 
-  conn.onopen = function () {
-    console.log("WebSocket connection opened");
-  };
-
-  conn.onclose = function (evt) {
-    console.error("WebSocket connection closed", evt);
-  };
-
-  conn.onmessage = function (msg) {
-    const data = JSON.parse(msg.data);
-
-    if (data.error) {
-      console.error(data.error);
-      return;
-    }
-
-    var stats = analyzeStats(data.word.guesses);
-    yesterday.word = data.word.value;
-    yesterday.completions = stats.completions;
-    yesterday.bestRun = stats.bestRun;
-    yesterday.avgRun = stats.avgRun;
-
-    stats = analyzeStats(data.today.guesses);
-    today.completions = stats.completions;
-    today.bestRun = stats.bestRun;
-    today.avgRun = stats.avgRun;
-  };
+      stats = analyzeStats(data.today.guesses);
+      today.completions = stats.completions;
+      today.bestRun = stats.bestRun;
+      today.avgRun = stats.avgRun;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 }
 
 function analyzeStats(guesses) {

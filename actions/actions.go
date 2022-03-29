@@ -31,6 +31,7 @@ func AddHandlers(r *gin.Engine) (err error) {
 	r.GET("/api/guess", GuessHandler)
 	r.GET("/api/hint", HintHandler)
 	r.GET("/api/seed", SeedHandler)
+	r.GET("/api/stats", StatsHandler)
 
 	// And the websockets
 	r.GET("/api/ws", wsHandler)

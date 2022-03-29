@@ -2,7 +2,6 @@ package actions
 
 import (
 	"context"
-	"guess_my_word/internal/model"
 	"log"
 	"net/http"
 	"os"
@@ -36,19 +35,6 @@ var wsupgrader = websocket.Upgrader{
 }
 
 var socketPeers = newPubSub()
-
-type stats struct {
-	Date     time.Time `form:"date" time_format:"unix"` // The unix date, no timestamp
-	dateUser time.Time // The date under the user's timezone
-	TZ       int       `form:"tz"`
-	Mode     string    `form:"mode"`
-}
-
-type statsReply struct {
-	Today model.Word `json:"today"`
-	Word  model.Word `json:"word"`
-	Error string     `json:"error,omitempty"`
-}
 
 // ErrRevealToday is emitted when the reveal request is for a current or future word
 const ErrRevealToday = "It's too early to reveal this word. Please try again later!"
@@ -108,7 +94,7 @@ func wsStatsHandler(c *gin.Context, request stats) {
 	// Add to the list of subscribers that will be notified whenever a refresh is required
 	refresher := socketPeers.Subscribe(conn)
 
-	conn.WriteJSON(wsStatsHandlerLoop(c, request))
+	conn.WriteJSON(refreshStats(c, request))
 	for {
 		select {
 		case <-c.Request.Context().Done():
@@ -121,7 +107,7 @@ func wsStatsHandler(c *gin.Context, request stats) {
 			log.Println("Refreshing WebSocket client", conn.RemoteAddr())
 
 			conn.SetWriteDeadline(time.Now().Add(time.Second * 5))
-			err := conn.WriteJSON(wsStatsHandlerLoop(c, request))
+			err := conn.WriteJSON(refreshStats(c, request))
 			if err != nil {
 				log.Printf("Websocket message send error: %s", err)
 				return
@@ -138,31 +124,6 @@ func wsNoOpReaderLoop(c *websocket.Conn, cancel func()) {
 			break
 		}
 	}
-}
-
-func wsStatsHandlerLoop(ctx context.Context, request stats) statsReply {
-	reply := statsReply{}
-
-	// Generate the word for the day
-	word, err := wordStore.GetForDay(ctx, request.dateUser, request.Mode)
-	if err != nil {
-		reply.Error = err.Error()
-		return reply
-	}
-
-	reply.Word = word
-
-	// Now for today's stats. Similar, but without the word information!
-	todayTm := request.dateUser.AddDate(0, 0, 1)
-	word, err = wordStore.GetForDay(ctx, todayTm, request.Mode)
-	if err != nil {
-		reply.Error = err.Error()
-		return reply
-	}
-
-	reply.Today = word
-	reply.Today.Value = ""
-	return reply
 }
 
 type pubSub struct {
