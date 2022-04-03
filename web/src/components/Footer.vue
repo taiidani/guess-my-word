@@ -15,8 +15,8 @@
       </div>
       <div class="col">
         <div class="p-3">
-          <h5><i class="bi bi-speedometer"></i> Difficulty</h5>
-          <difficulty v-bind:mode="mode" />
+          <h5><i class="bi bi-speedometer"></i> List</h5>
+          <difficulty v-bind:mode="mode" v-bind:lists="lists" />
         </div>
       </div>
       <div class="col">
@@ -50,6 +50,8 @@ let today = {
   avgRun: 0,
 };
 
+let lists = [];
+
 export default {
   components: { Stats, Difficulty },
   name: "Footer",
@@ -60,9 +62,29 @@ export default {
     }, 60000);
     refreshStats(this.mode);
 
+    // Populate the lists dropdown
+    fetch("/api/lists")
+      .then((response) => response.json())
+      .then((data) => {
+        console.debug(data);
+
+        if (data.error) {
+          console.error(data.error);
+          return;
+        }
+
+        data.forEach((item) => {
+          lists.push(item);
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
     return {
       yesterday: yesterday,
       today: today,
+      lists: lists,
     };
   },
 };

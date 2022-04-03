@@ -106,7 +106,7 @@ func guessHandlerReply(ctx context.Context, guess *guess, reply *guessReply) err
 			Count: guess.Guesses + 1,
 		})
 
-		dataStore.SetWord(ctx, datastore.WordKey(guess.Mode, tm), word)
+		wordStore.SetWord(ctx, datastore.WordKey(guess.Mode, tm), word)
 		socketPeers.Notify()
 	}
 

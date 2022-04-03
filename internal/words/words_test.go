@@ -19,7 +19,7 @@ func TestNewWordStore(t *testing.T) {
 
 func TestWordStore_GetForDay(t *testing.T) {
 	type fields struct {
-		storeClient Store
+		client Worder
 	}
 	type args struct {
 		ctx  context.Context
@@ -35,47 +35,47 @@ func TestWordStore_GetForDay(t *testing.T) {
 	}{
 		{
 			name:   "Date yesterday",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC),
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-26", Value: "power"},
 		},
 		{
 			name:   "Date tweak yesterday",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, -1),
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-26", Value: "power"},
 		},
 		{
 			name:   "Unix yesterday",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(1580083199, 0), // Sun Jan 26 23:59:59 2020 UTC
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-26", Value: "power"},
 		},
 		{
 			name:   "Date today",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Date today TZ",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx: context.Background(),
 				tm: time.Date(2020, time.January, 27, 2, 0, 0, 0, func() *time.Location {
@@ -85,47 +85,47 @@ func TestWordStore_GetForDay(t *testing.T) {
 					}
 					return ret
 				}()),
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Date tweak today",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 26, 2, 0, 0, 0, time.UTC).UTC().AddDate(0, 0, 1),
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Unix today",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(1580083201, 0).UTC(), // Mon Jan 27 00:00:01 2020 UTC
-				mode: "default",
+				mode: defaultListName,
 			},
 			want: model.Word{Day: "2020-01-27", Value: "tell"},
 		},
 		{
 			name:   "Hard mode date today",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Date(2020, time.January, 27, 2, 0, 0, 0, time.UTC),
-				mode: "hard",
+				mode: hardListName,
 			},
 			want: model.Word{Day: "2020-01-27", Value: "damans"},
 		},
 		{
 			name:   "Unix OMG ERROR",
-			fields: fields{storeClient: datastore.NewMemory()},
+			fields: fields{client: datastore.NewMemory()},
 			args: args{
 				ctx:  context.Background(),
 				tm:   time.Unix(0, 0),
-				mode: "default",
+				mode: defaultListName,
 			},
 			want:    model.Word{Value: ""},
 			wantErr: true,
@@ -134,9 +134,9 @@ func TestWordStore_GetForDay(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := &WordStore{
-				storeClient: tt.fields.storeClient,
-				scrabble:    strings.Split(strings.TrimSpace(scrabbleList), "\n"),
-				words:       strings.Split(strings.TrimSpace(wordList), "\n"),
+				client:   tt.fields.client,
+				scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+				words:    strings.Split(strings.TrimSpace(wordList), "\n"),
 			}
 
 			got, err := w.GetForDay(tt.args.ctx, tt.args.tm, tt.args.mode)

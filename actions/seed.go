@@ -71,5 +71,5 @@ func seedHandlerReply(ctx context.Context, dt time.Time, tz int, mode string) er
 		word.Guesses = append(word.Guesses, guess)
 	}
 
-	return dataStore.SetWord(ctx, datastore.WordKey(mode, tm), word)
+	return wordStore.SetWord(ctx, datastore.WordKey(mode, tm), word)
 }

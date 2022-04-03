@@ -12,36 +12,57 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type listClient interface {
+	GetLists(ctx context.Context) ([]string, error)
+	GetList(ctx context.Context, name string) (model.List, error)
+	CreateList(ctx context.Context, name string, list model.List) error
+	DeleteList(ctx context.Context, name string) error
+	UpdateList(ctx context.Context, name string, list model.List) error
+}
+
 type wordClient interface {
 	Validate(context.Context, string) bool
 	GetForDay(context.Context, time.Time, string) (model.Word, error)
+	GetWord(ctx context.Context, key string) (model.Word, error)
+	SetWord(ctx context.Context, key string, word model.Word) error
 }
 
-var dataStore words.Store
-var wordStore wordClient
+var (
+	listStore listClient
+	wordStore wordClient
+)
 
 func init() {
+	var client datastore.Client
 	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
-		dataStore = datastore.NewRedis(addr)
+		client = datastore.NewRedis(addr)
 	} else {
 		log.Println("WARNING: No REDIS_ADDR env var set. Falling back upon in-memory store")
-		dataStore = datastore.NewMemory()
+		client = datastore.NewMemory()
 	}
 
-	wordStore = words.NewWordStore(dataStore)
+	listStore = words.NewListStore(client)
+	wordStore = words.NewWordStore(client)
 }
 
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r *gin.Engine) (err error) {
 	r.Use(middlewareStandardHeaders())
 	r.GET("/ping", PingHandler)
-	r.GET("/api/guess", GuessHandler)
-	r.GET("/api/hint", HintHandler)
-	r.GET("/api/seed", SeedHandler)
-	r.GET("/api/stats", StatsHandler)
+
+	g := r.Group("/api")
+	g.GET("/guess", GuessHandler)
+	g.GET("/hint", HintHandler)
+	g.GET("/lists", ListsHandler)
+	g.GET("/list", ListHandler)
+	g.POST("/list", ListHandler)
+	g.PUT("/list", ListHandler)
+	g.DELETE("/list", ListHandler)
+	g.GET("/seed", SeedHandler)
+	g.GET("/stats", StatsHandler)
 
 	// And the websockets
-	r.GET("/api/ws", wsHandler)
+	g.GET("/ws", wsHandler)
 	return nil
 }
 

@@ -1,10 +1,13 @@
 <template>
   <div>
     <select id="mode" class="form-select" v-on:change="modeChange">
-      <option value="default" v-bind:selected="mode == 'default'">
-        Default
+      <option
+        v-for="list in lists"
+        :key="list.name"
+        v-bind:selected="mode == list.name"
+      >
+        {{ list.name }}
       </option>
-      <option value="hard" v-bind:selected="mode == 'hard'">Hard</option>
     </select>
   </div>
 </template>
@@ -12,7 +15,7 @@
 <script>
 export default {
   name: "Difficulty",
-  props: ["mode"],
+  props: ["mode", "lists"],
   methods: {
     modeChange: modeChange,
   },

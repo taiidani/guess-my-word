@@ -40,8 +40,28 @@ export default {
   components: { Footer, Guesser },
   name: "App",
   data() {
+    let mode = getMode();
+    // Determine the color for the current list
+    let request = new URLSearchParams({ name: mode });
+    fetch("/api/list?" + request.toString())
+      .then((response) => response.json())
+      .then((data) => {
+        console.debug(data);
+
+        if (data.error) {
+          console.error(data.error);
+          return;
+        }
+
+        document.getElementsByTagName("body")[0].style.backgroundColor =
+          "#" + data.color;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
     return {
-      mode: getMode(),
+      mode: mode,
     };
   },
 };
@@ -49,18 +69,12 @@ export default {
 function getMode() {
   // Extract the mode from the query parameters
   const params = new URLSearchParams(window.location.search);
-  var mode = params.get("mode");
 
-  if (mode == null) {
-    mode = "default";
+  if (params.get("mode") == null) {
+    params.set("mode", "default");
   }
 
-  // Hack as this component doesn't have access to the body element
-  if (mode == "hard") {
-    document.body.classList.add("mode-hard");
-  }
-
-  return mode;
+  return params.get("mode");
 }
 </script>
 

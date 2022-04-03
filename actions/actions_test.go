@@ -17,8 +17,9 @@ type mockWordStore struct {
 }
 
 func init() {
-	dataStore = datastore.NewMemory()
-	wordStore = words.NewWordStore(dataStore)
+	client := datastore.NewMemory()
+	listStore = words.NewListStore(client)
+	wordStore = words.NewWordStore(client)
 }
 
 func (m *mockWordStore) Validate(ctx context.Context, word string) bool {
@@ -26,6 +27,12 @@ func (m *mockWordStore) Validate(ctx context.Context, word string) bool {
 }
 func (m *mockWordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
 	return m.mockGetForDay(ctx, tm, mode)
+}
+func (m *mockWordStore) GetWord(ctx context.Context, key string) (model.Word, error) {
+	return m.GetWord(ctx, key)
+}
+func (m *mockWordStore) SetWord(ctx context.Context, key string, word model.Word) error {
+	return m.SetWord(ctx, key, word)
 }
 
 func setupRouter() *gin.Engine {

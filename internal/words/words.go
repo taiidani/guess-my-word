@@ -14,15 +14,14 @@ import (
 type (
 	// WordStore will generate and validate words
 	WordStore struct {
-		storeClient Store
-		scrabble    []string
-		words       []string
+		client   Worder
+		scrabble []string
+		words    []string
 	}
 
-	// Store represents the internal datastore for the words package
-	Store interface {
-		GetWord(ctx context.Context, key string) (model.Word, error)
-		SetWord(ctx context.Context, key string, word model.Word) error
+	// Worder represents the internal datastore for the words package
+	Worder interface {
+		datastore.Client
 	}
 )
 
@@ -37,33 +36,41 @@ var (
 )
 
 // NewWordStore will return an instance of the word generator
-func NewWordStore(store Store) *WordStore {
+func NewWordStore(store Worder) *WordStore {
 	return &WordStore{
-		storeClient: store,
-		scrabble:    strings.Split(strings.TrimSpace(scrabbleList), "\n"),
-		words:       strings.Split(strings.TrimSpace(wordList), "\n"),
+		client:   store,
+		scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+		words:    strings.Split(strings.TrimSpace(wordList), "\n"),
 	}
 }
 
 // GetForDay will return a word for the given day
 // This func is timezone agnostic. It will only consider the current local date
 func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
+	mode = strings.ToLower(mode)
 	key := datastore.WordKey(mode, tm)
-	// log.Println("Getting word for day at", key)
 
 	// Grab the word from the datastore
-	word, err := w.storeClient.GetWord(ctx, key)
+	word, err := w.GetWord(ctx, key)
 	if err != nil {
 		// Generate a new word
 		log.Printf("Encountered error '%s'. Generating new word for key '%s'", err, key)
-		word.Value, err = w.generateWord(tm, w.getWordList(mode))
+		listStore := NewListStore(w.client)
+		l, err := listStore.GetList(ctx, mode)
+		if err != nil {
+			return word, err
+		} else if len(l.Words) == 0 {
+			return word, fmt.Errorf("chosen list has no words")
+		}
+
+		word.Value, err = w.generateWord(tm, l.Words)
 		if err != nil {
 			return word, err
 		}
 
 		// And store it if we're able
 		log.Printf("Storing generated word '%v' at key '%s'", word, key)
-		err = w.storeClient.SetWord(ctx, key, word)
+		err = w.SetWord(ctx, key, word)
 		if err != nil {
 			log.Printf("Encountered error storing new word '%v' at key '%s': %s", word, key, err)
 		}
@@ -73,7 +80,7 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 		word.Day = tm.Format("2006-01-02")
 	}
 
-	return word, err
+	return word, nil
 }
 
 // Validate will confirm if a given word is valid
@@ -87,18 +94,17 @@ func (w *WordStore) Validate(ctx context.Context, word string) bool {
 	return false
 }
 
+func (w *WordStore) GetWord(ctx context.Context, key string) (model.Word, error) {
+	return w.client.GetWord(ctx, strings.ToLower(key))
+}
+
+func (w *WordStore) SetWord(ctx context.Context, key string, word model.Word) error {
+	return w.client.SetWord(ctx, strings.ToLower(key), word)
+}
+
 func (w *WordStore) generateWord(seed time.Time, words []string) (string, error) {
 	if seed.Unix() == 0 {
 		return "", fmt.Errorf("invalid timestamp for word")
 	}
 	return words[(seed.Year()*seed.YearDay())%len(words)], nil
-}
-
-func (w *WordStore) getWordList(mode string) []string {
-	switch mode {
-	case "hard":
-		return w.scrabble
-	default:
-		return w.words
-	}
 }
