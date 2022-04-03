@@ -22,7 +22,7 @@ jobs:
 
       - name: Lint
         run: |
-          go install honnef.co/go/tools/cmd/staticcheck@v0.3.3
+          go install honnef.co/go/tools/cmd/staticcheck@v0.3.0
           staticcheck -tests ./...
 
       - name: Test
