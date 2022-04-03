@@ -14,6 +14,8 @@ import (
 type mockWordStore struct {
 	mockValidate  func(context.Context, string) bool
 	mockGetForDay func(context.Context, time.Time, string) (model.Word, error)
+	mockGetWord   func(ctx context.Context, key string) (model.Word, error)
+	mockSetWord   func(ctx context.Context, key string, word model.Word) error
 }
 
 func init() {
@@ -29,10 +31,10 @@ func (m *mockWordStore) GetForDay(ctx context.Context, tm time.Time, mode string
 	return m.mockGetForDay(ctx, tm, mode)
 }
 func (m *mockWordStore) GetWord(ctx context.Context, key string) (model.Word, error) {
-	return m.GetWord(ctx, key)
+	return m.mockGetWord(ctx, key)
 }
 func (m *mockWordStore) SetWord(ctx context.Context, key string, word model.Word) error {
-	return m.SetWord(ctx, key, word)
+	return m.mockSetWord(ctx, key, word)
 }
 
 func setupRouter() *gin.Engine {
