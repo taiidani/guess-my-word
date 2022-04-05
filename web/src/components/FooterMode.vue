@@ -4,7 +4,7 @@
       <option
         v-for="list in lists"
         :key="list.name"
-        v-bind:selected="mode == list.name"
+        v-bind:selected="mode == list.name.toLowerCase()"
       >
         {{ list.name }}
       </option>
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "Difficulty",
+  name: "FooterMode",
   props: ["mode", "lists"],
   methods: {
     modeChange: modeChange,

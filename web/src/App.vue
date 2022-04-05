@@ -74,7 +74,7 @@ function getMode() {
     params.set("mode", "default");
   }
 
-  return params.get("mode");
+  return params.get("mode").toLowerCase();
 }
 </script>
 

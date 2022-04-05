@@ -40,7 +40,7 @@
 
 <script>
 import Stats from "./Stats.vue";
-import Difficulty from "./Difficulty.vue";
+import Difficulty from "./FooterMode.vue";
 
 let yesterday = {
   word: null,
