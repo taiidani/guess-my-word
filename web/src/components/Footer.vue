@@ -23,6 +23,11 @@
         <div class="p-3">
           <h5><i class="bi bi-github"></i> Source</h5>
           <p>
+            <a href="https://github.com/taiidani/guess-my-word/releases"
+              >Changelog</a
+            >
+          </p>
+          <p>
             <a href="https://github.com/taiidani/guess-my-word"
               >View on GitHub</a
             >
