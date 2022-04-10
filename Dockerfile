@@ -10,11 +10,8 @@ RUN npm run build
 # ---
 FROM nginx:1-alpine AS dist
 
-COPY . /tmp
-RUN ls -l /tmp
-
 # Add pre-built application
-COPY mybin /app/main /app
+COPY guess-my-word /app/main /app
 COPY --from=build /app/dist /usr/share/nginx/html/dist
 COPY --from=build /app/assets /usr/share/nginx/html/assets
 COPY --from=build /app/index.html /usr/share/nginx/html/index.html
