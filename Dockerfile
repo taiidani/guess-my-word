@@ -10,6 +10,9 @@ RUN npm run build
 # ---
 FROM nginx:1-alpine AS dist
 
+COPY . /tmp
+RUN ls -l /tmp
+
 # Add pre-built application
 COPY mybin /app/main /app
 COPY --from=build /app/dist /usr/share/nginx/html/dist

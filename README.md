@@ -28,12 +28,6 @@ The application requires the following to be configured:
 
 * Go installed, matching the version in the `go.mod` file.
 
-Start the Redis backend with:
-
-```sh
-docker-compose up -d redis
-```
-
 Start the application in development mode with:
 
 ```sh
@@ -56,6 +50,6 @@ Dev away!
 By default the application runs in "Local Mode" and will not persist any of the data (such as generated words). If you need to test the persistence options you may point the application at a local Redis instance:
 
 ```sh
-docker-compose up -d redis
-make && REDIS_ADDR=127.0.0.1:6379 ./bin/guess-my-word
+docker-compose up -d
+REDIS_ADDR=127.0.0.1:6379 go run main.go
 ```
