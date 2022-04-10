@@ -43,6 +43,9 @@ func init() {
 
 	listStore = words.NewListStore(client)
 	wordStore = words.NewWordStore(client)
+	if err := words.PopulateDefaultLists(context.Background(), client); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // AddHandlers will add the application handlers to the HTTP server

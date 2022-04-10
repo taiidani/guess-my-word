@@ -9,8 +9,8 @@
         v-for="word in formattedList"
         :key="word.found + word.remaining"
       >
-        <span class="found">{{ word.found }}</span
-        ><span>{{ word.remaining }}</span>
+        <span class="found">{{ word.found }}</span>
+        <span>{{ word.remaining }}</span>
       </li>
     </ul>
   </div>
@@ -29,6 +29,10 @@ export default {
     formattedList: function () {
       var newList = [];
       this.list.forEach((item) => {
+        if (item === null) {
+          return
+        }
+
         var newItem = { found: "", remaining: "" };
 
         const searchLength = Math.min(item.length, this.known.length);

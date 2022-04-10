@@ -9,7 +9,7 @@
       >
         <img
           id="between-logo"
-          src="../assets/between.svg"
+          src="/assets/between.svg"
           alt="Page Break by Arthur Shlain from the Noun Project"
         />
 
@@ -55,12 +55,14 @@
 export default {
   name: "GuessForm",
   props: ["state", "mode"],
+  emits: ["guess"],
   methods: {
     guess: guess,
     hint: hint,
   },
   data() {
     return {
+      word: "",
       guessingInProgress: false,
     };
   },
@@ -95,6 +97,7 @@ function guess() {
   // Populate and track the request while disabling submissions
   const requestStart = new Date();
   this.guessingInProgress = true;
+
   const params = new URLSearchParams({
     guesses: state.guesses,
     word: word,
@@ -113,25 +116,12 @@ function guess() {
         return;
       }
 
-      state.guesses += 1;
-      if (data.after) {
-        state.before.push(word);
-        state.before.sort();
-      } else if (data.before) {
-        state.after.push(word);
-        state.after.sort();
-      } else if (data.correct) {
-        state.answer = word;
-        state.end = new Date();
-      }
-
-      scrollView();
-      state.save(state);
+      this.$emit("guess", data, word);
     })
     .catch((err) => {
       console.error(err);
     })
-    .finally((info) => {
+    .finally(() => {
       // Track network request time
       state.idleTime = state.idleTime + (new Date() - requestStart);
 
@@ -174,14 +164,6 @@ function hint() {
     .catch((err) => {
       console.error(err);
     });
-}
-
-function scrollView() {
-  // scroll screen to last after, if available
-  const matches = document.querySelectorAll(".before li:nth-last-child(2)");
-  if (matches.length > 0) {
-    matches[0].scrollIntoView();
-  }
 }
 </script>
 

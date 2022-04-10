@@ -2,11 +2,12 @@
   <div id="app" class="container">
     <header>
       <h1>
-        <a href="/"
-          ><img
-            src="./assets/logo.svg"
+        <a href="/">
+          <img
+            src="/assets/logo.svg"
             alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041"
-        /></a>
+          />
+        </a>
         Guess My Word
       </h1>
     </header>
@@ -24,46 +25,36 @@
 
     <hr />
 
-    <Guesser v-bind:mode="mode" />
+    <Guesser v-bind:mode="mode" v-bind:state="state" />
 
     <hr />
 
-    <Footer v-bind:mode="mode" />
+    <Footer v-bind:mode="mode" @modeChange="modeChange" />
   </div>
 </template>
 
 <script>
 import Footer from "./components/Footer.vue";
 import Guesser from "./components/Guesser.vue";
+import state from "./state.js";
 
 export default {
   components: { Footer, Guesser },
   name: "App",
+  methods: {
+    modeChange: modeChange
+  },
   data() {
     let mode = getMode();
-    // Determine the color for the current list
-    let request = new URLSearchParams({ name: mode });
-    fetch("/api/list?" + request.toString())
-      .then((response) => response.json())
-      .then((data) => {
-        console.debug(data);
-
-        if (data.error) {
-          console.error(data.error);
-          return;
-        }
-
-        document.getElementsByTagName("body")[0].style.backgroundColor =
-          "#" + data.color;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
 
     return {
       mode: mode,
+      state: state.loadState(this.mode),
     };
   },
+  mounted() {
+    modeChange.call(this, this.mode);
+  }
 };
 
 function getMode() {
@@ -76,16 +67,38 @@ function getMode() {
 
   return params.get("mode").toLowerCase();
 }
+
+function modeChange(newMode) {
+  this.mode = newMode;
+  this.state = state.loadState(newMode);
+
+  // Determine the color for the current list
+  let request = new URLSearchParams({ name: newMode });
+  fetch("/api/list?" + request.toString())
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        console.error(data.error);
+        return;
+      }
+
+      console.debug(data);
+      if (data.color == undefined || data.color == "") {
+        document.getElementsByTagName("body")[0].style.backgroundColor = "#224";
+      } else {
+        document.getElementsByTagName("body")[0].style.backgroundColor =
+          "#" + data.color;
+      }
+    })
+    .catch((err) => {
+      console.log("api/list error:" + err);
+    });
+}
 </script>
 
 <style>
 body {
   background-color: #224;
-  color: #eee;
-}
-
-body.mode-hard {
-  background-color: #422;
   color: #eee;
 }
 

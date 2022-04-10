@@ -28,6 +28,17 @@ func NewListStore(store Lister) *ListStore {
 	}
 }
 
+func PopulateDefaultLists(ctx context.Context, store Lister) error {
+	ls := NewListStore(store)
+	if _, err := ls.GetList(ctx, hardListName); err != nil {
+		return fmt.Errorf("unable to populate hard list: %w", err)
+	} else if _, err := ls.GetList(ctx, defaultListName); err != nil {
+		return fmt.Errorf("unable to populate default list: %w", err)
+	}
+
+	return nil
+}
+
 func (l *ListStore) GetLists(ctx context.Context) ([]string, error) {
 	return l.client.GetLists(ctx)
 }

@@ -4,35 +4,35 @@
   "author": "Ryan Nixon <r.taiidani@gmail.com>",
   "private": true,
   "scripts": {
-    "watchify": "watchify -vd -p browserify-hmr -e src/main.js -o dist/build.js",
-    "serve": "http-server -o -s -c 1 -a localhost --proxy http://127.0.0.1:3000 --proxy-options.ws=true",
-    "dev": "npm-run-all --parallel watchify serve",
-    "build": "cross-env NODE_ENV=production browserify -g envify src/main.js | uglifyjs -c warnings=false -m > dist/build.js"
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
-    "vue": "^2.0.1"
+    "core-js": "^3.6.5",
+    "vue": "^3.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.0.0",
-    "babel-preset-env": "^1.7.0",
-    "babelify": "^10.0.0",
-    "browserify": "^17.0.0",
-    "browserify-hmr": "^0.4.1",
-    "cross-env": "^7.0.3",
-    "envify": "^4.1.0",
-    "http-server": "^14.0.0",
-    "npm-run-all": "^4.1.5",
-    "uglify-js": "^2.5.0",
-    "vueify": "^9.1.0",
-    "watchify": "^4.0.0"
+    "@vitejs/plugin-vue": "^1.6.1",
+    "vite": "^2.5.4",
+    "eslint": "^8.0.0",
+    "eslint-plugin-vue": "^8.0.0"
   },
-  "browserify": {
-    "transform": [
-      "vueify",
-      "babelify"
-    ]
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "es2021": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "rules": {}
   },
-  "browser": {
-    "vue": "vue/dist/vue.common.js"
-  }
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }
