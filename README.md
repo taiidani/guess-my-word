@@ -1,7 +1,6 @@
 # Guess My Word
 
 ![Go](https://github.com/taiidani/guess-my-word/workflows/Go/badge.svg)
-[![codecov](https://codecov.io/gh/taiidani/guess-my-word/branch/master/graph/badge.svg)](https://codecov.io/gh/taiidani/guess-my-word)
 
 This is a pet project game around guessing a word based on its location in the alphabet. Users will provide a word, and the application will tell them if that word falls before or after the target in the alphabet. This process will then be repeated until the target is found. HINT: Think binary search trees!
 
