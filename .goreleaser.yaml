@@ -8,6 +8,8 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
+    goarch:
+      - amd64
 archives:
   - replacements:
       amd64: x86_64
@@ -22,4 +24,4 @@ dockers:
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:{{ .Version }}"
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
   build_flag_templates:
-  - "--cache-from ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
+  - "--cache-from=ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
