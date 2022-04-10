@@ -20,8 +20,15 @@ snapshot:
 changelog:
   skip: true
 dockers:
-- image_templates:
-  - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:{{ .Version }}"
+- use: buildx
+  image_templates:
+  - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:{{.Version}}"
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
   build_flag_templates:
   - "--cache-from=ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
+  - "--label=org.opencontainers.image.created={{.Date}}"
+  - "--label=org.opencontainers.image.title={{.ProjectName}}"
+  - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+  - "--label=org.opencontainers.image.version={{.Version}}"
+  extra_files:
+  - "web"
