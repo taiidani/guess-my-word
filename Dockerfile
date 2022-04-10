@@ -12,9 +12,7 @@ FROM nginx:1-alpine AS dist
 
 # Add pre-built application
 COPY guess-my-word /app
-COPY --from=build /app/dist /usr/share/nginx/html/dist
-COPY --from=build /app/assets /usr/share/nginx/html/assets
-COPY --from=build /app/index.html /usr/share/nginx/html/index.html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 ENV GIN_MODE="release"
 EXPOSE 3000

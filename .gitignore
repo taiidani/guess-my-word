@@ -4,5 +4,6 @@ public/assets/
 .vscode/
 **/.DS_Store
 
-dist/
+/dist
 guess_my_word
+guess-my-word
