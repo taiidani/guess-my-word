@@ -1,7 +1,6 @@
 # Guess My Word
 
 ![Go](https://github.com/taiidani/guess-my-word/workflows/Go/badge.svg)
-[![codecov](https://codecov.io/gh/taiidani/guess-my-word/branch/master/graph/badge.svg)](https://codecov.io/gh/taiidani/guess-my-word)
 
 This is a pet project game around guessing a word based on its location in the alphabet. Users will provide a word, and the application will tell them if that word falls before or after the target in the alphabet. This process will then be repeated until the target is found. HINT: Think binary search trees!
 
@@ -29,12 +28,6 @@ The application requires the following to be configured:
 
 * Go installed, matching the version in the `go.mod` file.
 
-Start the Redis backend with:
-
-```sh
-docker-compose up -d redis
-```
-
 Start the application in development mode with:
 
 ```sh
@@ -57,6 +50,6 @@ Dev away!
 By default the application runs in "Local Mode" and will not persist any of the data (such as generated words). If you need to test the persistence options you may point the application at a local Redis instance:
 
 ```sh
-docker-compose up -d redis
-make && REDIS_ADDR=127.0.0.1:6379 ./bin/guess-my-word
+docker-compose up -d
+REDIS_ADDR=127.0.0.1:6379 go run main.go
 ```
