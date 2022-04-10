@@ -32,3 +32,4 @@ dockers:
   - "--label=org.opencontainers.image.version={{.Version}}"
   extra_files:
   - "web"
+  - "nginx.dev.conf"
