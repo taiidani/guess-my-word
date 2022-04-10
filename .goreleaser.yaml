@@ -21,6 +21,5 @@ dockers:
 - image_templates:
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:{{ .Version }}"
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
-  use: buildx
   build_flag_templates:
   - "--cache-from ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
