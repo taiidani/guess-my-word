@@ -21,6 +21,7 @@ release:
   mode: append
 changelog:
   sort: asc
+  use: github
 dockers:
 - use: buildx
   image_templates:
