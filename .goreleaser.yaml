@@ -25,6 +25,7 @@ dockers:
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:{{.Version}}"
   - "ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
   build_flag_templates:
+  - "--target=dist"
   - "--cache-from=ghcr.io/{{ .Env.GITHUB_REPOSITORY }}:latest"
   - "--label=org.opencontainers.image.created={{.Date}}"
   - "--label=org.opencontainers.image.title={{.ProjectName}}"
@@ -32,4 +33,3 @@ dockers:
   - "--label=org.opencontainers.image.version={{.Version}}"
   extra_files:
   - "web"
-  - "nginx.dev.conf"
