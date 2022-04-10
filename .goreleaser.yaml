@@ -17,8 +17,10 @@ checksum:
   name_template: 'checksums.txt'
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
+release:
+  mode: append
 changelog:
-  skip: true
+  sort: asc
 dockers:
 - use: buildx
   image_templates:
