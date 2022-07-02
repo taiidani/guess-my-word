@@ -10,7 +10,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
-    "core-js": "^3.22.7",
+    "core-js": "^3.23.3",
     "vue": "^3.2.37"
   },
   "devDependencies": {
