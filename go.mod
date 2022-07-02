@@ -3,7 +3,7 @@ module guess_my_word
 go 1.18
 
 require (
-	github.com/gin-gonic/gin v1.8.0
+	github.com/gin-gonic/gin v1.8.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gorilla/websocket v1.5.0
 	github.com/json-iterator/go v1.1.12 // indirect
