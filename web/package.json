@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "core-js": "^3.24.1",
-    "vue": "^3.2.37"
+    "vue": "^3.2.38"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.3",
