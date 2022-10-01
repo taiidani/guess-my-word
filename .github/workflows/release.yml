@@ -26,7 +26,7 @@ jobs:
         run: docker pull ghcr.io/${GITHUB_REPOSITORY}:latest || echo "Cache not found"
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
