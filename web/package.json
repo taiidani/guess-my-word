@@ -15,9 +15,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^2.3.4",
-    "vite": "^2.9.13",
+    "cypress": "^12.0.1",
     "eslint": "^8.29.0",
-    "eslint-plugin-vue": "^9.8.0"
+    "eslint-plugin-vue": "^9.8.0",
+    "vite": "^2.9.13"
   },
   "eslintConfig": {
     "root": true,
