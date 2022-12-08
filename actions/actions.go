@@ -7,6 +7,7 @@ import (
 	"guess_my_word/internal/words"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -36,8 +37,21 @@ func init() {
 	var client datastore.Client
 	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
 		client = datastore.NewRedis(addr)
+	} else if host, ok := os.LookupEnv("REDIS_HOST"); ok {
+		db := 0
+		if dbParsed, err := strconv.ParseInt(os.Getenv("REDIS_DB"), 10, 64); err == nil {
+			db = int(dbParsed)
+		}
+
+		client = datastore.NewRedisSecure(
+			host,
+			os.Getenv("REDIS_PORT"),
+			os.Getenv("REDIS_USER"),
+			os.Getenv("REDIS_PASSWORD"),
+			db,
+		)
 	} else {
-		log.Println("WARNING: No REDIS_ADDR env var set. Falling back upon in-memory store")
+		log.Println("WARNING: No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
 		client = datastore.NewMemory()
 	}
 

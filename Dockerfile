@@ -12,6 +12,7 @@ FROM nginx:1-alpine AS dist
 
 # Add pre-built application
 COPY guess-my-word /app
+RUN /app --help
 COPY --from=build /app/dist /usr/share/nginx/html
 
 ENV GIN_MODE="release"

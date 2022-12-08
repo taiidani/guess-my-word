@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"guess_my_word/actions"
 	"net/http"
@@ -15,6 +16,14 @@ import (
 const defaultAddress = ":3000"
 
 func main() {
+	help := flag.Bool("help", false, "displays help text and exits")
+	flag.Parse()
+
+	if help != nil && *help {
+		fmt.Fprintln(os.Stderr, "This application serves the Guess My Word app at "+defaultAddress)
+		os.Exit(0)
+	}
+
 	r := gin.Default()
 
 	if err := actions.AddHandlers(r); err != nil {

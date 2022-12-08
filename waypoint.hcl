@@ -2,10 +2,28 @@ project = "guess-my-word"
 
 app "web" {
   build {
-    use "docker-pull" {
+    hook {
+      when       = "before"
+      command    = ["go", "build", "-o", "./guess-my-word"]
+      on_failure = "fail"
+    }
+
+    use "docker" {
       disable_entrypoint = true
-      image              = "ghcr.io/taiidani/guess-my-word"
-      tag                = "latest"
+      target             = "dist"
+    }
+
+    registry {
+      use "docker" {
+        image = "ghcr.io/taiidani/guess-my-word"
+        tag   = "latest"
+      }
+    }
+
+    hook {
+      when       = "after"
+      command    = ["rm", "./guess-my-word"]
+      on_failure = "continue"
     }
   }
 

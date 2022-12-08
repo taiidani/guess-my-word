@@ -57,10 +57,21 @@ job "guess-my-word" {
       }
 
       env {
-        ADDR       = "0.0.0.0"
-        GIN_MODE   = "release"
-        REDIS_ADDR = "127.0.0.1:$${NOMAD_PORT_redis}"
-        ORIGIN     = "guessmyword.xyz"
+        ADDR     = "0.0.0.0"
+        GIN_MODE = "release"
+        ORIGIN   = "guessmyword.xyz"
+      }
+
+      template {
+        data        = <<EOF
+            REDIS_HOST="{{with secret "credentials/digitalocean/redis"}}{{ .Data.data.private_host }}{{end}}"
+            REDIS_PORT="{{with secret "credentials/digitalocean/redis"}}{{ .Data.data.port }}{{end}}"
+            REDIS_USER="{{with secret "credentials/digitalocean/redis"}}{{ .Data.data.user }}{{end}}"
+            REDIS_PASSWORD="{{with secret "credentials/digitalocean/redis"}}{{ .Data.data.password }}{{end}}"
+            REDIS_DB=1
+        EOF
+        destination = "$${NOMAD_SECRETS_DIR}/secrets.env"
+        env         = true
       }
 
       service {
@@ -84,7 +95,7 @@ job "guess-my-word" {
 
       resources {
         cpu    = 50
-        memory = 64
+        memory = 128
       }
     }
 
@@ -92,27 +103,6 @@ job "guess-my-word" {
       type      = "host"
       source    = "hashistack"
       read_only = "false"
-    }
-
-    task "redis" {
-      driver = "docker"
-
-      config {
-        image = "redis:6"
-        args  = ["redis-server", "--dir", "/data/guess"]
-        ports = ["redis"]
-      }
-
-      volume_mount {
-        volume      = "hashistack"
-        destination = "/data"
-        read_only   = "false"
-      }
-
-      resources {
-        cpu    = 25
-        memory = 32
-      }
     }
 
     task "redirect" {
@@ -158,7 +148,10 @@ job "guess-my-word" {
       port "web" { to = 80 }
       port "api" { to = 3000 }
       port "redirect" { to = 81 }
-      port "redis" { to = 6379 }
+    }
+
+    vault {
+      policies = ["hcp-root"]
     }
   }
 }

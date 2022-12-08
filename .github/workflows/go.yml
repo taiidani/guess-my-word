@@ -1,8 +1,9 @@
 name: go
 
-push:
-  branches:
-    - "**"
+on:
+  push:
+    branches:
+      - "**"
 
 jobs:
   build:

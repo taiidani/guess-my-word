@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"guess_my_word/internal/model"
@@ -37,6 +38,27 @@ func NewRedis(addr string) *RedisClient {
 	status := client.Ping(ctx)
 	if status.Err() != nil {
 		log.Printf("Failed to create Redis client")
+		panic(status.Err())
+	}
+
+	return &RedisClient{client: client, mutex: sync.Mutex{}}
+}
+
+// NewRedisSecure instantiates a new secure TLS client
+func NewRedisSecure(host, port, user, password string, db int) *RedisClient {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer cancel()
+
+	client := redis.NewClient(&redis.Options{
+		Addr:      fmt.Sprintf("%s:%s", host, port),
+		Username:  user,
+		Password:  password,
+		TLSConfig: &tls.Config{},
+		DB:        db,
+	})
+	status := client.Ping(ctx)
+	if status.Err() != nil {
+		log.Printf("Failed to create secure Redis client")
 		panic(status.Err())
 	}
 
