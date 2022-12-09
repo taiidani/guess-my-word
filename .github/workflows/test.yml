@@ -70,9 +70,6 @@ jobs:
           name: guess-my-word-api
           path: guess-my-word
 
-      - name: Run API
-        run: ./guess-my-word &
-
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.tool-versions'
@@ -85,4 +82,4 @@ jobs:
           working-directory: web/
           wait-on: 'http://localhost:3000, http://localhost:8080'
           build: npm run build
-          start: npm run dev
+          start: ../guess-my-word/guess-my-word, npm run dev
