@@ -2,19 +2,21 @@
 
 describe('guess spec', () => {
   it('guesses the default word', () => {
-    // Lock session
-    window.sessionStorage.setItem('state-default', JSON.stringify({
-      "version": 0.9,
-      "before": [],
-      "after": [],
-      "answer": "",
-      "guesses": 0,
-      "idleTime": 0,
-      "start": "2022-12-07T17:05:37.121Z",
-      "end": null,
-    }))
+    cy.visit('/', {
+      onBeforeLoad: (contentWindow) => {
+        contentWindow.sessionStorage.setItem('state-default', JSON.stringify({
+          "version": 0.9,
+          "before": [],
+          "after": [],
+          "answer": "",
+          "guesses": 0,
+          "idleTime": 0,
+          "start": "2022-12-07T17:05:37.121Z",
+          "end": null,
+        }))
+      },
+    })
 
-    cy.visit('http://localhost:8080')
     cy.contains('Guess')
     cy.get('footer .col:nth-child(1)').contains("alive")
     cy.get('.before li:nth-child(1)').contains('No guesses before the word')
@@ -58,19 +60,20 @@ describe('guess spec', () => {
   })
 
   it('guesses the hard word', () => {
-    // Lock session
-    window.sessionStorage.setItem('state-default', JSON.stringify({
-      "version": 0.9,
-      "before": [],
-      "after": [],
-      "answer": "",
-      "guesses": 0,
-      "idleTime": 0,
-      "start": "2022-12-07T17:05:37.121Z",
-      "end": null,
-    }))
-
-    cy.visit('http://localhost:8080')
+    cy.visit('/', {
+      onBeforeLoad: (contentWindow) => {
+        contentWindow.sessionStorage.setItem('state-hard', JSON.stringify({
+          "version": 0.9,
+          "before": [],
+          "after": [],
+          "answer": "",
+          "guesses": 0,
+          "idleTime": 0,
+          "start": "2022-12-07T17:05:37.121Z",
+          "end": null,
+        }))
+      },
+    })
     cy.contains('Guess')
 
     // Switch to hard

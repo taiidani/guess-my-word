@@ -30,7 +30,7 @@ function loadState(mode) {
         return state;
     } else if (typeof sessionStorage["state-" + mode] === "undefined") {
         // First-time page load, no state
-        console.log("First time page load; initial state");
+        console.log("first time page load for " + mode + "; initial state");
         return state;
     }
 
@@ -43,17 +43,7 @@ function loadState(mode) {
         incomingState.end = new Date(incomingState.end);
     }
 
-    // Only assign the state if it started on the same day as the current word
-    // Having this logic client-side allows a user to keep guessing their word even after
-    // a new word has been rotated in. As long as they do not refresh their page their
-    // state's "Start" property will lock them to the same day.
-    if (
-        incomingState.start.getDate() == state.start.getDate() &&
-        incomingState.start.getMonth() == state.start.getMonth()
-    ) {
-        state = incomingState;
-    }
-
+    state = incomingState;
     state.save = (state) => {
         saveState(mode, state);
     };

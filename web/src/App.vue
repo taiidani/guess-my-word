@@ -3,10 +3,8 @@
     <header>
       <h1>
         <a href="/">
-          <img
-            src="/assets/logo.svg"
-            alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041"
-          />
+          <img src="/assets/logo.svg"
+            alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041" />
         </a>
         Guess My Word
       </h1>
@@ -29,7 +27,7 @@
 
     <hr />
 
-    <Footer v-bind:mode="mode" @modeChange="modeChange" />
+    <Footer v-bind:mode="mode" v-bind:state="state" @modeChange="modeChange" />
   </div>
 </template>
 
@@ -46,15 +44,16 @@ export default {
   },
   data() {
     let mode = getMode();
+    console.info("loading mode " + mode);
 
     return {
       mode: mode,
-      state: state.loadState(this.mode),
+      state: state.loadState(mode),
     };
   },
-  mounted() {
-    modeChange.call(this, this.mode);
-  }
+  // mounted() {
+  //   modeChange.call(this, this.mode);
+  // }
 };
 
 function getMode() {
@@ -62,6 +61,7 @@ function getMode() {
   const params = new URLSearchParams(window.location.search);
 
   if (params.get("mode") == null) {
+    console.info("no mode set in query parameters, defaulting to default");
     params.set("mode", "default");
   }
 
@@ -69,6 +69,7 @@ function getMode() {
 }
 
 function modeChange(newMode) {
+  console.log("changing mode to " + newMode);
   this.mode = newMode;
   this.state = state.loadState(newMode);
 

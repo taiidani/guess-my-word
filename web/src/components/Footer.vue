@@ -50,7 +50,7 @@ import { nextTick } from 'vue';
 export default {
   components: { Stats, Difficulty },
   name: "Footer",
-  props: ["mode"],
+  props: ["mode", "state"],
   emits: ["modeChange"],
   methods: {
     modeChange: function (newMode) {
@@ -80,10 +80,9 @@ export default {
 
 function refreshStats() {
   console.debug("Refreshing stats for mode:", this.mode);
-  const dt = new Date();
   const params = new URLSearchParams({
-    date: Math.floor(dt.getTime() / 1000) - 24 * 60 * 60, // Subtract 1 day
-    tz: dt.getTimezoneOffset(),
+    date: Math.floor(this.state.start.getTime() / 1000) - 24 * 60 * 60, // Subtract 1 day
+    tz: this.state.start.getTimezoneOffset(),
     mode: this.mode,
   });
 
@@ -139,4 +138,5 @@ function analyzeStats(guesses) {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 </style>
