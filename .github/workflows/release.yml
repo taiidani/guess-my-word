@@ -2,6 +2,8 @@ name: goreleaser
 
 on:
   push:
+    tags:
+      - "*"
 
 permissions:
   contents: write
@@ -11,24 +13,17 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Fetch all tags
         run: git fetch --force --tags
 
-      - name: Log Into Docker Registry
-        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-
-      - name: Pull Docker Cache
-        run: docker pull ghcr.io/${GITHUB_REPOSITORY}:latest || echo "Cache not found"
-
-      - name: Set up Go
-        uses: actions/setup-go@v3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.18
+          go-version-file: go.mod
+          cache: true
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
