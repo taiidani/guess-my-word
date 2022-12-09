@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
-const today = Date.UTC(2022, 11, 8)
-const tomorrow = Date.UTC(2022, 11, 9)
+const today = Date.UTC(2022, 11, 8, 0, 0, 0)
+const tomorrow = Date.UTC(2022, 11, 9, 0, 0, 0)
 const defaultToday = "rough"
 const defaultYesterday = "alive"
 const hardToday = "oatcake"
