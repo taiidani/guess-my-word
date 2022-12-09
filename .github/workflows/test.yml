@@ -86,7 +86,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           working-directory: web/
-          wait-on: 'http://localhost:3000, http://localhost:8080'
+          wait-on: 'http://localhost:3000/ping, http://localhost:8080'
           build: npm run build
           start: npm run dev
 
