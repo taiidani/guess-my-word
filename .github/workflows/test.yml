@@ -1,0 +1,84 @@
+name: test
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Test
+        run: go test -race -covermode=atomic -cover ./...
+
+      - name: Build
+        run: go build -o guess-my-word
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: guess-my-word-api
+          if-no-files-found: error
+          path: guess-my-word
+
+  nodejs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build
+        working-directory: web/
+        run: npm run build
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          name: guess-my-word-web
+          if-no-files-found: error
+          path: web/dist
+
+  cypress:
+    runs-on: ubuntu-latest
+    needs: [ "go", "nodejs" ]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download API
+        uses: actions/download-artifact@v2
+        with:
+          name: guess-my-word-api
+          path: guess-my-word
+
+      - name: Run API
+        run: ./guess-my-word &
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.tool-versions'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          working-directory: web/
+          wait-on: 'http://localhost:3000, http://localhost:8080'
+          build: npm run build
+          start: npm run dev

@@ -26,6 +26,3 @@ jobs:
         run: |
           go install honnef.co/go/tools/cmd/staticcheck@v0.3.0
           staticcheck -tests ./...
-
-      - name: Test
-        run: go test -race -covermode=atomic -cover ./...
