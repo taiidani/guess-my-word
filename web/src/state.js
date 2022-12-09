@@ -43,7 +43,17 @@ function loadState(mode) {
         incomingState.end = new Date(incomingState.end);
     }
 
-    state = incomingState;
+    // Only assign the state if it started on the same day as the current word
+    // Having this logic client-side allows a user to keep guessing their word even after
+    // a new word has been rotated in. As long as they do not refresh their page their
+    // state's "Start" property will lock them to the same day.
+    if (
+        incomingState.start.getDate() == state.start.getDate() &&
+        incomingState.start.getMonth() == state.start.getMonth()
+    ) {
+        state = incomingState;
+    }
+
     state.save = (state) => {
         saveState(mode, state);
     };

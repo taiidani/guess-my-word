@@ -1,24 +1,19 @@
 /// <reference types="Cypress" />
 
+const today = Date.UTC(2022, 11, 8)
+const tomorrow = Date.UTC(2022, 11, 9)
+const defaultToday = "rough"
+const defaultYesterday = "alive"
+const hardToday = "oatcake"
+const hardYesterday = "nonjoiner"
+
 describe('guess spec', () => {
   it('guesses the default word', () => {
-    cy.visit('/', {
-      onBeforeLoad: (contentWindow) => {
-        contentWindow.sessionStorage.setItem('state-default', JSON.stringify({
-          "version": 0.9,
-          "before": [],
-          "after": [],
-          "answer": "",
-          "guesses": 0,
-          "idleTime": 0,
-          "start": "2022-12-07T17:05:37.121Z",
-          "end": null,
-        }))
-      },
-    })
+    cy.clock(today)
+    cy.visit('/')
 
     cy.contains('Guess')
-    cy.get('footer .col:nth-child(1)').contains("alive")
+    cy.get('footer .col:nth-child(1)').contains(defaultYesterday)
     cy.get('.before li:nth-child(1)').contains('No guesses before the word')
     cy.get('.after').contains('No guesses after the word')
 
@@ -50,9 +45,9 @@ describe('guess spec', () => {
     cy.get('.after li:nth-child(2)').contains('tame')
 
     // Correct guess
-    cy.get('form#guesser input').type('rough')
+    cy.get('form#guesser input').type(defaultToday)
     cy.get('form#guesser').submit()
-    cy.get('#app').contains('You guessed "rough" correctly')
+    cy.get('#app').contains('You guessed "' + defaultToday + '" correctly')
     cy.get('.before li:nth-child(1)').contains('medium')
     cy.get('.after li:nth-child(1)').contains('round')
     cy.get('.after li:nth-child(2)').contains('tame')
@@ -60,25 +55,13 @@ describe('guess spec', () => {
   })
 
   it('guesses the hard word', () => {
-    cy.visit('/', {
-      onBeforeLoad: (contentWindow) => {
-        contentWindow.sessionStorage.setItem('state-hard', JSON.stringify({
-          "version": 0.9,
-          "before": [],
-          "after": [],
-          "answer": "",
-          "guesses": 0,
-          "idleTime": 0,
-          "start": "2022-12-07T17:05:37.121Z",
-          "end": null,
-        }))
-      },
-    })
+    cy.clock(today)
+    cy.visit('/')
     cy.contains('Guess')
 
     // Switch to hard
     cy.get('#mode').select('Hard')
-    cy.get('footer .col:nth-child(1)').contains("nonjoiner")
+    cy.get('footer .col:nth-child(1)').contains(hardYesterday)
     cy.get('.before li:nth-child(1)').contains('No guesses before the word')
     cy.get('.after').contains('No guesses after the word')
 
@@ -110,12 +93,52 @@ describe('guess spec', () => {
     cy.get('.after li:nth-child(2)').contains('tame')
 
     // Correct guess
-    cy.get('form#guesser input').type('oatcake')
+    cy.get('form#guesser input').type(hardToday)
     cy.get('form#guesser').submit()
-    cy.get('#app').contains('You guessed "oatcake" correctly')
+    cy.get('#app').contains('You guessed "' + hardToday + '" correctly')
     cy.get('.before li:nth-child(1)').contains('medium')
     cy.get('.before li:nth-child(2)').contains('oat')
     cy.get('.after li:nth-child(1)').contains('out')
     cy.get('.after li:nth-child(2)').contains('tame')
+  })
+
+  it('throws away old states', () => {
+    cy.clock(tomorrow)
+    cy.visit('/', {
+      onBeforeLoad: (contentWindow) => {
+        contentWindow.sessionStorage.setItem('state-default', JSON.stringify({
+          "version": 0.9,
+          "before": [],
+          "after": [],
+          "answer": "",
+          "guesses": 0,
+          "idleTime": 0,
+          "start": today,
+          "end": null,
+        }))
+
+        contentWindow.sessionStorage.setItem('state-hard', JSON.stringify({
+          "version": 0.9,
+          "before": [],
+          "after": [],
+          "answer": "",
+          "guesses": 0,
+          "idleTime": 0,
+          "start": today,
+          "end": null,
+        }))
+      },
+    })
+
+    // Default
+    cy.get('footer .col:nth-child(1)').contains(defaultToday)
+    cy.get('.before li:nth-child(1)').contains('No guesses before the word')
+    cy.get('.after').contains('No guesses after the word')
+
+    // Switch to hard
+    cy.get('#mode').select('Hard')
+    cy.get('footer .col:nth-child(1)').contains(hardToday)
+    cy.get('.before li:nth-child(1)').contains('No guesses before the word')
+    cy.get('.after').contains('No guesses after the word')
   })
 })
