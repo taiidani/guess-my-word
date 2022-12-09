@@ -70,6 +70,9 @@ jobs:
           name: guess-my-word-api
           path: guess-my-word
 
+      - name: Make API executable
+        run: chmod +x guess-my-word/guess-my-word
+
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.tool-versions'
@@ -82,4 +85,10 @@ jobs:
           working-directory: web/
           wait-on: 'http://localhost:3000, http://localhost:8080'
           build: npm run build
-          start: ../guess-my-word/guess-my-word, npm run dev
+          start: '../guess-my-word/guess-my-word, npm run dev'
+
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: web/cypress/screenshots
