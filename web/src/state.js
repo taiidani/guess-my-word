@@ -52,6 +52,8 @@ function loadState(mode) {
         incomingState.start.getMonth() == state.start.getMonth()
     ) {
         state = incomingState;
+    } else {
+        console.log('throwed away old state');
     }
 
     state.save = (state) => {

@@ -101,44 +101,4 @@ describe('guess spec', () => {
     cy.get('.after li:nth-child(1)').contains('out')
     cy.get('.after li:nth-child(2)').contains('tame')
   })
-
-  it('throws away old states', () => {
-    cy.clock(tomorrow)
-    cy.visit('/', {
-      onBeforeLoad: (contentWindow) => {
-        contentWindow.sessionStorage.setItem('state-default', JSON.stringify({
-          "version": 0.9,
-          "before": [],
-          "after": [],
-          "answer": "",
-          "guesses": 0,
-          "idleTime": 0,
-          "start": today,
-          "end": null,
-        }))
-
-        contentWindow.sessionStorage.setItem('state-hard', JSON.stringify({
-          "version": 0.9,
-          "before": [],
-          "after": [],
-          "answer": "",
-          "guesses": 0,
-          "idleTime": 0,
-          "start": today,
-          "end": null,
-        }))
-      },
-    })
-
-    // Default
-    cy.get('footer .col:nth-child(1)').contains(defaultToday)
-    cy.get('.before li:nth-child(1)').contains('No guesses before the word')
-    cy.get('.after').contains('No guesses after the word')
-
-    // Switch to hard
-    cy.get('#mode').select('Hard')
-    cy.get('footer .col:nth-child(1)').contains(hardToday)
-    cy.get('.before li:nth-child(1)').contains('No guesses before the word')
-    cy.get('.after').contains('No guesses after the word')
-  })
 })
