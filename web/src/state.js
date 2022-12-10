@@ -51,9 +51,11 @@ function loadState(mode) {
         incomingState.start.getDate() == state.start.getDate() &&
         incomingState.start.getMonth() == state.start.getMonth()
     ) {
+        console.log(incomingState.start)
+        console.log(state.start)
         state = incomingState;
     } else {
-        console.log('throwed away old state');
+        console.log('throwing away old state');
     }
 
     state.save = (state) => {
@@ -70,6 +72,6 @@ function saveState(mode, state) {
     }
 
     const serialized = JSON.stringify(state);
-    sessionStorage["state-" + mode] = serialized;
+    sessionStorage[sessionName] = serialized;
     console.debug(serialized);
 }
