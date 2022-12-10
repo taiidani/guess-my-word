@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
-const today = new Date(2022, 11, 8, 0, 0, 0)
-const tomorrow = new Date(2022, 11, 9, 0, 0, 0)
+const today = new Date(Date.UTC(2022, 11, 8, 0, 0, 0)).getTime()
+const tomorrow = new Date(Date.UTC(2022, 11, 9, 0, 0, 0)).getTime()
 const defaultToday = "rough"
 const defaultYesterday = "alive"
 const hardToday = "oatcake"
