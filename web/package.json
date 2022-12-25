@@ -14,10 +14,11 @@
     "vue": "^3.2.45"
   },
   "devDependencies": {
+    "@playwright/test": "^1.29.1",
     "@vitejs/plugin-vue": "^2.3.4",
-    "vite": "^2.9.13",
     "eslint": "^8.29.0",
-    "eslint-plugin-vue": "^9.8.0"
+    "eslint-plugin-vue": "^9.8.0",
+    "vite": "^2.9.13"
   },
   "eslintConfig": {
     "root": true,
