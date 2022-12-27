@@ -1,12 +1,10 @@
 <template>
-  <div id="app" class="container">
+  <div class="container">
     <header>
       <h1>
         <a href="/">
-          <img
-            src="/assets/logo.svg"
-            alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041"
-          />
+          <img src="/assets/logo.svg"
+            alt="Question by Gregor Cresnar from the Noun Project, https://thenounproject.com/search/?q=question&i=540041" />
         </a>
         Guess My Word
       </h1>

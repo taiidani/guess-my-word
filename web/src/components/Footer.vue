@@ -6,7 +6,7 @@
           <h5>
             <i class="bi bi-clock-history"></i> Yesterday's Stats
           </h5>
-          <stats v-bind:day="yesterday"></stats>
+          <stats id="stats-yesterday" role="stats-yesterday" v-bind:day="yesterday"></stats>
         </div>
       </div>
       <div class="col">
@@ -14,7 +14,7 @@
           <h5>
             <i class="bi bi-bar-chart-fill"></i> Today's Stats
           </h5>
-          <stats v-bind:day="today"></stats>
+          <stats id="stats-today" v-bind:day="today"></stats>
         </div>
       </div>
       <div class="col">
@@ -139,4 +139,5 @@ function analyzeStats(guesses) {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 </style>
