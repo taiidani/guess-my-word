@@ -25,7 +25,7 @@ func TestMemoryClient_GetWord(t *testing.T) {
 				ctx: context.Background(),
 				key: "test",
 			},
-			c: &MemoryClient{Data: map[string]model.Word{
+			c: &MemoryClient{data: map[string]model.Word{
 				"test": {Value: "value"},
 			}},
 			want: model.Word{Value: "value"},
@@ -104,8 +104,8 @@ func TestMemoryClient_SetWord(t *testing.T) {
 				t.Errorf("Client.SetWord() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			if !reflect.DeepEqual(c.Data, tt.want) {
-				t.Errorf("Client.SetWord() got = %v, want %v", c.Data, tt.want)
+			if !reflect.DeepEqual(c.data, tt.want) {
+				t.Errorf("Client.SetWord() got = %v, want %v", c.data, tt.want)
 			}
 		})
 	}
