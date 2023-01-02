@@ -26,7 +26,7 @@ jobs:
         run: go build -o guess-my-word
 
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: guess-my-word-api
           if-no-files-found: error
@@ -52,7 +52,7 @@ jobs:
         run: npm run build
 
       - name: Upload
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: guess-my-word-web
           if-no-files-found: error
