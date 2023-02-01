@@ -14,7 +14,7 @@
     "vue": "^3.2.45"
   },
   "devDependencies": {
-    "@playwright/test": "^1.29.1",
+    "@playwright/test": "^1.30.0",
     "@vitejs/plugin-vue": "^2.3.4",
     "eslint": "^8.31.0",
     "eslint-plugin-vue": "^9.8.0",
