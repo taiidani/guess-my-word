@@ -34,9 +34,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          # push: ${{ github.ref_name == 'main' }}
-          push: true
-          # provenance: true
+          push: ${{ github.ref_name == 'main' }}
+          provenance: true
           tags: "ghcr.io/taiidani/guess-my-word:latest"
 
   deploy:
