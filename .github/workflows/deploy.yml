@@ -6,7 +6,9 @@ on:
 jobs:
   deliver:
     runs-on: ubuntu-latest
-    concurrency: deployment
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v3
         with:
@@ -42,6 +44,7 @@ jobs:
     needs: deliver
     runs-on: ubuntu-latest
     environment: production
+    concurrency: deployment
     # if: github.ref_name == 'main'
     steps:
       - uses: actions/checkout@v3
