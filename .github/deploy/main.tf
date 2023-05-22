@@ -1,5 +1,12 @@
 resource "nomad_job" "app" {
-  jobspec = file("${path.module}/guess-my-word.nomad")
+  jobspec = templatefile("${path.module}/guess-my-word.nomad", {
+    image_name = var.image_name
+  })
+  detach = false
+
+  hcl2 {
+    enabled = true
+  }
 }
 
 terraform {
@@ -23,4 +30,9 @@ terraform {
 
 provider "nomad" {
   address = "http://127.0.0.1:4646"
+}
+
+variable "image_name" {
+  description = "The name of the Docker image to use for the job"
+  type        = string
 }

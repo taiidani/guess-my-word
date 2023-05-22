@@ -14,7 +14,7 @@ job "guess-my-word" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/taiidani/guess-my-word:latest"
+        image = "${image_name}"
         ports = ["web"]
       }
 
@@ -51,7 +51,7 @@ job "guess-my-word" {
       driver = "docker"
 
       config {
-        image = "ghcr.io/taiidani/guess-my-word:latest"
+        image = "${image_name}"
         args  = ["/app"]
         ports = ["api"]
       }
