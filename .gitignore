@@ -6,4 +6,7 @@ public/assets/
 
 /dist
 guess_my_word
-guess-my-word*
+guess-my-word
+
+.terraform
+*.tfstate

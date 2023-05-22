@@ -11,7 +11,7 @@ RUN npm run build
 FROM nginx:1-alpine AS dist
 
 # Add pre-built application
-COPY guess-my-word /app
+COPY guess_my_word /app
 RUN /app --help
 COPY --from=build /app/dist /usr/share/nginx/html
 
