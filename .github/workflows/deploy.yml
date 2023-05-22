@@ -20,7 +20,9 @@ jobs:
           cache: true
 
       - name: build
-        run: go build -o ./guess_my_word
+        run: |
+          go build -o ./guess_my_word
+          chmod +x ./guess_my_word
 
       - name: setup buildx
         uses: docker/setup-buildx-action@v2
