@@ -36,7 +36,7 @@ jobs:
           context: .
           # push: ${{ github.ref_name == 'main' }}
           push: true
-          provenance: true
+          # provenance: true
           tags: "ghcr.io/taiidani/guess-my-word:latest"
 
   deploy:
