@@ -58,6 +58,26 @@ jobs:
           if-no-files-found: error
           path: web/dist
 
+  go-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Vet
+        run: go vet ./...
+
+      - uses: dominikh/staticcheck-action@v1
+        with:
+          version: "2022.1.1"
+
   playwright:
     runs-on: ubuntu-latest
     timeout-minutes: 60
