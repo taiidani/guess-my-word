@@ -56,7 +56,9 @@ jobs:
   deploy:
     needs: deliver
     runs-on: ubuntu-latest
-    environment: production
+    environment:
+      name: production
+      url: https://guessmyword.xyz
     concurrency: deployment
     if: github.ref_name == 'main'
     steps:
