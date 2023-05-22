@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     concurrency: deployment
-    # if: github.ref_name == 'main'
+    if: github.ref_name == 'main'
     steps:
       - uses: actions/checkout@v3
         with:

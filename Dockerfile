@@ -12,6 +12,7 @@ FROM nginx:1-alpine AS dist
 
 # Add pre-built application
 COPY guess_my_word /app
+RUN ls -l /
 RUN /app --help
 COPY --from=build /app/dist /usr/share/nginx/html
 
