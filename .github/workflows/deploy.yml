@@ -61,17 +61,34 @@ jobs:
       url: https://guessmyword.xyz
     concurrency: deployment
     if: github.ref_name == 'main'
+    permissions:
+      contents: read
+      id-token: write # Needed for Vault JWT
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: vault
+        id: vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://rnd.vault.0846e66f-a975-4a88-9e46-6dc6267e9b73.aws.hashicorp.cloud:8200
+          role: github-role
+          method: jwt
+          path: github
+          namespace: admin
+          jwtGithubAudience: https://github.com/taiidani
+          secrets: |
+            credentials/data/github TFC_TOKEN | TFC_TOKEN
+
 
       - name: setup-terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_wrapper: false
           terraform_version: 1.4.2
-          cli_config_credentials_token: ${{ secrets.TFC_TOKEN }}
+          cli_config_credentials_token: ${{ steps.vault.outputs.TFC_TOKEN }}
 
       - name: init
         working-directory: .github/deploy
