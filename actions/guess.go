@@ -107,7 +107,6 @@ func guessHandlerReply(ctx context.Context, guess *guess, reply *guessReply) err
 		})
 
 		wordStore.SetWord(ctx, datastore.WordKey(guess.Mode, tm), word)
-		socketPeers.Notify()
 	}
 
 	return nil

@@ -22,6 +22,9 @@ type statsReply struct {
 	Error string     `json:"error,omitempty"`
 }
 
+// ErrRevealToday is emitted when the reveal request is for a current or future word
+const ErrRevealToday = "It's too early to reveal this word. Please try again later!"
+
 // StatsHandler is an internal API handler for pre-populating data to test with.
 func StatsHandler(c *gin.Context) {
 	request := stats{}

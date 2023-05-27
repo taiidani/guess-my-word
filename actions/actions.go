@@ -77,9 +77,6 @@ func AddHandlers(r *gin.Engine) (err error) {
 	g.DELETE("/list", ListHandler)
 	g.GET("/seed", SeedHandler)
 	g.GET("/stats", StatsHandler)
-
-	// And the websockets
-	g.GET("/ws", wsHandler)
 	return nil
 }
 
