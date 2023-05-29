@@ -16,9 +16,8 @@ The backend web framework in use is Gin: https://gin-gonic.com
 
 The frontend frameworks in use are:
 
-* Vue.js: https://vuejs.org/
-* Bootstrap: https://getbootstrap.com/
-* Browserify: https://browserify.org/
+* Bootstrap: https://getbootstrap.com
+* HTMX: https://htmx.org
 
 Persistence is being enabled using a Redis backend.
 
@@ -32,13 +31,6 @@ Start the application in development mode with:
 
 ```sh
 go run main.go
-```
-
-Then start the frontend with:
-
-```sh
-cd web
-npm run dev
 ```
 
 Then view the website at http://localhost:8080.

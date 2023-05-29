@@ -3,6 +3,7 @@ pkged.go
 public/assets/
 .vscode/
 **/.DS_Store
+__debug_bin
 
 /dist
 guess_my_word

@@ -2,31 +2,18 @@ package actions
 
 import (
 	"context"
+	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
 	"log"
+	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
-
-type guess struct {
-	Guesses int       `form:"guesses"`
-	Word    string    `form:"word"`
-	Mode    string    `form:"mode"`
-	Start   time.Time `form:"start" time_format:"unix"`
-	TZ      int       `form:"tz"`
-}
-
-type guessReply struct {
-	Guess   string `json:"guess"`
-	Correct bool   `json:"correct"`
-	After   bool   `json:"after"`
-	Before  bool   `json:"before"`
-	Error   string `json:"error,omitempty"`
-}
 
 const (
 	// ErrInvalidWord is emitted when the guess is not a legitimate word
@@ -46,36 +33,39 @@ var guessMutex = sync.Mutex{}
 
 // GuessHandler is an API handler to process a user's guess.
 func GuessHandler(c *gin.Context) {
-	guess := guess{}
-	reply := guessReply{}
+	request, err := parseBodyData(c)
+	if err != nil {
+		log.Println("Unable to parse body data: ", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		return
+	}
+
+	word := strings.TrimSpace(c.Request.PostFormValue("word"))
 
 	// Validate the guess
-	if err := c.ShouldBind(&guess); err != nil {
-		log.Println("Invalid request received: ", err)
-		reply.Error = ErrInvalidRequest
-	} else if len(strings.TrimSpace(guess.Word)) == 0 {
-		reply.Error = ErrEmptyGuess
-	} else if !wordStore.Validate(c, guess.Word) {
-		reply.Error = ErrInvalidWord
-	} else if guess.Start.Unix() == 0 {
-		reply.Error = ErrInvalidStartTime
-	}
-	reply.Guess = strings.TrimSpace(guess.Word)
-	if reply.Error != "" {
-		c.JSON(200, reply)
+	if len(word) == 0 {
+		c.HTML(http.StatusBadRequest, "error.gohtml", ErrEmptyGuess)
+		return
+	} else if !wordStore.Validate(c, word) {
+		c.HTML(http.StatusBadRequest, "error.gohtml", ErrInvalidWord)
 		return
 	}
 
-	if err := guessHandlerReply(c, &guess, &reply); err != nil {
-		reply.Error = err.Error()
-		c.JSON(500, reply)
+	err = guessHandlerReply(c, request, word)
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
-	c.JSON(200, reply)
+	if err := request.Session.Save(); err != nil {
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		return
+	}
+
+	c.HTML(http.StatusOK, "guesser.gohtml", request.Session.Current())
 }
 
-func guessHandlerReply(ctx context.Context, guess *guess, reply *guessReply) error {
+func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 	// Only one guess operation may happen simultaneously
 	// This allows us to get the Word then modify it with new data without overriding anyone
 	// else's contributions
@@ -83,30 +73,41 @@ func guessHandlerReply(ctx context.Context, guess *guess, reply *guessReply) err
 	defer guessMutex.Unlock()
 
 	// Generate the word for the day
-	tm := convertUTCToUser(guess.Start, guess.TZ)
-	word, err := wordStore.GetForDay(ctx, tm, guess.Mode)
+	tm := data.Session.DateUser(data.TZ)
+	word, err := wordStore.GetForDay(ctx, tm, data.Session.Mode)
 	if err != nil {
 		return err
 	}
 
-	if reply.Error == "" {
-		switch strings.Compare(reply.Guess, word.Value) {
-		case -1:
-			reply.After = true
-		case 1:
-			reply.Before = true
-		case 0:
-			reply.Correct = true
+	current := data.Session.Current()
+	switch strings.Compare(guess, word.Value) {
+	case -1:
+		for _, w := range current.Before {
+			if w == guess {
+				return fmt.Errorf("you have already guessed this word")
+			}
 		}
-	}
+		current.Before = append(current.Before, guess)
+		sort.Strings(current.Before)
+	case 1:
+		for _, w := range current.After {
+			if w == guess {
+				return fmt.Errorf("you have already guessed this word")
+			}
+		}
+		current.After = append(current.After, guess)
+		sort.Strings(current.After)
+	case 0:
+		current.Answer = guess
+		now := time.Now()
+		current.End = &now
 
-	if reply.Correct {
+		// Record the successful guess
 		word.Guesses = append(word.Guesses, model.Guess{
-			// Increment by one, as the guess we're receiving right now has not been counted yet
-			Count: guess.Guesses + 1,
+			Count: len(current.Before) + len(current.After) + 1,
 		})
 
-		wordStore.SetWord(ctx, datastore.WordKey(guess.Mode, tm), word)
+		wordStore.SetWord(ctx, datastore.WordKey(data.Session.Mode, tm), word)
 	}
 
 	return nil

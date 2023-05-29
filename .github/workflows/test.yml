@@ -28,35 +28,9 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: guess-my-word-api
+          name: guess-my-word-app
           if-no-files-found: error
           path: guess-my-word
-
-  nodejs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: '.tool-versions'
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-
-      - name: Install
-        working-directory: web/
-        run: npm ci
-
-      - name: Build
-        working-directory: web/
-        run: npm run build
-
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: guess-my-word-web
-          if-no-files-found: error
-          path: web/dist
 
   go-lint:
     runs-on: ubuntu-latest
@@ -68,30 +42,26 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Get dependencies
-        run: go mod download
-
       - name: Vet
         run: go vet ./...
 
-      - uses: dominikh/staticcheck-action@v1
-        with:
-          version: "2022.1.1"
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
 
   playwright:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [ "go", "nodejs" ]
+    needs: [ "go" ]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download API
+      - name: Download App
         uses: actions/download-artifact@v3
         with:
-          name: guess-my-word-api
+          name: guess-my-word-app
           path: guess-my-word
 
-      - name: Run API
+      - name: Run App
         run: |
           chmod +x guess-my-word/guess-my-word
           ./guess-my-word/guess-my-word --help

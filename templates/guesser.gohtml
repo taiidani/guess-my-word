@@ -1,0 +1,80 @@
+<div id="guesser" class="row">
+    <div class="col-md-12">
+      <div class="list-group guess-list before">
+        <ul class="list-group before">
+          {{ range .Before }}
+          <li class="list-group-item guess">
+            {{/* <span class="found">{{ .Found }}</span>
+            <span>{{ .Remaining }}</span> */}}
+            <span>{{ . }}</span>
+          </li>
+          {{ else }}
+          <li class="list-group-item guess no-guesses">
+            <span>No guesses before the word</span>
+          </li>
+          {{ end }}
+        </ul>
+      </div>
+
+      <div class="guess-form">
+        <section>
+          {{ if not .Answer }}
+          <form method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
+              <img
+              id="between-logo"
+              src="/assets/between.svg"
+              alt="Page Break by Arthur Shlain from the Noun Project"
+              />
+
+              {{ $commonGuess := .CommonGuessPrefix }}
+              <label>
+              <input
+                  id="guess-input"
+                  name="word"
+                  placeholder="{{ if $commonGuess }}Starting with '{{ $commonGuess }}'{{ else }}Enter a word here{{ end }}"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="off"
+                  v-model="word"
+              />
+              </label>
+
+              <button class="btn btn-primary" type="submit">Guess</button>
+              <img class="htmx-indicator" src="/assets/loading.svg" />
+          </form>
+
+          {{ if and (gt .GuessCount 5) }}
+          <form method="GET" action="/hint" hx-get="/hint">
+              <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
+          </form>
+          {{ end }}
+
+          {{ else }}
+          <p>
+              🎉 You guessed "{{ .Answer }}" correctly with
+              {{ .GuessCount }} tries in
+              {{ printf "%.2f" .GuessDuration.Minutes }} minutes. Come back tomorrow for another!
+          </p>
+
+          {{ end }}
+          </section>
+      </div>
+
+      <div class="guess-list">
+        <ul class="list-group after">
+          {{ range .After }}
+          <li class="list-group-item guess">
+            {{/* <span class="found">{{ .Found }}</span>
+            <span>{{ .Remaining }}</span> */}}
+            <span>{{ . }}</span>
+          </li>
+          {{ else }}
+          <li class="list-group-item guess no-guesses">
+            <span>No guesses after the word</span>
+          </li>
+          {{ end }}
+        </ul>
+      </div>
+    </div>
+</div>

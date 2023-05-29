@@ -1,0 +1,73 @@
+body {
+    background-color: #224;
+    color: #eee;
+}
+
+a {
+    color: #eee;
+    text-decoration: underline;
+}
+
+header {
+    background-color: #5295de;
+    padding: 10px 20px;
+    margin-bottom: 1em;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+header a {
+    text-decoration: none;
+}
+
+header img {
+    display: inline-block;
+    max-height: 2em;
+}
+
+header h1 {
+    display: inline;
+    font-size: 30px;
+}
+
+hr {
+    border-color: #eee;
+}
+
+.htmx-indicator {
+    display: inline;
+    height: 2em;
+}
+
+.guess-list .list-group {
+    font-size: 1em;
+    color: #999;
+}
+
+.guess-list .before li:last-child {
+    font-size: 2em;
+    color: #111;
+}
+
+.guess-list .after li:first-child {
+    font-size: 2em;
+    color: #111;
+}
+
+.guess-list li.no-guesses {
+    font-size: 1em !important;
+    color: #999 !important;
+}
+
+.guess-list span.found {
+    text-decoration: underline;
+    background-color: #eef;
+}
+
+.guess-form section {
+    padding: 1em 0;
+}
+
+.guess-form #between-logo {
+    height: 3em;
+}

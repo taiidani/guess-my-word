@@ -1,25 +1,12 @@
 package actions
 
 import (
+	"guess_my_word/internal/sessions"
 	"log"
-	"strings"
-	"time"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
-
-type hint struct {
-	After  string    `form:"after"`
-	Before string    `form:"before"`
-	Mode   string    `form:"mode"`
-	Start  time.Time `form:"start" time_format:"unix"`
-	TZ     int       `form:"tz"`
-}
-
-type hintReply struct {
-	Word  string `json:"word"`
-	Error string `json:"error,omitempty"`
-}
 
 const (
 	// ErrInvalidRequest is emitted when the request payload is malformed
@@ -31,55 +18,32 @@ const (
 
 // HintHandler is an API handler to provide a hint to a user.
 func HintHandler(c *gin.Context) {
-	hint := hint{}
-	reply := hintReply{}
-
-	// Validate the guess
-	if err := c.ShouldBind(&hint); err != nil {
-		log.Println("Invalid request received: ", err)
-		reply.Error = ErrInvalidRequest
-	} else if len(strings.TrimSpace(hint.Before)) == 0 || len(strings.TrimSpace(hint.After)) == 0 {
-		reply.Error = ErrEmptyBeforeAfter
-	} else if hint.Start.Unix() == 0 {
-		reply.Error = ErrInvalidStartTime
-	}
-	if reply.Error != "" {
-		c.JSON(200, reply)
+	request, err := parseBodyData(c)
+	if err != nil {
+		log.Println("Unable to parse body data: ", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, convertUTCToUser(hint.Start, hint.TZ), hint.Mode)
+	h := request.Session.Current()
+	word, err := wordStore.GetForDay(c, h.DateUser(request.TZ), request.Session.Mode)
 	if err != nil {
-		reply.Error = err.Error()
-		c.JSON(500, reply)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err.Error())
 		return
 	}
 
-	reply.Word = getWordHint(hint, word.Value)
-
-	c.JSON(200, reply)
+	hintWord := getWordHint(h, word.Value)
+	c.HTML(http.StatusOK, "raw.gohtml", "The word starts with: "+hintWord)
 }
 
-func getWordHint(h hint, word string) string {
-	minWord := minof(len(h.After), len(h.Before))
-	for i := 0; i < minWord; i++ {
-		if h.After[i] != h.Before[i] {
-			return word[0 : i+1]
-		}
+func getWordHint(h *sessions.SessionMode, word string) string {
+	letters := h.CommonGuessPrefix()
+
+	// Don't return the whole word if there's only one letter left!
+	if len(letters) >= len(word)-1 {
+		return word[0 : len(word)-1]
 	}
 
-	return word[0 : minWord+1]
-}
-
-func minof(vars ...int) int {
-	min := vars[0]
-
-	for _, i := range vars {
-		if min > i {
-			min = i
-		}
-	}
-
-	return min
+	return word[0 : len(letters)+1]
 }

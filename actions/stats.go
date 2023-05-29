@@ -1,87 +1,105 @@
 package actions
 
 import (
-	"context"
+	_ "embed"
 	"guess_my_word/internal/model"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-type stats struct {
-	Date     time.Time `form:"date" time_format:"unix"` // The unix date, no timestamp
-	dateUser time.Time // The date under the user's timezone
-	TZ       int       `form:"tz"`
-	Mode     string    `form:"mode"`
-}
-
-type statsReply struct {
-	Today model.Word `json:"today"`
-	Word  model.Word `json:"word"`
-	Error string     `json:"error,omitempty"`
-}
-
 // ErrRevealToday is emitted when the reveal request is for a current or future word
 const ErrRevealToday = "It's too early to reveal this word. Please try again later!"
 
-// StatsHandler is an internal API handler for pre-populating data to test with.
-func StatsHandler(c *gin.Context) {
-	request := stats{}
-	reply := statsReply{}
-
-	// Validate the form
-	if err := c.ShouldBind(&request); err != nil {
-		log.Println("Invalid request received: ", err)
-		reply.Error = ErrInvalidRequest
-	}
-
-	if request.Date.Unix() == 0 {
-		reply.Error = ErrInvalidStartTime
-	} else {
-		log.Println("TZ:", request.TZ)
-		request.dateUser = convertUTCToUser(request.Date, request.TZ)
-		log.Printf("Requested date is: %s", request.dateUser)
-
-		y, m, d := time.Now().Date()
-		cmp := time.Date(y, m, d, 0, 0, 0, 0, request.dateUser.Location())
-
-		if request.dateUser.After(cmp) {
-			log.Printf("Compared date was: %s", request.dateUser)
-			reply.Error = ErrRevealToday
-		}
-	}
-
-	if reply.Error != "" {
-		c.JSON(400, reply)
+// YesterdayHandler is an HTML handler for pre-populating data to test with.
+func YesterdayHandler(c *gin.Context) {
+	request, err := parseBodyData(c)
+	if err != nil {
+		log.Println("Unable to parse body data: ", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
-	reply = refreshStats(c, request)
-	c.JSON(200, reply)
-}
+	// Subtract one day for yesterday
+	dateUser := request.Session.DateUser(request.TZ).Add(time.Hour * -24)
 
-func refreshStats(ctx context.Context, request stats) statsReply {
-	reply := statsReply{}
+	// Is it too early to reveal the word?
+	y, m, d := time.Now().Date()
+	cmp := time.Date(y, m, d, 0, 0, 0, 0, dateUser.Location())
+
+	if dateUser.After(cmp) {
+		log.Printf("Too early to reveal word. Compared date was: %s", dateUser)
+		c.HTML(http.StatusBadRequest, "error.gohtml", ErrRevealToday)
+		return
+	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(ctx, request.dateUser, request.Mode)
+	word, err := wordStore.GetForDay(c, dateUser, request.Session.Mode)
 	if err != nil {
-		reply.Error = err.Error()
-		return reply
+		log.Println("Unable to get day: ", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		return
 	}
 
-	reply.Word = word
+	data := analyzeDay(word)
+	c.HTML(http.StatusOK, "stats.gohtml", data)
+}
 
-	// Now for today's stats. Similar, but without the word information!
-	todayTm := request.dateUser.AddDate(0, 0, 1)
-	word, err = wordStore.GetForDay(ctx, todayTm, request.Mode)
+// TodayHandler is an HTML handler for pre-populating data to test with.
+func TodayHandler(c *gin.Context) {
+	request, err := parseBodyData(c)
 	if err != nil {
-		reply.Error = err.Error()
-		return reply
+		log.Println("Unable to parse body data: ", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		return
 	}
 
-	reply.Today = word
-	reply.Today.Value = ""
-	return reply
+	// Generate the word for the day
+	word, err := wordStore.GetForDay(c, request.Session.DateUser(request.TZ), request.Session.Mode)
+	if err != nil {
+		log.Println("Unable to get day: ", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		return
+	}
+
+	data := analyzeDay(word)
+
+	// Wipe the word from the data, as it's today
+	data.Word = ""
+
+	c.HTML(http.StatusOK, "stats.gohtml", data)
+}
+
+type replyData struct {
+	Word        string
+	Completions int
+	BestRun     int
+	AvgRun      int
+}
+
+func analyzeDay(word model.Word) replyData {
+	// If no one guessed that day
+	if len(word.Guesses) == 0 {
+		return replyData{Word: word.Value}
+	}
+
+	ret := replyData{
+		Word:        word.Value,
+		Completions: len(word.Guesses),
+		BestRun:     999,
+	}
+
+	var guessCount = 0
+	for _, item := range word.Guesses {
+		guessCount += item.Count
+
+		if item.Count < ret.BestRun {
+			ret.BestRun = item.Count
+		}
+	}
+
+	ret.AvgRun = guessCount / len(word.Guesses)
+	return ret
 }

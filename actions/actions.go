@@ -2,11 +2,9 @@ package actions
 
 import (
 	"context"
-	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
-	"guess_my_word/internal/words"
+	"guess_my_word/internal/sessions"
 	"log"
-	"os"
 	"strconv"
 	"time"
 
@@ -33,57 +31,47 @@ var (
 	wordStore wordClient
 )
 
-func init() {
-	var client datastore.Client
-	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
-		client = datastore.NewRedis(addr)
-	} else if host, ok := os.LookupEnv("REDIS_HOST"); ok {
-		db := 0
-		if dbParsed, err := strconv.ParseInt(os.Getenv("REDIS_DB"), 10, 64); err == nil {
-			db = int(dbParsed)
-		}
-
-		client = datastore.NewRedisSecure(
-			host,
-			os.Getenv("REDIS_PORT"),
-			os.Getenv("REDIS_USER"),
-			os.Getenv("REDIS_PASSWORD"),
-			db,
-		)
-	} else {
-		log.Println("WARNING: No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
-		client = datastore.NewMemory()
-	}
-
-	listStore = words.NewListStore(client)
-	wordStore = words.NewWordStore(client)
-	if err := words.PopulateDefaultLists(context.Background(), client); err != nil {
-		log.Fatal(err)
-	}
+func SetupStores(l listClient, w wordClient) {
+	listStore = l
+	wordStore = w
 }
 
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r *gin.Engine) (err error) {
 	r.Use(middlewareStandardHeaders())
+	r.GET("/", IndexHandler)
 	r.GET("/ping", PingHandler)
+	r.GET("/stats/yesterday", YesterdayHandler)
+	r.GET("/stats/today", TodayHandler)
+	r.POST("/mode", ModeSetHandler)
+	r.POST("/guess", GuessHandler)
+	r.GET("/hint", HintHandler)
 
 	g := r.Group("/api")
-	g.GET("/guess", GuessHandler)
-	g.GET("/hint", HintHandler)
 	g.GET("/lists", ListsHandler)
 	g.GET("/list", ListHandler)
 	g.POST("/list", ListHandler)
 	g.PUT("/list", ListHandler)
 	g.DELETE("/list", ListHandler)
-	g.GET("/seed", SeedHandler)
-	g.GET("/stats", StatsHandler)
+
 	return nil
 }
 
-// convertUTCToLocal will take a given time in UTC and convert it to a given user's timezone
-// TZ for PDT (-7:00) is a positive 420, so SUBTRACT that from the unix timestamp
-func convertUTCToUser(t time.Time, tz int) time.Time {
-	ret := t.In(time.FixedZone("User", tz*-1))
-	ret = ret.Add(time.Minute * -1 * time.Duration(tz))
-	return ret
+type bodyData struct {
+	TZ      int               // The timezone offset for the user, in milliseconds
+	Session *sessions.Session // The session for the user
+}
+
+func parseBodyData(c *gin.Context) (bodyData, error) {
+	ret := bodyData{}
+	ret.Session = sessions.New(c)
+
+	tz, err := strconv.ParseInt(c.Request.URL.Query().Get("tz"), 10, 64)
+	if err != nil {
+		log.Println("ERROR: Could not parse timezone: ", err)
+		tz = 0
+	}
+	ret.TZ = int(tz)
+
+	return ret, nil
 }

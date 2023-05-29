@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,7 +14,7 @@ func Test_HintHandler(t *testing.T) {
 	tests := []struct {
 		name    string
 		request url.Values
-		want    hintReply
+		want    string
 		wantErr bool
 	}{
 		{
@@ -26,10 +25,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"}, // generates "teth"
 				"mode":   {"hard"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "t",
 				Error: "",
-			},
+			}`,
 		},
 		{
 			name: "1 character",
@@ -39,10 +38,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"}, // generates "teth"
 				"mode":   {"hard"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "t",
 				Error: "",
-			},
+			}`,
 		},
 		{
 			name: "2 characters",
@@ -52,10 +51,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"}, // generates "teth"
 				"mode":   {"hard"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "te",
 				Error: "",
-			},
+			}`,
 		},
 		{
 			name: "Almost there",
@@ -65,10 +64,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"}, // generates "belong"
 				"mode":   {"default"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "belon",
 				Error: "",
-			},
+			}`,
 		},
 		{
 			name: "Empty before",
@@ -78,10 +77,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"},
 				"mode":   {"default"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "",
 				Error: ErrEmptyBeforeAfter,
-			},
+			}`,
 		},
 		{
 			name: "Empty after",
@@ -91,10 +90,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"},
 				"mode":   {"default"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "",
 				Error: ErrEmptyBeforeAfter,
-			},
+			}`,
 		},
 		{
 			name: "Empty both",
@@ -104,10 +103,10 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"1587930259"},
 				"mode":   {"default"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "",
 				Error: ErrEmptyBeforeAfter,
-			},
+			}`,
 		},
 		{
 			name: "Invalid time",
@@ -117,30 +116,29 @@ func Test_HintHandler(t *testing.T) {
 				"start":  {"0"}, // OMG WUT
 				"mode":   {"default"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "",
 				Error: ErrInvalidStartTime,
-			},
+			}`,
 		},
 		{
 			name: "Invalid request",
 			request: url.Values{
 				"start": {"bar"},
 			},
-			want: hintReply{
+			want: `hintReply{
 				Word:  "",
 				Error: ErrInvalidRequest,
-			},
+			}`,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequest("GET", "/api/hint?"+tt.request.Encode(), nil)
+			req, _ := http.NewRequest("GET", "/hint?"+tt.request.Encode(), nil)
 			router.ServeHTTP(w, req)
 
-			got := hintReply{}
-			json.Unmarshal(w.Body.Bytes(), &got)
+			got := w.Body.String()
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("guess() = %#v, want %#v", got, tt.want)

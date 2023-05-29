@@ -1,7 +1,6 @@
 package actions
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,7 +14,7 @@ func Test_GuessHandler(t *testing.T) {
 	tests := []struct {
 		name    string
 		request url.Values
-		want    guessReply
+		want    string
 		wantErr bool
 	}{
 		{
@@ -25,13 +24,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587930259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `
 				Guess:   "power",
 				Correct: false,
 				After:   false,
 				Before:  true,
 				Error:   "",
-			},
+			`,
 		},
 		{
 			name: "Before",
@@ -40,13 +39,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587930259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "apple",
 				Correct: false,
 				After:   true,
 				Before:  false,
 				Error:   "",
-			},
+			`,
 		},
 		{
 			name: "Correct",
@@ -55,13 +54,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587930259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "belong",
 				Correct: true,
 				After:   false,
 				Before:  false,
 				Error:   "",
-			},
+			}`,
 		},
 		{
 			name: "Invalid word",
@@ -70,13 +69,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587930259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "asdf",
 				Correct: false,
 				After:   false,
 				Before:  false,
 				Error:   ErrInvalidWord,
-			},
+			}`,
 		},
 		{
 			name: "Empty word",
@@ -85,13 +84,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587930259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "",
 				Correct: false,
 				After:   false,
 				Before:  false,
 				Error:   ErrEmptyGuess,
-			},
+			}`,
 		},
 		{
 			name: "Invalid Time",
@@ -100,13 +99,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"0"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "power",
 				Correct: false,
 				After:   false,
 				Before:  false,
 				Error:   ErrInvalidStartTime,
-			},
+			}`,
 		},
 		{
 			name: "Correct Tomorrow",
@@ -115,13 +114,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1588030259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "roll",
 				Correct: true,
 				After:   false,
 				Before:  false,
 				Error:   "",
-			},
+			}`,
 		},
 		{
 			name: "Correct Yesterday",
@@ -130,13 +129,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587830259"},
 				"mode":  {"default"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "laundry",
 				Correct: true,
 				After:   false,
 				Before:  false,
 				Error:   "",
-			},
+			}`,
 		},
 		{
 			name: "Correct Hard",
@@ -145,13 +144,13 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587930259"},
 				"mode":  {"hard"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "teth",
 				Correct: true,
 				After:   false,
 				Before:  false,
 				Error:   "",
-			},
+			}`,
 		},
 		{
 			name: "Correct Hard Yesterday",
@@ -160,22 +159,22 @@ func Test_GuessHandler(t *testing.T) {
 				"start": {"1587830259"},
 				"mode":  {"hard"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Guess:   "tayra",
 				Correct: true,
 				After:   false,
 				Before:  false,
 				Error:   "",
-			},
+			}`,
 		},
 		{
 			name: "Invalid request",
 			request: url.Values{
 				"start": {"bar"},
 			},
-			want: guessReply{
+			want: `guessReply{
 				Error: ErrInvalidRequest,
-			},
+			}`,
 		},
 	}
 	for _, tt := range tests {
@@ -184,8 +183,7 @@ func Test_GuessHandler(t *testing.T) {
 			req, _ := http.NewRequest("GET", "/api/guess?"+tt.request.Encode(), nil)
 			router.ServeHTTP(w, req)
 
-			got := guessReply{}
-			json.Unmarshal(w.Body.Bytes(), &got)
+			got := w.Body.String()
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("guess() = %#v, want %#v", got, tt.want)
