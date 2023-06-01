@@ -24,7 +24,7 @@
             <div>
               <select id="mode" class="form-select">
                 {{ $mode := .Mode}}
-                {{ range .List }}
+                {{ range .Lists }}
                 <option {{ if eq . $mode }}selected="selected"{{end}}>{{ . }}</option>
                 {{ end }}
               </select>

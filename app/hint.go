@@ -1,4 +1,4 @@
-package actions
+package app
 
 import (
 	"guess_my_word/internal/sessions"

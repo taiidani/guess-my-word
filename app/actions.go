@@ -1,10 +1,14 @@
-package actions
+package app
 
 import (
 	"context"
+	"embed"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
+	"html/template"
+	"io/fs"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -36,8 +40,36 @@ func SetupStores(l listClient, w wordClient) {
 	wordStore = w
 }
 
+//go:embed templates
+var templates embed.FS
+
+// SetupTemplates will load the HTML templates into gin.
+func SetupTemplates(r *gin.Engine) error {
+	t, err := template.ParseFS(templates, "templates/**")
+	if err != nil {
+		return err
+	}
+	r.SetHTMLTemplate(t)
+
+	return nil
+}
+
+//go:embed assets
+var assets embed.FS
+
+// SetupAssets will load the static assets into gin.
+func SetupAssets(r *gin.Engine) error {
+	sub, err := fs.Sub(assets, "assets")
+	if err != nil {
+		return err
+	}
+	r.StaticFS("/assets", http.FS(sub))
+
+	return nil
+}
+
 // AddHandlers will add the application handlers to the HTTP server
-func AddHandlers(r *gin.Engine) (err error) {
+func AddHandlers(r *gin.Engine) error {
 	r.Use(middlewareStandardHeaders())
 	r.GET("/", IndexHandler)
 	r.GET("/ping", PingHandler)
@@ -62,9 +94,12 @@ type bodyData struct {
 	Session *sessions.Session // The session for the user
 }
 
+var fnPopulateTestSessionData func(s *sessions.Session) = func(s *sessions.Session) {}
+
 func parseBodyData(c *gin.Context) (bodyData, error) {
 	ret := bodyData{}
 	ret.Session = sessions.New(c)
+	fnPopulateTestSessionData(ret.Session)
 
 	tz, err := strconv.ParseInt(c.Request.URL.Query().Get("tz"), 10, 64)
 	if err != nil {

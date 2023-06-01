@@ -1,4 +1,4 @@
-package actions
+package app
 
 import (
 	"context"
@@ -65,6 +65,11 @@ func GuessHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "guesser.gohtml", request.Session.Current())
 }
 
+var fnSetEndTime func() *time.Time = func() *time.Time {
+	now := time.Now()
+	return &now
+}
+
 func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 	// Only one guess operation may happen simultaneously
 	// This allows us to get the Word then modify it with new data without overriding anyone
@@ -99,8 +104,7 @@ func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 		sort.Strings(current.After)
 	case 0:
 		current.Answer = guess
-		now := time.Now()
-		current.End = &now
+		current.End = fnSetEndTime()
 
 		// Record the successful guess
 		word.Guesses = append(word.Guesses, model.Guess{

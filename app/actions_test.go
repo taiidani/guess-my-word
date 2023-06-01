@@ -1,4 +1,4 @@
-package actions
+package app
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/words"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,6 +42,13 @@ func (m *mockWordStore) SetWord(ctx context.Context, key string, word model.Word
 func setupRouter() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.Default()
+
+	if err := SetupTemplates(r); err != nil {
+		panic(err)
+	}
+
+	sessionClient := memstore.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("guessmyword", sessionClient))
 
 	AddHandlers(r)
 	return r

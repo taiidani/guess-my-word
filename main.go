@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
-	"embed"
 	"flag"
 	"fmt"
-	"guess_my_word/actions"
+	"guess_my_word/app"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/words"
-	"html/template"
-	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -24,12 +21,6 @@ import (
 )
 
 const defaultAddress = ":3000"
-
-//go:embed templates
-var templates embed.FS
-
-//go:embed assets
-var assets embed.FS
 
 func main() {
 	help := flag.Bool("help", false, "displays help text and exits")
@@ -50,23 +41,19 @@ func main() {
 	}
 
 	// Load the HTML templates into gin
-	t, err := template.ParseFS(templates, "templates/**")
-	if err != nil {
+	if err := app.SetupTemplates(r); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to load embedded templates: %s\n", err)
 		os.Exit(1)
 	}
-	r.SetHTMLTemplate(t)
 
 	// And the static assets
-	sub, err := fs.Sub(assets, "assets")
-	if err != nil {
+	if err := app.SetupAssets(r); err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to load embedded assets: %s\n", err)
 		os.Exit(1)
 	}
-	r.StaticFS("/assets", http.FS(sub))
 
 	// Add all HTTP handlers
-	if err := actions.AddHandlers(r); err != nil {
+	if err := app.AddHandlers(r); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -128,7 +115,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 	}
 
 	// Set up data storage
-	actions.SetupStores(
+	app.SetupStores(
 		words.NewListStore(dataClient),
 		words.NewWordStore(dataClient),
 	)

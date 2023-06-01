@@ -1,4 +1,4 @@
-package actions
+package app
 
 import (
 	_ "embed"
