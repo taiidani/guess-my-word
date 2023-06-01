@@ -63,7 +63,7 @@ func main() {
 
 	done := make(chan interface{})
 	go gracefulShutdown(ctx, &srv, done)
-	srv.ListenAndServe()
+	_ = srv.ListenAndServe()
 	<-done
 }
 

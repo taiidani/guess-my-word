@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
+	"log"
 	"net/http"
 	"strings"
 
@@ -19,7 +20,11 @@ func IndexHandler(c *gin.Context) {
 	}{}
 
 	s := sessions.New(c)
-	defer s.Save()
+	defer func() {
+		if err := s.Save(); err != nil {
+			log.Printf("WARN: Unable to save session: %s", err)
+		}
+	}()
 
 	// Load the lists
 	var err error

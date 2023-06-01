@@ -111,7 +111,7 @@ func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 			Count: len(current.Before) + len(current.After) + 1,
 		})
 
-		wordStore.SetWord(ctx, datastore.WordKey(data.Session.Mode, tm), word)
+		return wordStore.SetWord(ctx, datastore.WordKey(data.Session.Mode, tm), word)
 	}
 
 	return nil

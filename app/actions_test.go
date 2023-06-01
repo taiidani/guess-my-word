@@ -1,11 +1,7 @@
 package app
 
 import (
-	"context"
-	"time"
-
 	"guess_my_word/internal/datastore"
-	"guess_my_word/internal/model"
 	"guess_my_word/internal/words"
 
 	"github.com/gin-contrib/sessions"
@@ -13,30 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type mockWordStore struct {
-	mockValidate  func(context.Context, string) bool
-	mockGetForDay func(context.Context, time.Time, string) (model.Word, error)
-	mockGetWord   func(ctx context.Context, key string) (model.Word, error)
-	mockSetWord   func(ctx context.Context, key string, word model.Word) error
-}
-
 func init() {
 	client := datastore.NewMemory()
 	listStore = words.NewListStore(client)
 	wordStore = words.NewWordStore(client)
-}
-
-func (m *mockWordStore) Validate(ctx context.Context, word string) bool {
-	return m.mockValidate(ctx, word)
-}
-func (m *mockWordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
-	return m.mockGetForDay(ctx, tm, mode)
-}
-func (m *mockWordStore) GetWord(ctx context.Context, key string) (model.Word, error) {
-	return m.mockGetWord(ctx, key)
-}
-func (m *mockWordStore) SetWord(ctx context.Context, key string, word model.Word) error {
-	return m.mockSetWord(ctx, key, word)
 }
 
 func setupRouter() *gin.Engine {
@@ -50,6 +26,6 @@ func setupRouter() *gin.Engine {
 	sessionClient := memstore.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("guessmyword", sessionClient))
 
-	AddHandlers(r)
+	_ = AddHandlers(r)
 	return r
 }
