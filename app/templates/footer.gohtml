@@ -1,0 +1,48 @@
+  <footer class="container text-center text-md-start px-4">
+    <div class="row gx-5">
+      <div class="col">
+        <div class="p-3">
+          <h5>
+            <i class="bi bi-clock-history"></i> Yesterday's Stats
+          </h5>
+          <div id="stats-yesterday" role="stats-yesterday" hx-get="http://localhost:3000/stats/yesterday" hx-trigger="load, every 1m, from:#mode"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="p-3">
+          <h5>
+            <i class="bi bi-bar-chart-fill"></i> Today's Stats
+          </h5>
+          <div id="stats-today" role="stats-today" hx-get="http://localhost:3000/stats/today" hx-trigger="load, every 1m, from:#mode"></div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="p-3">
+          <h5>
+            <i class="bi bi-speedometer"></i> List
+          </h5>
+            <div>
+              <select id="mode" class="form-select">
+                {{ $mode := .Mode}}
+                {{ range .Lists }}
+                <option {{ if eq . $mode }}selected="selected"{{end}}>{{ . }}</option>
+                {{ end }}
+              </select>
+            </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="p-3">
+          <h5>
+            <i class="bi bi-github"></i> Source
+          </h5>
+          <p>
+            <a href="https://github.com/taiidani/guess-my-word/releases">Changelog</a>
+          </p>
+          <p>
+            <a href="https://github.com/taiidani/guess-my-word">View on GitHub</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>

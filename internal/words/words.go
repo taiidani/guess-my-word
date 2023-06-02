@@ -58,9 +58,9 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 		listStore := NewListStore(w.client)
 		l, err := listStore.GetList(ctx, mode)
 		if err != nil {
-			return word, err
+			return word, fmt.Errorf("could not get list for %q mode: %w", mode, err)
 		} else if len(l.Words) == 0 {
-			return word, fmt.Errorf("chosen list has no words")
+			return word, fmt.Errorf("chosen list %q has no words", mode)
 		}
 
 		word.Value, err = w.generateWord(tm, l.Words)

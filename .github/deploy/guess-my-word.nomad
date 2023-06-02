@@ -10,50 +10,13 @@ job "guess-my-word" {
   }
 
   group "app" {
-    task "web" {
-      driver = "docker"
-
-      config {
-        image = "${image_name}"
-        ports = ["web"]
-      }
-
-      service {
-        name     = "guess-my-word-web"
-        provider = "nomad"
-        port     = "web"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.guess.rule=Host(`guessmyword.xyz`)",
-          "traefik.http.routers.guess.middlewares=guess@nomad",
-          "traefik.http.routers.guesssecure.rule=Host(`guessmyword.xyz`)",
-          "traefik.http.routers.guesssecure.tls=true",
-          "traefik.http.routers.guesssecure.tls.certresolver=le",
-          "traefik.http.routers.guesssecure.middlewares=guess@nomad",
-          "traefik.http.middlewares.guess.redirectscheme.permanent=true",
-          "traefik.http.middlewares.guess.redirectscheme.scheme=https",
-        ]
-
-        // check_restart {
-        //   limit           = 3
-        //   grace           = "15s"
-        //   ignore_warnings = false
-        // }
-      }
-
-      resources {
-        cpu    = 25
-        memory = 32
-      }
-    }
-
-    task "api" {
+    task "app" {
       driver = "docker"
 
       config {
         image = "${image_name}"
         args  = ["/app"]
-        ports = ["api"]
+        ports = ["web"]
       }
 
       env {
@@ -75,15 +38,19 @@ job "guess-my-word" {
       }
 
       service {
-        name     = "guess-my-word-api"
+        name     = "guess-my-word"
         provider = "nomad"
-        port     = "api"
+        port     = "web"
         tags = [
           "traefik.enable=true",
-          "traefik.http.routers.guesssecureapi.rule=Host(`guessmyword.xyz`) && PathPrefix(`/api`)",
-          "traefik.http.routers.guesssecureapi.tls=true",
-          "traefik.http.routers.guesssecureapi.tls.certresolver=le",
-          "traefik.http.routers.guesssecureapi.middlewares=guess@nomad",
+          "traefik.http.routers.guess.rule=Host(`guessmyword.xyz`)",
+          "traefik.http.routers.guess.middlewares=guess@nomad",
+          "traefik.http.routers.guesssecure.rule=Host(`guessmyword.xyz`)",
+          "traefik.http.routers.guesssecure.tls=true",
+          "traefik.http.routers.guesssecure.tls.certresolver=le",
+          "traefik.http.routers.guesssecure.middlewares=guess@nomad",
+          "traefik.http.middlewares.guess.redirectscheme.permanent=true",
+          "traefik.http.middlewares.guess.redirectscheme.scheme=https",
         ]
 
         // check_restart {
@@ -145,8 +112,7 @@ job "guess-my-word" {
 
     network {
       mode = "bridge"
-      port "web" { to = 80 }
-      port "api" { to = 3000 }
+      port "web" { to = 3000 }
       port "redirect" { to = 81 }
     }
 

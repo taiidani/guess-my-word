@@ -46,7 +46,6 @@ jobs:
           push: ${{ github.ref_name == 'main' }}
           provenance: true
           sbom: true
-          target: dist
           tags: "ghcr.io/taiidani/guess-my-word:${{ github.sha }}"
 
       - name: outputs
