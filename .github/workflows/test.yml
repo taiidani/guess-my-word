@@ -48,6 +48,8 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
+          # Unpin after https://github.com/golangci/golangci-lint/issues/3862 is addressed
+          version: "v1.52.2"
           skip-pkg-cache: true
 
   playwright:
