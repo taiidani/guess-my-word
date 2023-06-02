@@ -56,6 +56,10 @@ func New(c *gin.Context) *Session {
 	return &session
 }
 
+func Configure(r *gin.Engine, client sessions.Store) {
+	r.Use(sessions.Sessions("guessmyword", client))
+}
+
 func (s *Session) Clear() error {
 	s.session.Clear()
 	return s.session.Save()

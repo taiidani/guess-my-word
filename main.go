@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"guess_my_word/app"
 	"guess_my_word/internal/datastore"
+	"guess_my_word/internal/sessions"
 	"guess_my_word/internal/words"
 	"log"
 	"net/http"
@@ -14,9 +15,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
-	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 )
 
@@ -73,7 +72,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 	var err error
 
 	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
-		sessionClient, err = redis.NewStore(10, "tcp", addr, "", []byte("secret"))
+		sessionClient, err = sessions.NewRedis(addr, []byte("secret"))
 		if err != nil {
 			return fmt.Errorf("redis setup failure: %w", err)
 		}
@@ -90,13 +89,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 		user := os.Getenv("REDIS_USER")
 		pass := os.Getenv("REDIS_PASSWORD")
 
-		sessionClient, err = redis.NewStore(
-			10,
-			"tcp",
-			fmt.Sprintf("%s:%s", host, port),
-			pass,
-			[]byte("secret"),
-		)
+		sessionClient, err = sessions.NewRedisSecure(host, port, user, pass, db, []byte("secret"))
 		if err != nil {
 			return fmt.Errorf("redis setup failure: %w", err)
 		}
@@ -121,7 +114,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 	)
 
 	// Set up session management
-	r.Use(sessions.Sessions("guessmyword", sessionClient))
+	sessions.Configure(r, sessionClient)
 
 	return words.PopulateDefaultLists(ctx, dataClient)
 }

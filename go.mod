@@ -12,10 +12,14 @@ require (
 	golang.org/x/crypto v0.5.0 // indirect
 )
 
-require github.com/gin-contrib/sessions v0.0.5
+require (
+	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff
+	github.com/gin-contrib/sessions v0.0.5
+	github.com/gorilla/securecookie v1.1.1
+	github.com/gorilla/sessions v1.2.1
+)
 
 require (
-	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
@@ -27,8 +31,6 @@ require (
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/gorilla/context v1.1.1 // indirect
-	github.com/gorilla/securecookie v1.1.1 // indirect
-	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
