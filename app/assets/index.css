@@ -39,31 +39,6 @@ hr {
     height: 2em;
 }
 
-.list-group {
-    font-size: 1em;
-    color: #999;
-}
-
-.before li:last-child {
-    font-size: 2em;
-    color: #111;
-}
-
-.after li:first-child {
-    font-size: 2em;
-    color: #111;
-}
-
-li.no-guesses {
-    font-size: 1em !important;
-    color: #999 !important;
-}
-
-/* span.found {
-    text-decoration: underline;
-    background-color: #eef;
-} */
-
 .guess-form section {
     padding: 1em 0;
 }

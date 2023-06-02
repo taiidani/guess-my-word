@@ -33,7 +33,7 @@ Start the application in development mode with:
 go run main.go
 ```
 
-Then view the website at http://localhost:8080.
+Then view the website at http://localhost:3000.
 
 Dev away!
 

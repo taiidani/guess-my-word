@@ -78,6 +78,7 @@ func AddHandlers(r *gin.Engine) error {
 	r.POST("/mode", ModeSetHandler)
 	r.POST("/guess", GuessHandler)
 	r.GET("/hint", HintHandler)
+	r.POST("/reset", ResetHandler)
 
 	g := r.Group("/api")
 	g.GET("/lists", ListsHandler)
@@ -104,8 +105,11 @@ func parseBodyData(c *gin.Context) (bodyData, error) {
 
 	tz, err := strconv.ParseInt(c.Request.URL.Query().Get("tz"), 10, 64)
 	if err != nil {
-		log.Println("ERROR: Could not parse timezone: ", err)
-		tz = 0
+		tz, err = strconv.ParseInt(c.Request.PostFormValue("tz"), 10, 64)
+		if err != nil {
+			log.Printf("ERROR: Could not parse timezone: %s", err)
+			tz = 0
+		}
 	}
 	ret.TZ = int(tz)
 

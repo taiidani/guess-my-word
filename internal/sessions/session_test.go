@@ -63,3 +63,35 @@ func TestSessionMode_CommonGuessPrefix(t *testing.T) {
 		})
 	}
 }
+
+func TestSessionMode_Stale(t *testing.T) {
+	type fields struct {
+		Start time.Time
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   bool
+	}{
+		{
+			name:   "not stale",
+			fields: fields{Start: time.Now()},
+			want:   false,
+		},
+		{
+			name:   "stale",
+			fields: fields{Start: time.Now().Add(time.Hour * -24)},
+			want:   true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &SessionMode{
+				Start: tt.fields.Start,
+			}
+			if got := m.Stale(); got != tt.want {
+				t.Errorf("SessionMode.Stale() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

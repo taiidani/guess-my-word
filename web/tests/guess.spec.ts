@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
-const defaultToday = "course"
+const defaultToday = "website"
 const defaultYesterday = "worst"
-const hardToday = "glissader"
+const hardToday = "gemshorn"
 const hardYesterday = "gabbroid"
 
 test.use({
@@ -33,29 +33,29 @@ test('guesses the default word', async ({ page }) => {
   await expect(lGuessAfter).toHaveText('No guesses after the word')
 
   // Second guess
-  await lWordEntry.type('jeans')
+  await lWordEntry.type('yam')
   await lWordEntry.press('Enter')
   await expect(lGuessBefore).toHaveText('apple')
-  await expect(lGuessAfter).toHaveText('jeans')
+  await expect(lGuessAfter).toHaveText('yam')
 
   // Third guess
-  await lWordEntry.type('bottom')
+  await lWordEntry.type('ham')
   await lWordEntry.press('Enter')
-  await expect(lGuessBefore).toHaveText('apple bottom')
-  await expect(lGuessAfter).toHaveText('jeans')
+  await expect(lGuessBefore).toHaveText('apple ham')
+  await expect(lGuessAfter).toHaveText('yam')
 
   // Fourth guess
-  await lWordEntry.type('hey')
+  await lWordEntry.type('zoo')
   await lWordEntry.press('Enter')
-  await expect(lGuessBefore).toHaveText('apple bottom')
-  await expect(lGuessAfter).toHaveText('hey jeans')
+  await expect(lGuessBefore).toHaveText('apple ham')
+  await expect(lGuessAfter).toHaveText('yam zoo')
 
   // Correct guess
   await lWordEntry.type(defaultToday)
   await lWordEntry.press('Enter')
   await expect(page.locator('#app')).toContainText('You guessed "' + defaultToday + '" correctly')
-  await expect(lGuessBefore).toHaveText('apple bottom')
-  await expect(lGuessAfter).toHaveText('hey jeans')
+  await expect(lGuessBefore).toHaveText('apple ham')
+  await expect(lGuessAfter).toHaveText('yam zoo')
 })
 
 test('guesses the hard word', async ({ page }) => {

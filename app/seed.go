@@ -25,7 +25,7 @@ func SeedHandler(c *gin.Context) {
 	// Seed the session with predictable data
 	request.Session.Mode = "default"
 	request.Session.History = map[string]*sessions.SessionMode{
-		// The answer is "course"
+		// The answer is "website"
 		// Yesterday's answer is "worst"
 		"default": {
 			Start:  time.Date(2022, 11, 8, 0, 0, 0, 0, time.UTC),
@@ -33,7 +33,7 @@ func SeedHandler(c *gin.Context) {
 			After:  []string{},
 		},
 
-		// The answer is "glissader"
+		// The answer is "gemshorn"
 		// Yesterday's answer is "gabbroid"
 		"hard": {
 			Start:  time.Date(2022, 11, 8, 0, 0, 0, 0, time.UTC),

@@ -56,6 +56,11 @@ func New(c *gin.Context) *Session {
 	return &session
 }
 
+func (s *Session) Clear() error {
+	s.session.Clear()
+	return s.session.Save()
+}
+
 func (s *Session) Current() *SessionMode {
 	if _, ok := s.History[s.Mode]; !ok {
 		s.History[s.Mode] = &SessionMode{
@@ -84,7 +89,12 @@ func (s *Session) Save() error {
 }
 
 func (m *SessionMode) GuessCount() int {
-	return len(m.Before) + len(m.After)
+	count := len(m.Before) + len(m.After)
+	if m.Answer != "" {
+		count++
+	}
+
+	return count
 }
 
 // CommonGuessPrefix will find the shared letters between the closest Before
@@ -118,6 +128,11 @@ func (m *SessionMode) GuessDuration() time.Duration {
 
 func (m *SessionMode) DateUser(tz int) time.Time {
 	return convertUTCToUser(m.Start, tz)
+}
+
+func (m *SessionMode) Stale() bool {
+	now := time.Now()
+	return m.Start.Month() != now.Month() || m.Start.Day() != now.Day()
 }
 
 // convertUTCToLocal will take a given time in UTC and convert it to a given user's timezone
