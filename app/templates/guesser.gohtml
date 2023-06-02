@@ -1,20 +1,16 @@
 <div id="guesser" class="row">
     <div class="col-md-12">
-      <div class="list-group guess-list before">
-        <ul class="list-group before">
-          {{ range .Before }}
-          <li class="list-group-item guess">
-            {{/* <span class="found">{{ .Found }}</span>
-            <span>{{ .Remaining }}</span> */}}
-            <span>{{ . }}</span>
-          </li>
-          {{ else }}
-          <li class="list-group-item guess no-guesses">
-            <span>No guesses before the word</span>
-          </li>
-          {{ end }}
-        </ul>
-      </div>
+      <ul class="list-group before">
+        {{ range .Before }}
+        <li class="list-group-item guess">
+          <span>{{ . }}</span>
+        </li>
+        {{ else }}
+        <li class="list-group-item guess no-guesses">
+          <span>No guesses before the word</span>
+        </li>
+        {{ end }}
+      </ul>
 
       <div class="guess-form">
         <section>
@@ -61,20 +57,16 @@
           </section>
       </div>
 
-      <div class="guess-list">
-        <ul class="list-group after">
-          {{ range .After }}
-          <li class="list-group-item guess">
-            {{/* <span class="found">{{ .Found }}</span>
-            <span>{{ .Remaining }}</span> */}}
-            <span>{{ . }}</span>
-          </li>
-          {{ else }}
-          <li class="list-group-item guess no-guesses">
-            <span>No guesses after the word</span>
-          </li>
-          {{ end }}
-        </ul>
-      </div>
+      <ul class="list-group after">
+        {{ range .After }}
+        <li class="list-group-item guess">
+          <span>{{ . }}</span>
+        </li>
+        {{ else }}
+        <li class="list-group-item guess no-guesses">
+          <span>No guesses after the word</span>
+        </li>
+        {{ end }}
+      </ul>
     </div>
 </div>

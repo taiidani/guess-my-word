@@ -85,6 +85,7 @@ func AddHandlers(r *gin.Engine) error {
 	g.POST("/list", ListHandler)
 	g.PUT("/list", ListHandler)
 	g.DELETE("/list", ListHandler)
+	g.GET("/seed", SeedHandler)
 
 	return nil
 }

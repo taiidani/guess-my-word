@@ -39,30 +39,30 @@ hr {
     height: 2em;
 }
 
-.guess-list .list-group {
+.list-group {
     font-size: 1em;
     color: #999;
 }
 
-.guess-list .before li:last-child {
+.before li:last-child {
     font-size: 2em;
     color: #111;
 }
 
-.guess-list .after li:first-child {
+.after li:first-child {
     font-size: 2em;
     color: #111;
 }
 
-.guess-list li.no-guesses {
+li.no-guesses {
     font-size: 1em !important;
     color: #999 !important;
 }
 
-.guess-list span.found {
+/* span.found {
     text-decoration: underline;
     background-color: #eef;
-}
+} */
 
 .guess-form section {
     padding: 1em 0;
