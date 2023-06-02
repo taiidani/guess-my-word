@@ -47,6 +47,8 @@ jobs:
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
+        with:
+          skip-pkg-cache: true
 
   playwright:
     runs-on: ubuntu-latest
