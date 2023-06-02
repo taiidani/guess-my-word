@@ -78,7 +78,7 @@ func (s *Session) Current() *SessionMode {
 }
 
 func (s *Session) DateUser(tz int) time.Time {
-	m := s.History[s.Mode]
+	m := s.Current()
 	return convertUTCToUser(m.Start, tz)
 }
 
