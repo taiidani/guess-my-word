@@ -6,7 +6,7 @@ updates:
       interval: "monthly"
     groups:
       combined:
-        patterns: "*"
+        patterns: ["*"]
 
   - package-ecosystem: "gomod"
     directory: "/"
@@ -14,7 +14,7 @@ updates:
       interval: "monthly"
     groups:
       combined:
-        patterns: "*"
+        patterns: ["*"]
 
   - package-ecosystem: "npm"
     directory: "/web"
@@ -22,7 +22,7 @@ updates:
       interval: "monthly"
     groups:
       combined:
-        patterns: "*"
+        patterns: ["*"]
 
 
   - package-ecosystem: "docker"
@@ -31,7 +31,7 @@ updates:
       interval: "monthly"
     groups:
       combined:
-        patterns: "*"
+        patterns: ["*"]
 
   - package-ecosystem: "terraform"
     directory: ".github/deploy"
@@ -39,4 +39,4 @@ updates:
       interval: "monthly"
     groups:
       combined:
-        patterns: "*"
+        patterns: ["*"]
