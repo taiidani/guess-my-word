@@ -34,9 +34,19 @@ func IndexHandler(c *gin.Context) {
 		return
 	}
 
-	// Allow mode selection through the select dropdown
-	data.Mode = strings.ToLower(c.Request.URL.Query().Get("mode"))
-	if data.Mode == "" {
+	// Assign the mode
+	switch {
+	// Allow mode selection through the path
+	case c.Param("mode") != "":
+		data.Mode = c.Param("mode")
+
+	// Allow mode selection through the query parameters
+	case c.Request.URL.Query().Get("mode") != "":
+		data.Mode = strings.ToLower(c.Request.URL.Query().Get("mode"))
+		c.Redirect(301, "/mode/"+data.Mode)
+		return
+
+	default:
 		data.Mode = "default"
 	}
 
