@@ -11,7 +11,7 @@ document.addEventListener('htmx:afterSwap', function (evt) {
 
 document.getElementById("mode").addEventListener("change", function (evt) {
     let newMode = evt.target.value;
-    window.location.href = "/mode/" + newMode;
+    window.location.href = "/mode/" + encodeURIComponent(newMode);
 });
 
 console.log("Loaded");
