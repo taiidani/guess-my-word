@@ -72,10 +72,10 @@ func SetupAssets(r *gin.Engine) error {
 func AddHandlers(r *gin.Engine) error {
 	r.Use(middlewareStandardHeaders())
 	r.GET("/", IndexHandler)
+	r.GET("/mode/:mode", IndexHandler)
 	r.GET("/ping", PingHandler)
 	r.GET("/stats/yesterday", YesterdayHandler)
 	r.GET("/stats/today", TodayHandler)
-	r.POST("/mode", ModeSetHandler)
 	r.POST("/guess", GuessHandler)
 	r.GET("/hint", HintHandler)
 	r.POST("/reset", ResetHandler)
