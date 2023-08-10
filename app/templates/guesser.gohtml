@@ -56,8 +56,7 @@
           {{ else }}
             <p>
                 🎉 You guessed "{{ .Answer }}" correctly with
-                {{ .GuessCount }} tries in
-                {{ printf "%.2f" .GuessDuration.Minutes }} minutes. Come back tomorrow for another!
+                {{ .GuessCount }} tries. Come back tomorrow for another!
             </p>
           {{ end }}
           </section>

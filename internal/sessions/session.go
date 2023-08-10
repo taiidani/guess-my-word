@@ -126,10 +126,6 @@ func (m *SessionMode) CommonGuessPrefix() string {
 	return before[0:minWord]
 }
 
-func (m *SessionMode) GuessDuration() time.Duration {
-	return m.End.Sub(m.Start)
-}
-
 func (m *SessionMode) DateUser(tz int) time.Time {
 	return convertUTCToUser(m.Start, tz)
 }
