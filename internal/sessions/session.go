@@ -116,7 +116,7 @@ func (m *SessionMode) CommonGuessPrefix() string {
 	before := m.Before[len(m.Before)-1]
 	after := m.After[0]
 
-	minWord := minof(len(after), len(before))
+	minWord := min(len(after), len(before))
 	for i := 0; i < minWord; i++ {
 		if after[i] != before[i] {
 			return before[0:i]
@@ -141,17 +141,4 @@ func convertUTCToUser(t time.Time, tz int) time.Time {
 	ret := t.In(time.FixedZone("User", tz*-1))
 	ret = ret.Add(time.Minute * -1 * time.Duration(tz))
 	return ret
-}
-
-// minof will find the smallest number in the given list of numbers
-func minof(vars ...int) int {
-	min := vars[0]
-
-	for _, i := range vars {
-		if min > i {
-			min = i
-		}
-	}
-
-	return min
 }
