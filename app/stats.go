@@ -3,7 +3,7 @@ package app
 import (
 	_ "embed"
 	"guess_my_word/internal/model"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -17,7 +17,7 @@ const ErrRevealToday = "It's too early to reveal this word. Please try again lat
 func YesterdayHandler(c *gin.Context) {
 	request, err := parseBodyData(c)
 	if err != nil {
-		log.Println("Unable to parse body data: ", err)
+		slog.Warn("Unable to parse body data", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
@@ -30,7 +30,7 @@ func YesterdayHandler(c *gin.Context) {
 	cmp := time.Date(y, m, d, 0, 0, 0, 0, dateUser.Location())
 
 	if dateUser.After(cmp) {
-		log.Printf("Too early to reveal word. Compared date was: %s", dateUser)
+		slog.Warn("Too early to reveal word", "date", dateUser)
 		c.HTML(http.StatusBadRequest, "error.gohtml", ErrRevealToday)
 		return
 	}
@@ -38,7 +38,7 @@ func YesterdayHandler(c *gin.Context) {
 	// Generate the word for the day
 	word, err := wordStore.GetForDay(c, dateUser, request.Session.Mode)
 	if err != nil {
-		log.Println("Unable to get day: ", err)
+		slog.Warn("Unable to get day", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
@@ -51,7 +51,7 @@ func YesterdayHandler(c *gin.Context) {
 func TodayHandler(c *gin.Context) {
 	request, err := parseBodyData(c)
 	if err != nil {
-		log.Println("Unable to parse body data: ", err)
+		slog.Warn("Unable to parse body data", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
@@ -59,7 +59,7 @@ func TodayHandler(c *gin.Context) {
 	// Generate the word for the day
 	word, err := wordStore.GetForDay(c, request.Session.DateUser(request.TZ), request.Session.Mode)
 	if err != nil {
-		log.Println("Unable to get day: ", err)
+		slog.Warn("Unable to get day", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}

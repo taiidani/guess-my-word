@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"guess_my_word/internal/model"
-	"log"
+	"log/slog"
 	"sort"
 	"strings"
 	"sync"
@@ -37,7 +37,7 @@ func NewRedis(addr string) *RedisClient {
 	client := redis.NewClient(&redis.Options{Addr: addr})
 	status := client.Ping(ctx)
 	if status.Err() != nil {
-		log.Printf("Failed to create Redis client")
+		slog.Error("Failed to create Redis client", "addr", addr)
 		panic(status.Err())
 	}
 
@@ -58,7 +58,7 @@ func NewRedisSecure(host, port, user, password string, db int) *RedisClient {
 	})
 	status := client.Ping(ctx)
 	if status.Err() != nil {
-		log.Printf("Failed to create secure Redis client")
+		slog.Warn("Failed to create secure Redis client", "addr", client.Options().Addr)
 		panic(status.Err())
 	}
 

@@ -9,6 +9,7 @@ import (
 	"guess_my_word/internal/sessions"
 	"guess_my_word/internal/words"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -102,7 +103,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 			db,
 		)
 	} else {
-		log.Println("WARNING: No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
+		slog.Warn("No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
 		sessionClient = memstore.NewStore([]byte("secret"))
 		dataClient = datastore.NewMemory()
 	}

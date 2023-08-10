@@ -2,7 +2,7 @@ package app
 
 import (
 	"guess_my_word/internal/sessions"
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 
@@ -17,7 +17,7 @@ type seedReply struct {
 func SeedHandler(c *gin.Context) {
 	request, err := parseBodyData(c)
 	if err != nil {
-		log.Println("Unable to parse body data: ", err)
+		slog.Warn("Unable to parse body data", "error", err)
 		c.JSON(http.StatusBadRequest, seedReply{Error: err.Error()})
 		return
 	}

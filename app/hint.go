@@ -2,7 +2,7 @@ package app
 
 import (
 	"guess_my_word/internal/sessions"
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,7 @@ const (
 func HintHandler(c *gin.Context) {
 	request, err := parseBodyData(c)
 	if err != nil {
-		log.Println("Unable to parse body data: ", err)
+		slog.Warn("Unable to parse body data", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}

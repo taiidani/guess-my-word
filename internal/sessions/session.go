@@ -3,7 +3,7 @@ package sessions
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -48,7 +48,7 @@ func New(c *gin.Context) *Session {
 	}
 	if jsonSession != nil {
 		if err := json.Unmarshal(jsonSession.([]byte), &session); err != nil {
-			log.Println("WARN: Could not parse history: ", err)
+			slog.Warn("Could not parse history", "error", err)
 		}
 	}
 

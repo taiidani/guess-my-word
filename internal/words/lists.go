@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
-	"log"
+	"log/slog"
 	"strings"
 )
 
@@ -47,11 +47,12 @@ const hardListName = "Hard"
 const defaultListName = "Default"
 
 func (l *ListStore) GetList(ctx context.Context, name string) (model.List, error) {
+	log := slog.With("name", name)
 	switch name {
 	case hardListName, strings.ToLower(hardListName):
 		list, err := l.client.GetList(ctx, strings.ToLower(hardListName))
 		if err != nil || len(list.Words) == 0 {
-			log.Printf("hard list not present. Generating from builtin words: %s", err)
+			log.Info("hard list not present. Generating from builtin words", "error", err)
 			list = model.List{
 				Name:        hardListName,
 				Description: "The hardest mode available -- represents the entire Scrabble dictionary",
@@ -65,7 +66,7 @@ func (l *ListStore) GetList(ctx context.Context, name string) (model.List, error
 	case defaultListName, strings.ToLower(defaultListName):
 		list, err := l.client.GetList(ctx, strings.ToLower(defaultListName))
 		if err != nil || len(list.Words) == 0 {
-			log.Printf("default list not present. Generating from builtin words: %s", err)
+			log.Info("default list not present. Generating from builtin words", "error", err)
 			list = model.List{
 				Name:        defaultListName,
 				Description: "The standard word list -- repesents about 1,000 common English words found in TV and movies",

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
-	"log"
+	"log/slog"
 	"strings"
 	"time"
 )
@@ -49,12 +49,13 @@ func NewWordStore(store Worder) *WordStore {
 func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (model.Word, error) {
 	mode = strings.ToLower(mode)
 	key := datastore.WordKey(mode, tm)
+	log := slog.With("key", key)
 
 	// Grab the word from the datastore
 	word, err := w.GetWord(ctx, key)
 	if err != nil {
 		// Generate a new word
-		log.Printf("Encountered error '%s'. Generating new word for key '%s'", err, key)
+		log.Warn("Encountered error. Generating new word", "error", err)
 		listStore := NewListStore(w.client)
 		l, err := listStore.GetList(ctx, mode)
 		if err != nil {
@@ -69,10 +70,10 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 		}
 
 		// And store it if we're able
-		log.Printf("Storing generated word '%v' at key '%s'", word, key)
+		log.Info("Storing generated word", "word", word)
 		err = w.SetWord(ctx, key, word)
 		if err != nil {
-			log.Printf("Encountered error storing new word '%v' at key '%s': %s", word, key, err)
+			log.Info("Encountered error storing new word", "word", word, "error", err)
 		}
 	}
 

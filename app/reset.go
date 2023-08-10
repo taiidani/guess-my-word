@@ -1,7 +1,7 @@
 package app
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,7 +10,7 @@ import (
 func ResetHandler(c *gin.Context) {
 	request, err := parseBodyData(c)
 	if err != nil {
-		log.Println("Unable to parse body data: ", err)
+		slog.Warn("Unable to parse body data", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}

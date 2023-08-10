@@ -7,7 +7,7 @@ import (
 	"guess_my_word/internal/sessions"
 	"html/template"
 	"io/fs"
-	"log"
+	"log/slog"
 	"net/http"
 	"strconv"
 	"time"
@@ -107,7 +107,7 @@ func parseBodyData(c *gin.Context) (bodyData, error) {
 	if err != nil {
 		tz, err = strconv.ParseInt(c.Request.PostFormValue("tz"), 10, 64)
 		if err != nil {
-			log.Printf("ERROR: Could not parse timezone: %s", err)
+			slog.Error("Could not parse timezone", "error", err)
 			tz = 0
 		}
 	}

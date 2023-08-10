@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
-	"log"
+	"log/slog"
 	"net/http"
 	"sort"
 	"strings"
@@ -35,7 +35,7 @@ var guessMutex = sync.Mutex{}
 func GuessHandler(c *gin.Context) {
 	request, err := parseBodyData(c)
 	if err != nil {
-		log.Println("Unable to parse body data: ", err)
+		slog.Warn("Unable to parse body data", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
