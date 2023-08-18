@@ -35,10 +35,9 @@ jobs:
         id: outputs
         run: echo "version=${{ steps.goreleaser.outputs.artifacts }}" >> "$GITHUB_OUTPUT"
 
-      - name: Debugging failure
+      - name: Debugging
         run: |
           echo ${{ steps.goreleaser.outputs.artifacts }}
-          exit 1
 
   deploy:
     needs: release
