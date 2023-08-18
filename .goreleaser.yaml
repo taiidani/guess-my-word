@@ -15,10 +15,9 @@ archives:
       amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
 release:
+  draft: true
   mode: append
+  tag: "{{ .Now.Format("2006.01.02") }}-{{ .ShortCommit }}"
 changelog:
-  sort: asc
-  use: github
+  use: github-native

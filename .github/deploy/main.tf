@@ -1,6 +1,6 @@
 resource "nomad_job" "app" {
   jobspec = templatefile("${path.module}/guess-my-word.nomad", {
-    image_name = var.image_name
+    version = var.version
   })
   detach = false
 
@@ -32,7 +32,7 @@ provider "nomad" {
   address = "http://127.0.0.1:4646"
 }
 
-variable "image_name" {
-  description = "The name of the Docker image to use for the job"
+variable "version" {
+  description = "The artifact version to use for the job"
   type        = string
 }
