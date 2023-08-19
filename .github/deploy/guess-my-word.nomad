@@ -7,21 +7,25 @@ job "guess-my-word" {
   type        = "service"
 
   update {
-    min_healthy_time  = "30s"
     healthy_deadline  = "1m"
-    progress_deadline = "10m"
+    progress_deadline = "2m"
     auto_revert       = true
   }
 
+  reschedule {
+    attempts  = 0
+    unlimited = false
+  }
+
   group "app" {
+    count = 2
+
     task "app" {
       driver = "exec"
 
       config {
         command = "guess-my-word"
-        args = [
-          "--port=${NOMAD_PORT_web}",
-        ]
+        args    = ["--port=${NOMAD_PORT_web}"]
       }
 
       artifact {
@@ -62,11 +66,11 @@ job "guess-my-word" {
           "traefik.http.middlewares.guess.redirectscheme.scheme=https",
         ]
 
-        // check_restart {
-        //   limit           = 3
-        //   grace           = "15s"
-        //   ignore_warnings = false
-        // }
+        check_restart {
+          limit           = 3
+          grace           = "15s"
+          ignore_warnings = false
+        }
       }
 
       resources {
@@ -81,48 +85,8 @@ job "guess-my-word" {
       read_only = "false"
     }
 
-    task "redirect" {
-      driver = "docker"
-
-      config {
-        image = "containous/whoami"
-        args  = ["-port=81"]
-        ports = ["redirect"]
-      }
-
-      service {
-        name     = "guess-my-word-redirect"
-        provider = "nomad"
-        port     = "redirect"
-        tags = [
-          "traefik.enable=true",
-          "traefik.http.routers.guessredirect.rule=Host(`guess.taiidani.com`)",
-          "traefik.http.routers.guessredirect.middlewares=guessredirect@nomad",
-          "traefik.http.routers.guessredirectsecure.rule=Host(`guess.taiidani.com`)",
-          "traefik.http.routers.guessredirectsecure.tls=true",
-          "traefik.http.routers.guessredirectsecure.tls.certresolver=le",
-          "traefik.http.routers.guessredirectsecure.middlewares=guessredirect@nomad",
-          "traefik.http.middlewares.guessredirect.redirectregex.regex=^http.?://guess.taiidani.com/(.*)",
-          "traefik.http.middlewares.guessredirect.redirectregex.replacement=https://guessmyword.xyz/",
-        ]
-
-        // check_restart {
-        //   limit           = 3
-        //   grace           = "15s"
-        //   ignore_warnings = false
-        // }
-      }
-
-      resources {
-        cpu    = 25
-        memory = 32
-      }
-    }
-
     network {
-      mode = "bridge"
       port "web" {}
-      port "redirect" { to = 81 }
     }
 
     vault {
