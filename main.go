@@ -20,14 +20,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const defaultAddress = ":3000"
-
 func main() {
+	port := flag.Int("port", 3000, "port to listen on")
 	help := flag.Bool("help", false, "displays help text and exits")
 	flag.Parse()
+	bind := fmt.Sprintf(":%d", *port)
 
 	if help != nil && *help {
-		fmt.Fprintln(os.Stderr, "This application serves the Guess My Word app at "+defaultAddress)
+		fmt.Fprintf(os.Stderr, "This application serves the Guess My Word app at %s\n", bind)
 		os.Exit(0)
 	}
 
@@ -58,8 +58,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Listening and serving HTTP on %s\n", defaultAddress)
-	srv := http.Server{Addr: defaultAddress, Handler: r}
+	fmt.Printf("Listening and serving HTTP on port %s\n", bind)
+	srv := http.Server{Addr: bind, Handler: r}
 
 	done := make(chan interface{})
 	go gracefulShutdown(ctx, &srv, done)
@@ -125,6 +125,7 @@ func gracefulShutdown(ctx context.Context, srv *http.Server, done chan<- interfa
 
 	// Wait for the process to be interrupted
 	<-ctx.Done()
+	fmt.Fprintf(os.Stderr, "Interrupted. Shutting down\n")
 
 	// Gracefully drain all connections
 	drainCtx, cancel := context.WithTimeout(context.Background(), drainTimeout)

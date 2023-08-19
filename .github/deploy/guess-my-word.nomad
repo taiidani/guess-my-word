@@ -15,12 +15,17 @@ job "guess-my-word" {
 
   group "app" {
     task "app" {
-      driver = "docker"
+      driver = "exec"
 
       config {
-        image = var.artifact_url
-        args  = ["/app"]
-        ports = ["web"]
+        command = "guess-my-word"
+        args = [
+          "--port=${NOMAD_PORT_web}",
+        ]
+      }
+
+      artifact {
+        source = var.artifact_url
       }
 
       env {
@@ -116,7 +121,7 @@ job "guess-my-word" {
 
     network {
       mode = "bridge"
-      port "web" { to = 3000 }
+      port "web" {}
       port "redirect" { to = 81 }
     }
 
