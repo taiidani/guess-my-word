@@ -34,7 +34,7 @@ jobs:
 
       - name: Set output
         id: outputs
-        run: echo "version=https://github.com/taiidani/guess-my-word/releases/download/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}/guess-my-word_v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tar.gz" >> "$GITHUB_OUTPUT"
+        run: echo "version=https://github.com/taiidani/guess-my-word/releases/download/$(date +'%Y.%m.%d')-${GITHUB_SHA::6}/guess-my-word_v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tar.gz" >> "$GITHUB_OUTPUT"
 
   deploy:
     uses: ./.github/workflows/deploy.yml
