@@ -13,7 +13,6 @@ builds:
 checksum:
   name_template: 'checksums.txt'
 release:
-  draft: true
   mode: append
 changelog:
   use: github-native

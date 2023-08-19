@@ -23,10 +23,9 @@ jobs:
           cache: true
 
       - name: Tag Release
-        run: git tag $(date +'%Y.%m.%d')-${GITHUB_SHA::4}
+        run: git tag v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}
 
       - name: Run GoReleaser
-        id: goreleaser
         uses: goreleaser/goreleaser-action@v4
         with:
           args: release --clean
@@ -35,11 +34,7 @@ jobs:
 
       - name: Set output
         id: outputs
-        run: echo "version=${{ steps.goreleaser.outputs.artifacts }}" >> "$GITHUB_OUTPUT"
-
-      - name: Debugging
-        run: |
-          echo ${{ steps.goreleaser.outputs.artifacts }}
+        run: echo "version=https://github.com/taiidani/guess-my-word/releases/download/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}/guess-my-word_v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tar.gz" >> "$GITHUB_OUTPUT"
 
   deploy:
     needs: release
