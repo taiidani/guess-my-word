@@ -10,7 +10,7 @@ job "guess-my-word" {
     min_healthy_time  = "30s"
     healthy_deadline  = "1m"
     progress_deadline = "10m"
-    auto_revert       = false
+    auto_revert       = true
   }
 
   group "app" {
