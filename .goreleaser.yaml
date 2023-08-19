@@ -10,16 +10,10 @@ builds:
       - linux
     goarch:
       - amd64
-archives:
-  - replacements:
-      amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
 release:
   draft: true
   mode: append
-  tag: "{{ .Now.Format("2006.01.02") }}-{{ .ShortCommit }}"
 changelog:
   use: github-native

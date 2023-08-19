@@ -10,7 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
     outputs:
       version: ${{ steps.outputs.outputs.version }}
     steps:
@@ -22,6 +21,9 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+
+      - name: Tag Release
+        run: git tag $(date +'%Y.%m.%d')-${GITHUB_SHA::4}
 
       - name: Run GoReleaser
         id: goreleaser
