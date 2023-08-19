@@ -1,11 +1,12 @@
 resource "nomad_job" "app" {
-  jobspec = templatefile("${path.module}/guess-my-word.nomad", {
-    image_name = var.artifact_url
-  })
-  detach = false
+  jobspec = file("${path.module}/guess-my-word.nomad")
+  detach  = false
 
   hcl2 {
     enabled = true
+    vars = {
+      artifact_url = var.artifact_url
+    }
   }
 }
 

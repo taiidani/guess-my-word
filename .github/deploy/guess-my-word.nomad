@@ -1,3 +1,7 @@
+variable "artifact_url" {
+  type = string
+}
+
 job "guess-my-word" {
   datacenters = ["dc1"]
   type        = "service"
@@ -14,7 +18,7 @@ job "guess-my-word" {
       driver = "docker"
 
       config {
-        image = "${image_name}"
+        image = var.artifact_url
         args  = ["/app"]
         ports = ["web"]
       }
@@ -33,7 +37,7 @@ job "guess-my-word" {
             REDIS_PASSWORD="{{with secret "credentials/digitalocean/redis"}}{{ .Data.data.password }}{{end}}"
             REDIS_DB=1
         EOF
-        destination = "$${NOMAD_SECRETS_DIR}/secrets.env"
+        destination = "${NOMAD_SECRETS_DIR}/secrets.env"
         env         = true
       }
 
