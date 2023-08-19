@@ -1,0 +1,43 @@
+name: main
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.outputs.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Tag Release
+        run: git tag v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set output
+        id: outputs
+        run: echo "version=https://github.com/taiidani/guess-my-word/releases/download/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}/guess-my-word_v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tar.gz" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    needs: release
+    with:
+      artifact_url: "${{ needs.release.outputs.version }}"

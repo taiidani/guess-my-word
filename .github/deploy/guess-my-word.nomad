@@ -18,7 +18,7 @@ job "guess-my-word" {
       }
 
       artifact {
-        source = "${version}"
+        source = "${artifact_url}"
       }
 
       env {

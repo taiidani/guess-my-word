@@ -1,6 +1,6 @@
 resource "nomad_job" "app" {
   jobspec = templatefile("${path.module}/guess-my-word.nomad", {
-    version = var.version
+    artifact_url = var.artifact_url
   })
   detach = false
 
@@ -32,7 +32,7 @@ provider "nomad" {
   address = "http://127.0.0.1:4646"
 }
 
-variable "version" {
-  description = "The artifact version to use for the job"
+variable "artifact_url" {
+  description = "The artifact URL to use for the job"
   type        = string
 }
