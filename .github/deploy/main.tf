@@ -1,6 +1,6 @@
 resource "nomad_job" "app" {
   jobspec = templatefile("${path.module}/guess-my-word.nomad", {
-    artifact_url = var.artifact_url
+    image_name = var.artifact_url
   })
   detach = false
 

@@ -11,14 +11,12 @@ job "guess-my-word" {
 
   group "app" {
     task "app" {
-      driver = "exec"
+      driver = "docker"
 
       config {
-        command = "guess-my-word"
-      }
-
-      artifact {
-        source = "${artifact_url}"
+        image = "${image_name}"
+        args  = ["/app"]
+        ports = ["web"]
       }
 
       env {
