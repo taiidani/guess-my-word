@@ -6,6 +6,11 @@ on:
       artifact_url:
         required: true
         type: string
+  workflow_dispatch:
+    inputs:
+      artifact_url:
+        required: true
+        type: string
 
 jobs:
   terraform:
