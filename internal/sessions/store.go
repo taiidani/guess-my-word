@@ -12,9 +12,9 @@ import (
 
 	"github.com/boj/redistore"
 	"github.com/gin-contrib/sessions"
-	redis "github.com/go-redis/redis/v8"
 	"github.com/gorilla/securecookie"
 	gsessions "github.com/gorilla/sessions"
+	redis "github.com/redis/go-redis/v9"
 )
 
 // ATTRIBUTION: This implementation takes heavy inspiration from
@@ -163,7 +163,7 @@ func (s *store) save(session *gsessions.Session) error {
 	if age == 0 {
 		age = defaultMaxAge
 	}
-	cmd := s.client.SetEX(context.TODO(), keyPrefix+session.ID, b, time.Duration(age*int(time.Second)))
+	cmd := s.client.SetEx(context.TODO(), keyPrefix+session.ID, b, time.Duration(age*int(time.Second)))
 	return cmd.Err()
 }
 
