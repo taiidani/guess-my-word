@@ -3,7 +3,6 @@ resource "nomad_job" "app" {
   detach  = false
 
   hcl2 {
-    enabled = true
     vars = {
       artifact_url = var.artifact_url
     }
@@ -16,7 +15,7 @@ terraform {
   required_providers {
     nomad = {
       source  = "hashicorp/nomad"
-      version = "1.4.20"
+      version = "~> 2.0"
     }
   }
 
