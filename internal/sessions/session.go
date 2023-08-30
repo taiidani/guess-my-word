@@ -77,9 +77,9 @@ func (s *Session) Current() *SessionMode {
 	return s.History[s.Mode]
 }
 
-func (s *Session) DateUser(tz int) time.Time {
+func (s *Session) DateUser() time.Time {
 	m := s.Current()
-	return convertUTCToUser(m.Start, tz)
+	return m.Start
 }
 
 func (s *Session) Save() error {
@@ -126,19 +126,11 @@ func (m *SessionMode) CommonGuessPrefix() string {
 	return before[0:minWord]
 }
 
-func (m *SessionMode) DateUser(tz int) time.Time {
-	return convertUTCToUser(m.Start, tz)
+func (m *SessionMode) DateUser() time.Time {
+	return m.Start
 }
 
 func (m *SessionMode) Stale() bool {
 	now := time.Now()
 	return m.Start.Month() != now.Month() || m.Start.Day() != now.Day()
-}
-
-// convertUTCToLocal will take a given time in UTC and convert it to a given user's timezone
-// TZ for PDT (-7:00) is a positive 420, so SUBTRACT that from the unix timestamp
-func convertUTCToUser(t time.Time, tz int) time.Time {
-	ret := t.In(time.FixedZone("User", tz*-1))
-	ret = ret.Add(time.Minute * -1 * time.Duration(tz))
-	return ret
 }

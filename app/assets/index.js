@@ -1,7 +1,3 @@
-document.body.setAttribute("hx-vals", JSON.stringify({
-    tz: new Date().getTimezoneOffset(),
-}))
-
 document.addEventListener('htmx:afterSwap', function (evt) {
     let fInput = document.getElementById("guess-input");
     if (fInput !== null) {

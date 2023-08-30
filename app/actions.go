@@ -7,9 +7,7 @@ import (
 	"guess_my_word/internal/sessions"
 	"html/template"
 	"io/fs"
-	"log/slog"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -92,7 +90,6 @@ func AddHandlers(r *gin.Engine) error {
 }
 
 type bodyData struct {
-	TZ      int               // The timezone offset for the user, in milliseconds
 	Session *sessions.Session // The session for the user
 }
 
@@ -102,16 +99,6 @@ func parseBodyData(c *gin.Context) (bodyData, error) {
 	ret := bodyData{}
 	ret.Session = sessions.New(c)
 	fnPopulateTestSessionData(ret.Session)
-
-	tz, err := strconv.ParseInt(c.Request.URL.Query().Get("tz"), 10, 64)
-	if err != nil {
-		tz, err = strconv.ParseInt(c.Request.PostFormValue("tz"), 10, 64)
-		if err != nil {
-			slog.Error("Could not parse timezone", "error", err)
-			tz = 0
-		}
-	}
-	ret.TZ = int(tz)
 
 	return ret, nil
 }

@@ -78,7 +78,7 @@ func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 	defer guessMutex.Unlock()
 
 	// Generate the word for the day
-	tm := data.Session.DateUser(data.TZ)
+	tm := data.Session.DateUser()
 	word, err := wordStore.GetForDay(ctx, tm, data.Session.Mode)
 	if err != nil {
 		return err
