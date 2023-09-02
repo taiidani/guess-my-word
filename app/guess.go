@@ -22,9 +22,6 @@ const (
 	// ErrInvalidStartTime is emitted when the start time is malformed or invalid
 	ErrInvalidStartTime = "Invalid start time provided with request"
 
-	// ErrInvalidTimezone is emitted when the timezone is malformed or invalid
-	ErrInvalidTimezone = "Invalid timezone provided with request"
-
 	// ErrEmptyGuess is emitted when the guess provided was empty
 	ErrEmptyGuess = "Guess must not be empty"
 )

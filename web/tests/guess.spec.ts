@@ -7,7 +7,6 @@ const hardYesterday = "gabbroid"
 
 test.use({
   locale: 'en-US',
-  timezoneId: 'America/Los_Angeles',
 })
 
 test('guesses the default word', async ({ page }) => {
