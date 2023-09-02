@@ -130,6 +130,12 @@ func (m *SessionMode) DateUser() time.Time {
 	return m.Start
 }
 
+func (m *SessionMode) RemainingTime() time.Duration {
+	now := time.Now()
+	tomorrow := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
+	return tomorrow.Sub(now).Round(time.Minute)
+}
+
 func (m *SessionMode) Stale() bool {
 	now := time.Now()
 	return m.Start.Month() != now.Month() || m.Start.Day() != now.Day()
