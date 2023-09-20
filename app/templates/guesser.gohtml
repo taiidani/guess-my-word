@@ -1,79 +1,78 @@
-<div id="guesser" class="row">
-    <div class="col-md-12">
-      <ul class="list-group before">
-        {{/* Since templates don't support arithmetic, jumping through hoops to get N-1 */}}
-        {{/* It would be easier to simply know the last element in the array! */}}
-        {{ $length := 0 }}
-        {{ if .Before }}{{ $length = len (slice .Before 1) }}{{ end }}
+<ul class="list-group before">
+  {{/* Since templates don't support arithmetic, jumping through hoops to get N-1 */}}
+  {{/* It would be easier to simply know the last element in the array! */}}
+  {{ $length := 0 }}
+  {{ if .Before }}{{ $length = len (slice .Before 1) }}{{ end }}
 
-        {{ range $i, $el := .Before }}
-          <li class="list-group-item guess {{ if eq $i ($length) }}active{{ else }}disabled{{ end }}">
-            {{ if eq $i ($length) }}<strong>{{ . }}</strong>
-            {{ else }}<span>{{ . }}</span>
-            {{ end }}
-          </li>
-        {{ else }}
-          <li class="list-group-item guess no-guesses disabled">
-            <span>No guesses before the word</span>
-          </li>
-        {{ end }}
-      </ul>
+  {{ range $i, $el := .Before }}
+    <li class="list-group-item guess {{ if eq $i ($length) }}active{{ else }}disabled{{ end }}">
+      {{ if eq $i ($length) }}<strong>{{ . }}</strong>
+      {{ else }}<span>{{ . }}</span>
+      {{ end }}
+    </li>
+  {{ else }}
+    <li class="list-group-item guess no-guesses disabled">
+      <span>No guesses before the word</span>
+    </li>
+  {{ end }}
+</ul>
 
-      <div class="guess-form">
-        <section>
-          {{ if not .Answer }}
-            <form method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
-                <img
-                id="between-logo"
-                src="/assets/between.svg"
-                alt="Page Break by Arthur Shlain from the Noun Project"
-                />
+<div class="guess-form">
+  <section>
+    {{ if not .Answer }}
+      <form method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
+          <img
+          id="between-logo"
+          src="/assets/between.svg"
+          alt="Page Break by Arthur Shlain from the Noun Project"
+          />
 
-                {{ $commonGuess := .CommonGuessPrefix }}
-                <label>
-                <input
-                    id="guess-input"
-                    name="word"
-                    placeholder="{{ if $commonGuess }}Starting with '{{ $commonGuess }}'{{ else }}Enter a word here{{ end }}"
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="off"
-                    v-model="word"
-                />
-                </label>
+          {{ $commonGuess := .CommonGuessPrefix }}
+          <label>
+          <input
+              id="guess-input"
+              name="word"
+              placeholder="{{ if $commonGuess }}Starting with '{{ $commonGuess }}'{{ else }}Enter a word here{{ end }}"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="off"
+              v-model="word"
+          />
+          </label>
 
-                <button class="btn btn-primary" type="submit">Guess</button>
-                <img class="htmx-indicator" src="/assets/loading.svg" />
-            </form>
+          <button class="btn btn-primary" type="submit">Guess</button>
+          <img class="htmx-indicator" src="/assets/loading.svg" />
+      </form>
 
-            {{ if and (gt .GuessCount 15) }}
-            <form method="GET" action="/hint" hx-get="/hint">
-                <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
-            </form>
-            {{ end }}
+      {{ if and (gt .GuessCount 15) }}
+      <form method="GET" action="/hint" hx-get="/hint">
+          <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
+      </form>
+      {{ end }}
 
-          {{ else }}
-            <p>
-                🎉 You guessed "{{ .Answer }}" correctly with
-                {{ .GuessCount }} tries. Come back tomorrow for another!
-            </p>
-          {{ end }}
-          </section>
-      </div>
-
-      <ul class="list-group after">
-        {{ range $i, $em := .After }}
-        <li class="list-group-item guess {{ if not $i }}active{{ else }}disabled{{ end }}">
-            {{ if not $i }}<strong>{{ . }}</strong>
-            {{ else }}<span>{{ . }}</span>
-            {{ end }}
-        </li>
-        {{ else }}
-        <li class="list-group-item guess no-guesses disabled">
-          <span>No guesses after the word</span>
-        </li>
-        {{ end }}
-      </ul>
-    </div>
+    {{ else }}
+      <form method="POST" action="/reset" style="display: inline">
+          🎉 You guessed "{{ .Answer }}" correctly with
+          {{ .GuessCount }} tries.
+          {{ if .Stale }} A new word is available! <button type="submit" class="btn btn-success">Start guessing</button>
+          {{ else }} Come back tomorrow for another!
+          {{ end}}
+      </form>
+    {{ end }}
+    </section>
 </div>
+
+<ul class="list-group after">
+  {{ range $i, $em := .After }}
+  <li class="list-group-item guess {{ if not $i }}active{{ else }}disabled{{ end }}">
+      {{ if not $i }}<strong>{{ . }}</strong>
+      {{ else }}<span>{{ . }}</span>
+      {{ end }}
+  </li>
+  {{ else }}
+  <li class="list-group-item guess no-guesses disabled">
+    <span>No guesses after the word</span>
+  </li>
+  {{ end }}
+</ul>

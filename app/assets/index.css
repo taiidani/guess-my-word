@@ -8,6 +8,10 @@ a {
     text-decoration: underline;
 }
 
+nav img {
+    height: 1.5em;
+}
+
 header {
     background-color: #5295de;
     padding: 10px 20px;
@@ -18,11 +22,6 @@ header {
 
 header a {
     text-decoration: none;
-}
-
-header img {
-    display: inline-block;
-    max-height: 2em;
 }
 
 header h1 {
@@ -45,4 +44,9 @@ hr {
 
 .guess-form #between-logo {
     height: 3em;
+}
+
+footer,
+footer a {
+    color: #111;
 }

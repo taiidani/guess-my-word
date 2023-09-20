@@ -1,48 +1,21 @@
-  <footer class="container text-center text-md-start px-4">
-    <div class="row gx-5">
-      <div class="col">
-        <div class="p-3">
-          <h5>
-            <i class="bi bi-clock-history"></i> Yesterday's Stats
-          </h5>
-          <div id="stats-yesterday" role="stats-yesterday" hx-get="/stats/yesterday" hx-trigger="load, every 1m, from:#mode"></div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="p-3">
-          <h5>
-            <i class="bi bi-bar-chart-fill"></i> Today's Stats
-          </h5>
-          <div id="stats-today" role="stats-today" hx-get="/stats/today" hx-trigger="load, every 1m, from:#mode"></div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="p-3">
-          <h5>
-            <i class="bi bi-speedometer"></i> List
-          </h5>
-            <div>
-              <select id="mode" class="form-select">
-                {{ $mode := .Mode}}
-                {{ range .Lists }}
-                <option {{ if eq . $mode }}selected="selected"{{end}} value="{{ . }}">{{ . }}</option>
-                {{ end }}
-              </select>
-            </div>
-        </div>
-      </div>
-      <div class="col">
-        <div class="p-3">
-          <h5>
-            <i class="bi bi-github"></i> Source
-          </h5>
-          <p>
-            <a href="https://github.com/taiidani/guess-my-word/releases">Changelog</a>
-          </p>
-          <p>
-            <a href="https://github.com/taiidani/guess-my-word">View on GitHub</a>
-          </p>
-        </div>
-      </div>
     </div>
-  </footer>
+    <p></p>
+
+    <footer class="container-fluid bg-body-tertiary">
+      <div class="row py-3 my-4">
+        <div class="col-md-4">
+            © 2023 Ryan Nixon
+        </div>
+        <div class="col-md-4 offset-md-4 text-end">
+          <a href="https://github.com/taiidani/guess-my-word" alt="View on GitHub">
+            <i class="bi bi-github"></i>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <script type="text/javascript" src="https://unpkg.com/htmx.org@1.9.2"></script>
+    <script type="text/javascript" src="/assets/index.js" defer></script>
+</body>
+
+</html>

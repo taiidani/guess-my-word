@@ -30,6 +30,11 @@ type wordClient interface {
 	SetWord(ctx context.Context, key string, word model.Word) error
 }
 
+type baseBag struct {
+	Page string
+	List model.List
+}
+
 var (
 	listStore listClient
 	wordStore wordClient
@@ -73,9 +78,9 @@ func AddHandlers(r *gin.Engine) error {
 	r.Use(middlewareStandardHeaders())
 	r.GET("/", IndexHandler)
 	r.GET("/mode/:mode", IndexHandler)
+	r.GET("/about", AboutHandler)
 	r.GET("/ping", PingHandler)
-	r.GET("/stats/yesterday", YesterdayHandler)
-	r.GET("/stats/today", TodayHandler)
+	r.GET("/stats", StatsHandler)
 	r.POST("/guess", GuessHandler)
 	r.GET("/hint", HintHandler)
 	r.POST("/reset", ResetHandler)

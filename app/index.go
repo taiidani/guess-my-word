@@ -2,22 +2,22 @@ package app
 
 import (
 	"fmt"
-	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
 	"log/slog"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
+type indexBag struct {
+	baseBag
+	Mode    string
+	History *sessions.SessionMode
+}
+
 func IndexHandler(c *gin.Context) {
-	data := struct {
-		Mode    string
-		List    model.List
-		History *sessions.SessionMode
-		Lists   []string
-	}{}
+	data := indexBag{}
+	data.Page = "home"
 
 	s := sessions.New(c)
 	defer func() {
@@ -26,39 +26,25 @@ func IndexHandler(c *gin.Context) {
 		}
 	}()
 
-	// Load the lists
-	var err error
-	data.Lists, err = listStore.GetLists(c)
-	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error.gohtml", "Unable to load word lists")
-		return
-	}
-
 	// Assign the mode
 	switch {
 	// Allow mode selection through the path
 	case c.Param("mode") != "":
 		data.Mode = c.Param("mode")
-
-	// Allow mode selection through the query parameters
-	case c.Request.URL.Query().Get("mode") != "":
-		data.Mode = strings.ToLower(c.Request.URL.Query().Get("mode"))
-		c.Redirect(301, "/mode/"+data.Mode)
-		return
-
 	default:
 		data.Mode = "default"
 	}
+	s.Mode = data.Mode
 
 	// Load list data for the current mode
 	// This also validates that it is an existing mode
+	var err error
 	data.List, err = listStore.GetList(c, data.Mode)
 	if err != nil {
 		c.HTML(http.StatusBadRequest, "error.gohtml", fmt.Sprintf("Could not load list %q: %s", data.Mode, err))
 		return
 	}
 
-	s.Mode = data.Mode
 	data.History = s.Current()
 
 	c.HTML(http.StatusOK, "index.gohtml", data)
