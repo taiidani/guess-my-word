@@ -7,7 +7,6 @@ const hardYesterday = "gabbroid"
 
 test.use({
   locale: 'en-US',
-  timezoneId: 'America/Los_Angeles',
 })
 
 test('guesses the default word', async ({ page }) => {
@@ -53,7 +52,7 @@ test('guesses the default word', async ({ page }) => {
   // Correct guess
   await lWordEntry.type(defaultToday)
   await lWordEntry.press('Enter')
-  await expect(page.locator('#app')).toContainText('You guessed "' + defaultToday + '" correctly')
+  await expect(page.locator('#guesser').first()).toContainText('You guessed "' + defaultToday + '" correctly')
   await expect(lGuessBefore).toHaveText('apple ham')
   await expect(lGuessAfter).toHaveText('yam zoo')
 })
@@ -101,7 +100,7 @@ test('guesses the hard word', async ({ page }) => {
   // Correct guess
   await lWordEntry.type(hardToday)
   await lWordEntry.press('Enter')
-  await expect(page.locator('#app')).toContainText('You guessed "' + hardToday + '" correctly')
+  await expect(page.locator('#guesser').first()).toContainText('You guessed "' + hardToday + '" correctly')
   await expect(lGuessBefore).toHaveText('apple cherry')
   await expect(lGuessAfter).toHaveText('tree trunk')
 })

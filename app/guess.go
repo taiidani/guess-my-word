@@ -22,9 +22,6 @@ const (
 	// ErrInvalidStartTime is emitted when the start time is malformed or invalid
 	ErrInvalidStartTime = "Invalid start time provided with request"
 
-	// ErrInvalidTimezone is emitted when the timezone is malformed or invalid
-	ErrInvalidTimezone = "Invalid timezone provided with request"
-
 	// ErrEmptyGuess is emitted when the guess provided was empty
 	ErrEmptyGuess = "Guess must not be empty"
 )
@@ -78,7 +75,7 @@ func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 	defer guessMutex.Unlock()
 
 	// Generate the word for the day
-	tm := data.Session.DateUser(data.TZ)
+	tm := data.Session.DateUser()
 	word, err := wordStore.GetForDay(ctx, tm, data.Session.Mode)
 	if err != nil {
 		return err

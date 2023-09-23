@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -77,9 +78,9 @@ func (s *Session) Current() *SessionMode {
 	return s.History[s.Mode]
 }
 
-func (s *Session) DateUser(tz int) time.Time {
+func (s *Session) DateUser() time.Time {
 	m := s.Current()
-	return convertUTCToUser(m.Start, tz)
+	return m.Start
 }
 
 func (s *Session) Save() error {
@@ -126,19 +127,43 @@ func (m *SessionMode) CommonGuessPrefix() string {
 	return before[0:minWord]
 }
 
-func (m *SessionMode) DateUser(tz int) time.Time {
-	return convertUTCToUser(m.Start, tz)
+func (m *SessionMode) DateUser() time.Time {
+	return m.Start
+}
+
+var remainingSeedTime time.Time
+
+func (m *SessionMode) RemainingTime() string {
+	now := time.Now()
+	if !remainingSeedTime.IsZero() {
+		now = remainingSeedTime
+	}
+
+	tomorrow := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
+
+	// The time between tomorrow (midnight) and right now
+	interval := tomorrow.Sub(now)
+
+	// Number of hours, floating point precision
+	hours := math.Floor(interval.Hours())
+
+	// Subtract the truncated hours=>minutes from the total minutes
+	minutes := math.Floor(interval.Minutes() - (hours * 60))
+
+	// Truncate the hours & minutes, and print
+	hoursStr := "hours"
+	if hours >= 1 && hours < 2 {
+		hoursStr = "hour"
+	}
+
+	minutesStr := "minutes"
+	if minutes >= 1 && minutes < 2 {
+		minutesStr = "minute"
+	}
+	return fmt.Sprintf("%0.f %s, %0.f %s", hours, hoursStr, minutes, minutesStr)
 }
 
 func (m *SessionMode) Stale() bool {
 	now := time.Now()
 	return m.Start.Month() != now.Month() || m.Start.Day() != now.Day()
-}
-
-// convertUTCToLocal will take a given time in UTC and convert it to a given user's timezone
-// TZ for PDT (-7:00) is a positive 420, so SUBTRACT that from the unix timestamp
-func convertUTCToUser(t time.Time, tz int) time.Time {
-	ret := t.In(time.FixedZone("User", tz*-1))
-	ret = ret.Add(time.Minute * -1 * time.Duration(tz))
-	return ret
 }

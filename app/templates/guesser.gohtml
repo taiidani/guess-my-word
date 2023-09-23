@@ -54,10 +54,13 @@
             {{ end }}
 
           {{ else }}
-            <p>
+            <form method="POST" action="/reset" style="display: inline">
                 🎉 You guessed "{{ .Answer }}" correctly with
-                {{ .GuessCount }} tries. Come back tomorrow for another!
-            </p>
+                {{ .GuessCount }} tries.
+                {{ if .Stale }} A new word is available! <button type="submit" class="btn btn-success">Start guessing</button>
+                {{ else }} Come back in {{ .RemainingTime }} for another!
+                {{ end}}
+            </form>
           {{ end }}
           </section>
       </div>
