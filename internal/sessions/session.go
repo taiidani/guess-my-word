@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -130,10 +131,36 @@ func (m *SessionMode) DateUser() time.Time {
 	return m.Start
 }
 
-func (m *SessionMode) RemainingTime() time.Duration {
+var remainingSeedTime time.Time
+
+func (m *SessionMode) RemainingTime() string {
 	now := time.Now()
+	if !remainingSeedTime.IsZero() {
+		now = remainingSeedTime
+	}
+
 	tomorrow := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
-	return tomorrow.Sub(now).Round(time.Minute)
+
+	// The time between tomorrow (midnight) and right now
+	interval := tomorrow.Sub(now)
+
+	// Number of hours, floating point precision
+	hours := math.Floor(interval.Hours())
+
+	// Subtract the truncated hours=>minutes from the total minutes
+	minutes := math.Floor(interval.Minutes() - (hours * 60))
+
+	// Truncate the hours & minutes, and print
+	hoursStr := "hours"
+	if hours >= 1 && hours < 2 {
+		hoursStr = "hour"
+	}
+
+	minutesStr := "minutes"
+	if minutes >= 1 && minutes < 2 {
+		minutesStr = "minute"
+	}
+	return fmt.Sprintf("%0.f %s, %0.f %s", hours, hoursStr, minutes, minutesStr)
 }
 
 func (m *SessionMode) Stale() bool {
