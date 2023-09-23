@@ -15,7 +15,6 @@ type aboutBag struct {
 func AboutHandler(c *gin.Context) {
 	data := aboutBag{}
 	data.Page = "about"
-	data.List.Color = "422422"
 
 	s := sessions.New(c)
 	defer func() {

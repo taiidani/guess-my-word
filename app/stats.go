@@ -54,8 +54,7 @@ func StatsHandler(c *gin.Context) {
 	}
 
 	data := statsBag{}
-	data.Page = "about"
-	data.List.Color = "422422"
+	data.Page = "stats"
 	data.Yesterday = analyzeDay(wordYesterday)
 	data.YesterdayHard = analyzeDay(wordYesterdayHard)
 	data.Today = analyzeDay(wordToday)

@@ -1,36 +1,27 @@
+:root {
+    --text-color: #eee;
+}
+
 body {
     background-color: #224;
-    color: #eee;
+    color: var(--text-color);
 }
 
 a {
-    color: #eee;
+    color: var(--text-color);
     text-decoration: underline;
+}
+
+[data-bs-theme="dark"] {
+    --bs-tertiary-bg-rgb: 32, 99, 172;
 }
 
 nav img {
     height: 1.5em;
 }
 
-header {
-    background-color: #5295de;
-    padding: 10px 20px;
-    margin-bottom: 1em;
-    border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px;
-}
-
-header a {
-    text-decoration: none;
-}
-
-header h1 {
-    display: inline;
-    font-size: 30px;
-}
-
 hr {
-    border-color: #eee;
+    border-color: var(--text-color);
 }
 
 .htmx-indicator {
@@ -46,7 +37,7 @@ hr {
     height: 3em;
 }
 
-footer,
-footer a {
-    color: #111;
+footer {
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity));
+    color: var(--bs-body-color);
 }
