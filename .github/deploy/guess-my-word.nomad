@@ -7,8 +7,10 @@ job "guess-my-word" {
   type        = "service"
 
   update {
-    healthy_deadline  = "1m"
-    progress_deadline = "2m"
+    canary            = 1
+    healthy_deadline  = "2m"
+    progress_deadline = "3m"
+    auto_promote      = true
     auto_revert       = true
   }
 
@@ -104,7 +106,7 @@ job "guess-my-word" {
     }
 
     vault {
-      policies = ["hcp-root"]
+      policies = ["digitalocean-app"]
     }
   }
 }
