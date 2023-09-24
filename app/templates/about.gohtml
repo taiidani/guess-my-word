@@ -1,0 +1,26 @@
+{{ template "header.gohtml" .}}
+
+<h1>About</h1>
+
+<p>This is a pet project game around guessing a word based on its location in the alphabet. Users will provide a word, and the application will tell them if that word falls before or after the target in the alphabet. This process will then be repeated until the target is found. HINT: Think binary search trees!</p>
+
+<h1>Attributions</h1>
+
+<p>Originally inspired by <a href="https://hryanjones.com/guess-my-word/">https://hryanjones.com/guess-my-word/</a>.</p>
+
+<p>The Scrabble word list was obtained from <a href="https://sourceforge.net/projects/scrabbledict/">https://sourceforge.net/projects/scrabbledict/</a>.</p>
+
+<p>The backend web framework in use is Gin: <a href="https://gin-gonic.com">https://gin-gonic.com</a></p>
+
+<p>The frontend frameworks in use are:</p>
+
+<ul>
+    <li>Bootstrap: <a href="https://getbootstrap.com">https://getbootstrap.com</a></li>
+    <li>HTMX: <a href="https://htmx.org">https://htmx.org</a></li>
+</ul>
+
+<p>Persistence is being enabled using a Redis backend.</p>
+
+<p>View the source at <a href="https://github.com/taiidani/guess-my-word">https://github.com/taiidani/guess-my-word</a>.</p>
+
+{{ template "footer.gohtml" .}}

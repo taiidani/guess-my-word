@@ -28,6 +28,12 @@ type wordClient interface {
 	SetWord(ctx context.Context, key string, word model.Word) error
 }
 
+type baseBag struct {
+	Session *sessions.Session
+	Page    string
+	List    model.List
+}
+
 var (
 	listStore listClient
 	wordStore wordClient
@@ -71,9 +77,9 @@ func AddHandlers(r *gin.Engine) error {
 	r.Use(middlewareStandardHeaders())
 	r.GET("/", IndexHandler)
 	r.GET("/mode/:mode", IndexHandler)
+	r.GET("/about", AboutHandler)
 	r.GET("/ping", PingHandler)
-	r.GET("/stats/yesterday", YesterdayHandler)
-	r.GET("/stats/today", TodayHandler)
+	r.GET("/stats", StatsHandler)
 	r.POST("/guess", GuessHandler)
 	r.GET("/hint", HintHandler)
 	r.POST("/reset", ResetHandler)
@@ -89,16 +95,11 @@ func AddHandlers(r *gin.Engine) error {
 	return nil
 }
 
-type bodyData struct {
-	Session *sessions.Session // The session for the user
-}
+var fnPopulateSessionData func(s *sessions.Session) = func(s *sessions.Session) {}
 
-var fnPopulateTestSessionData func(s *sessions.Session) = func(s *sessions.Session) {}
-
-func parseBodyData(c *gin.Context) (bodyData, error) {
-	ret := bodyData{}
-	ret.Session = sessions.New(c)
-	fnPopulateTestSessionData(ret.Session)
+func startSession(c *gin.Context) (*sessions.Session, error) {
+	ret := sessions.New(c)
+	fnPopulateSessionData(ret)
 
 	return ret, nil
 }

@@ -1,37 +1,27 @@
+:root {
+    --text-color: #eee;
+}
+
 body {
     background-color: #224;
-    color: #eee;
+    color: var(--text-color);
 }
 
 a {
-    color: #eee;
+    color: var(--text-color);
     text-decoration: underline;
 }
 
-header {
-    background-color: #5295de;
-    padding: 10px 20px;
-    margin-bottom: 1em;
-    border-bottom-right-radius: 3px;
-    border-bottom-left-radius: 3px;
+[data-bs-theme="dark"] {
+    --bs-tertiary-bg-rgb: 32, 99, 172;
 }
 
-header a {
-    text-decoration: none;
-}
-
-header img {
-    display: inline-block;
-    max-height: 2em;
-}
-
-header h1 {
-    display: inline;
-    font-size: 30px;
+nav img {
+    height: 1.5em;
 }
 
 hr {
-    border-color: #eee;
+    border-color: var(--text-color);
 }
 
 .htmx-indicator {
@@ -45,4 +35,9 @@ hr {
 
 .guess-form #between-logo {
     height: 3em;
+}
+
+footer {
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity));
+    color: var(--bs-body-color);
 }

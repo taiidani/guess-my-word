@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
+	"guess_my_word/internal/sessions"
 	"log/slog"
 	"net/http"
 	"sort"
@@ -30,9 +31,9 @@ var guessMutex = sync.Mutex{}
 
 // GuessHandler is an API handler to process a user's guess.
 func GuessHandler(c *gin.Context) {
-	request, err := parseBodyData(c)
+	session, err := startSession(c)
 	if err != nil {
-		slog.Warn("Unable to parse body data", "error", err)
+		slog.Warn("Unable to start session", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
@@ -48,18 +49,18 @@ func GuessHandler(c *gin.Context) {
 		return
 	}
 
-	err = guessHandlerReply(c, request, word)
+	err = guessHandlerReply(c, session, word)
 	if err != nil {
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
-	if err := request.Session.Save(); err != nil {
+	if err := session.Save(); err != nil {
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
-	c.HTML(http.StatusOK, "guesser.gohtml", request.Session.Current())
+	c.HTML(http.StatusOK, "guesser.gohtml", session.Current())
 }
 
 var fnSetEndTime func() *time.Time = func() *time.Time {
@@ -67,7 +68,7 @@ var fnSetEndTime func() *time.Time = func() *time.Time {
 	return &now
 }
 
-func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
+func guessHandlerReply(ctx context.Context, session *sessions.Session, guess string) error {
 	// Only one guess operation may happen simultaneously
 	// This allows us to get the Word then modify it with new data without overriding anyone
 	// else's contributions
@@ -75,13 +76,13 @@ func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 	defer guessMutex.Unlock()
 
 	// Generate the word for the day
-	tm := data.Session.DateUser()
-	word, err := wordStore.GetForDay(ctx, tm, data.Session.Mode)
+	tm := session.DateUser()
+	word, err := wordStore.GetForDay(ctx, tm, session.Mode)
 	if err != nil {
 		return err
 	}
 
-	current := data.Session.Current()
+	current := session.Current()
 	switch strings.Compare(guess, word.Value) {
 	case -1:
 		for _, w := range current.Before {
@@ -108,7 +109,7 @@ func guessHandlerReply(ctx context.Context, data bodyData, guess string) error {
 			Count: len(current.Before) + len(current.After) + 1,
 		})
 
-		return wordStore.SetWord(ctx, datastore.WordKey(data.Session.Mode, tm), word)
+		return wordStore.SetWord(ctx, datastore.WordKey(session.Mode, tm), word)
 	}
 
 	return nil

@@ -17,11 +17,9 @@ test('guesses the default word', async ({ page }) => {
   await expect(page).toHaveTitle(/Guess My Word/)
 
   const lWordEntry = page.getByPlaceholder('Enter a word here')
-  const lStatsYesterday = page.locator("#stats-yesterday")
   const lGuessBefore = page.locator(".before")
   const lGuessAfter = page.locator(".after")
 
-  await expect(lStatsYesterday).toContainText(defaultYesterday)
   await expect(lGuessBefore).toHaveText('No guesses before the word')
   await expect(lGuessAfter).toHaveText('No guesses after the word')
 
@@ -52,7 +50,7 @@ test('guesses the default word', async ({ page }) => {
   // Correct guess
   await lWordEntry.type(defaultToday)
   await lWordEntry.press('Enter')
-  await expect(page.locator('#guesser').first()).toContainText('You guessed "' + defaultToday + '" correctly')
+  await expect(page.locator('.guess-form').first()).toContainText('You guessed "' + defaultToday + '" correctly')
   await expect(lGuessBefore).toHaveText('apple ham')
   await expect(lGuessAfter).toHaveText('yam zoo')
 })
@@ -61,15 +59,13 @@ test('guesses the hard word', async ({ page }) => {
   await page.goto('/api/seed');
   await page.waitForLoadState("load");
 
-  await page.goto('/?mode=hard')
+  await page.goto('/mode/hard')
   await expect(page).toHaveTitle(/Guess My Word/)
 
   const lWordEntry = page.getByPlaceholder('Enter a word here')
-  const lStatsYesterday = page.locator("#stats-yesterday")
   const lGuessBefore = page.locator(".before")
   const lGuessAfter = page.locator(".after")
 
-  await expect(lStatsYesterday).toContainText(hardYesterday)
   await expect(lGuessBefore).toHaveText('No guesses before the word')
   await expect(lGuessAfter).toHaveText('No guesses after the word')
 
@@ -100,7 +96,7 @@ test('guesses the hard word', async ({ page }) => {
   // Correct guess
   await lWordEntry.type(hardToday)
   await lWordEntry.press('Enter')
-  await expect(page.locator('#guesser').first()).toContainText('You guessed "' + hardToday + '" correctly')
+  await expect(page.locator('.guess-form').first()).toContainText('You guessed "' + hardToday + '" correctly')
   await expect(lGuessBefore).toHaveText('apple cherry')
   await expect(lGuessAfter).toHaveText('tree trunk')
 })

@@ -141,7 +141,7 @@ func Test_HintHandler(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fnPopulateTestSessionData = tt.session
+			fnPopulateSessionData = tt.session
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", "/hint", nil)

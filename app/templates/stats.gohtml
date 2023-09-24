@@ -1,6 +1,37 @@
-<div>
-    {{ if .Word }} <div><strong>Word:</strong> {{ .Word }}</div>{{ end }}
-    <div><strong>Completions:</strong> {{ .Completions }}</div>
-    <div><strong>Best Run:</strong> {{ .BestRun }}</div>
-    <div><strong>Average Run:</strong> {{ .AvgRun }}</div>
+{{ template "header.gohtml" . }}
+
+<div class="row list-default">
+    <h2>Default</h2>
+    <div class="col-md-6 yesterday">
+        <h3>
+        <i class="bi bi-clock-history"></i> Yesterday's Stats
+        </h3>
+        {{ template "stats_block.gohtml" .Yesterday }}
+    </div>
+    <div class="col today">
+        <h3>
+        <i class="bi bi-bar-chart-fill"></i> Today's Stats
+        </h3>
+        {{ template "stats_block.gohtml" .Today }}
+    </div>
 </div>
+
+<hr/>
+
+<div class="row list-hard">
+    <h2>Hard</h2>
+    <div class="col-md-6 yesterday">
+        <h3>
+        <i class="bi bi-clock-history"></i> Yesterday's Stats
+        </h3>
+        {{ template "stats_block.gohtml" .YesterdayHard }}
+    </div>
+    <div class="col today">
+        <h3>
+        <i class="bi bi-bar-chart-fill"></i> Today's Stats
+        </h3>
+        {{ template "stats_block.gohtml" .TodayHard }}
+    </div>
+</div>
+
+{{ template "footer.gohtml" . }}

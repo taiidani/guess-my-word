@@ -18,16 +18,16 @@ const (
 
 // HintHandler is an API handler to provide a hint to a user.
 func HintHandler(c *gin.Context) {
-	request, err := parseBodyData(c)
+	session, err := startSession(c)
 	if err != nil {
-		slog.Warn("Unable to parse body data", "error", err)
+		slog.Warn("Unable to start session", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
 	// Generate the word for the day
-	h := request.Session.Current()
-	word, err := wordStore.GetForDay(c, h.DateUser(), request.Session.Mode)
+	h := session.Current()
+	word, err := wordStore.GetForDay(c, h.DateUser(), session.Mode)
 	if err != nil {
 		c.HTML(http.StatusBadRequest, "error.gohtml", err.Error())
 		return
