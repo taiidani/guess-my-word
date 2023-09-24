@@ -12,17 +12,9 @@
         </div>
     </div>
 
-    {{ if .History.Stale }}
-    <div class="alert alert-warning" role="alert">
-        <form method="POST" action="/reset">
-            A new day has dawned, and a fresh word is available! <button type="submit" class="btn btn-success">Start guessing</button>.
-        </form>
-    </div>
-    {{ end }}
-
     <div class="row">
         <div id="guesser" class="col-md-6 offset-md-3">
-            {{ template "guesser.gohtml" .History }}
+            {{ template "guesser.gohtml" .Session.Current }}
         </div>
     </div>
 </div>

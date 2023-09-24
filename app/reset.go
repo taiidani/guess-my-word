@@ -8,14 +8,14 @@ import (
 )
 
 func ResetHandler(c *gin.Context) {
-	request, err := parseBodyData(c)
+	session, err := startSession(c)
 	if err != nil {
-		slog.Warn("Unable to parse body data", "error", err)
+		slog.Warn("Unable to start session", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
-	if err := request.Session.Clear(); err != nil {
+	if err := session.Clear(); err != nil {
 		c.HTML(http.StatusInternalServerError, "error.gohtml", err.Error())
 		return
 	}

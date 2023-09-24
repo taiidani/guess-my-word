@@ -23,8 +23,15 @@ type statsBag struct {
 
 // StatsHandler is an HTML handler for pre-populating data to test with.
 func StatsHandler(c *gin.Context) {
+	session, err := startSession(c)
+	if err != nil {
+		slog.Warn("Unable to start session", "error", err)
+		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		return
+	}
+
 	// Set up the days
-	dateToday := time.Now()
+	dateToday := session.DateUser()
 	dateYesterday := dateToday.Add(time.Hour * -24)
 
 	// Generate the word for the day
@@ -54,6 +61,7 @@ func StatsHandler(c *gin.Context) {
 	}
 
 	data := statsBag{}
+	data.Session = session
 	data.Page = "stats"
 	data.Yesterday = analyzeDay(wordYesterday)
 	data.YesterdayHard = analyzeDay(wordYesterdayHard)
@@ -66,15 +74,15 @@ func StatsHandler(c *gin.Context) {
 
 // YesterdayHandler is an HTML handler for pre-populating data to test with.
 func YesterdayHandler(c *gin.Context) {
-	request, err := parseBodyData(c)
+	session, err := startSession(c)
 	if err != nil {
-		slog.Warn("Unable to parse body data", "error", err)
+		slog.Warn("Unable to start session", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
 	// Subtract one day for yesterday
-	dateUser := request.Session.DateUser().Add(time.Hour * -24)
+	dateUser := session.DateUser().Add(time.Hour * -24)
 
 	// Is it too early to reveal the word?
 	y, m, d := time.Now().Date()
@@ -87,7 +95,7 @@ func YesterdayHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, dateUser, request.Session.Mode)
+	word, err := wordStore.GetForDay(c, dateUser, session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
@@ -100,15 +108,15 @@ func YesterdayHandler(c *gin.Context) {
 
 // TodayHandler is an HTML handler for pre-populating data to test with.
 func TodayHandler(c *gin.Context) {
-	request, err := parseBodyData(c)
+	session, err := startSession(c)
 	if err != nil {
-		slog.Warn("Unable to parse body data", "error", err)
+		slog.Warn("Unable to start session", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)
 		return
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, request.Session.DateUser(), request.Session.Mode)
+	word, err := wordStore.GetForDay(c, session.DateUser(), session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)

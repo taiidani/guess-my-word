@@ -16,9 +16,9 @@ func AboutHandler(c *gin.Context) {
 	data := aboutBag{}
 	data.Page = "about"
 
-	s := sessions.New(c)
+	data.Session = sessions.New(c)
 	defer func() {
-		if err := s.Save(); err != nil {
+		if err := data.Session.Save(); err != nil {
 			slog.Warn("Unable to save session", "error", err)
 		}
 	}()

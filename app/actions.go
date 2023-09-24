@@ -29,8 +29,9 @@ type wordClient interface {
 }
 
 type baseBag struct {
-	Page string
-	List model.List
+	Session *sessions.Session
+	Page    string
+	List    model.List
 }
 
 var (
@@ -94,16 +95,11 @@ func AddHandlers(r *gin.Engine) error {
 	return nil
 }
 
-type bodyData struct {
-	Session *sessions.Session // The session for the user
-}
+var fnPopulateSessionData func(s *sessions.Session) = func(s *sessions.Session) {}
 
-var fnPopulateTestSessionData func(s *sessions.Session) = func(s *sessions.Session) {}
-
-func parseBodyData(c *gin.Context) (bodyData, error) {
-	ret := bodyData{}
-	ret.Session = sessions.New(c)
-	fnPopulateTestSessionData(ret.Session)
+func startSession(c *gin.Context) (*sessions.Session, error) {
+	ret := sessions.New(c)
+	fnPopulateSessionData(ret)
 
 	return ret, nil
 }

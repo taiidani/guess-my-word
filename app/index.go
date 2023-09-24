@@ -11,17 +11,16 @@ import (
 
 type indexBag struct {
 	baseBag
-	Mode    string
-	History *sessions.SessionMode
+	Mode string
 }
 
 func IndexHandler(c *gin.Context) {
 	data := indexBag{}
 	data.Page = "home"
 
-	s := sessions.New(c)
+	data.Session = sessions.New(c)
 	defer func() {
-		if err := s.Save(); err != nil {
+		if err := data.Session.Save(); err != nil {
 			slog.Warn("Unable to save session", "error", err)
 		}
 	}()
@@ -34,7 +33,7 @@ func IndexHandler(c *gin.Context) {
 	default:
 		data.Mode = "default"
 	}
-	s.Mode = data.Mode
+	data.Session.Mode = data.Mode
 
 	// Load list data for the current mode
 	// This also validates that it is an existing mode
@@ -44,8 +43,6 @@ func IndexHandler(c *gin.Context) {
 		c.HTML(http.StatusBadRequest, "error.gohtml", fmt.Sprintf("Could not load list %q: %s", data.Mode, err))
 		return
 	}
-
-	data.History = s.Current()
 
 	c.HTML(http.StatusOK, "index.gohtml", data)
 }
