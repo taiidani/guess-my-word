@@ -28,7 +28,7 @@ func SeedHandler(c *gin.Context) {
 		// The answer is "website"
 		// Yesterday's answer is "worst"
 		"default": {
-			Start:  time.Date(2022, 11, 8, 0, 0, 0, 0, time.UTC),
+			Start:  time.Date(2022, 11, 7, 0, 0, 0, 0, time.UTC),
 			Before: []string{},
 			After:  []string{},
 		},
@@ -36,7 +36,7 @@ func SeedHandler(c *gin.Context) {
 		// The answer is "gemshorn"
 		// Yesterday's answer is "gabbroid"
 		"hard": {
-			Start:  time.Date(2022, 11, 8, 0, 0, 0, 0, time.UTC),
+			Start:  time.Date(2022, 11, 7, 0, 0, 0, 0, time.UTC),
 			Before: []string{},
 			After:  []string{},
 		},

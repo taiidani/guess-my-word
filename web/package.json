@@ -3,7 +3,7 @@
   "private": true,
   "devDependencies": {
     "@playwright/test": "^1.37.1",
-    "@types/node": "^20.5.1"
+    "@types/node": "^20.5.7"
   },
   "browserslist": [
     "> 1%",

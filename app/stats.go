@@ -74,7 +74,7 @@ func YesterdayHandler(c *gin.Context) {
 	}
 
 	// Subtract one day for yesterday
-	dateUser := request.Session.DateUser(request.TZ).Add(time.Hour * -24)
+	dateUser := request.Session.DateUser().Add(time.Hour * -24)
 
 	// Is it too early to reveal the word?
 	y, m, d := time.Now().Date()
@@ -108,7 +108,7 @@ func TodayHandler(c *gin.Context) {
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, request.Session.DateUser(request.TZ), request.Session.Mode)
+	word, err := wordStore.GetForDay(c, request.Session.DateUser(), request.Session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
 		c.HTML(http.StatusBadRequest, "error.gohtml", err)

@@ -27,7 +27,7 @@ func HintHandler(c *gin.Context) {
 
 	// Generate the word for the day
 	h := request.Session.Current()
-	word, err := wordStore.GetForDay(c, h.DateUser(request.TZ), request.Session.Mode)
+	word, err := wordStore.GetForDay(c, h.DateUser(), request.Session.Mode)
 	if err != nil {
 		c.HTML(http.StatusBadRequest, "error.gohtml", err.Error())
 		return
