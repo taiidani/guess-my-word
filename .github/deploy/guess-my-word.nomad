@@ -22,7 +22,7 @@ job "guess-my-word" {
   }
 
   group "app" {
-    count = 2
+    count = 1
 
     task "app" {
       driver = "exec"
