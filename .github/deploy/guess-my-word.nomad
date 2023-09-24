@@ -13,7 +13,9 @@ job "guess-my-word" {
   }
 
   reschedule {
-    attempts  = 1
+    attempts  = 11
+    interval  = "1m"
+    delay     = "15s"
     unlimited = false
   }
 
@@ -95,12 +97,6 @@ job "guess-my-word" {
         cpu    = 50
         memory = 128
       }
-    }
-
-    volume "hashistack" {
-      type      = "host"
-      source    = "hashistack"
-      read_only = "false"
     }
 
     network {
