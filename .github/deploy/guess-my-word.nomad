@@ -13,7 +13,7 @@ job "guess-my-word" {
   }
 
   reschedule {
-    attempts  = 0
+    attempts  = 1
     unlimited = false
   }
 
