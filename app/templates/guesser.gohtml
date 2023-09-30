@@ -21,17 +21,20 @@
   <section>
     {{ if not .Answer }}
       <form method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
+        <div class="hstack gap-2">
           <img
           id="between-logo"
           src="/assets/between.svg"
           alt="Page Break by Arthur Shlain from the Noun Project"
           />
+          <img class="htmx-indicator" src="/assets/loading.svg" />
 
           {{ $commonGuess := .CommonGuessPrefix }}
           <label>
           <input
               id="guess-input"
               name="word"
+              class="form-control"
               placeholder="{{ if $commonGuess }}Starting with '{{ $commonGuess }}'{{ else }}Enter a word here{{ end }}"
               autocomplete="off"
               autocorrect="off"
@@ -42,7 +45,7 @@
           </label>
 
           <button class="btn btn-primary" type="submit">Guess</button>
-          <img class="htmx-indicator" src="/assets/loading.svg" />
+        </div>
       </form>
 
       {{ if and (gt .GuessCount 15) }}

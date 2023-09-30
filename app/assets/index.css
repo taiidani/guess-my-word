@@ -1,9 +1,14 @@
 :root {
     --text-color: #eee;
+    --default-bg-color: #224;
+}
+
+body.mode-Hard {
+    --default-bg-color: #422;
 }
 
 body {
-    background-color: #224;
+    background-color: var(--default-bg-color);
     color: var(--text-color);
 }
 
@@ -24,17 +29,21 @@ hr {
     border-color: var(--text-color);
 }
 
-.htmx-indicator {
-    display: inline;
-    height: 2em;
-}
-
 .guess-form section {
     padding: 1em 0;
 }
 
-.guess-form #between-logo {
+.guess-form .htmx-indicator {
+    position: absolute;
+    background-color: var(--default-bg-color);
+    opacity: 1;
+}
+
+/* These need to match exactly, as the indicator must obscure the between logo */
+.guess-form #between-logo,
+.guess-form .htmx-indicator {
     height: 3em;
+    width: 3em;
 }
 
 footer {
