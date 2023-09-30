@@ -84,15 +84,23 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 	return word, nil
 }
 
-// Validate will confirm if a given word is valid
-func (w *WordStore) Validate(ctx context.Context, word string) bool {
-	for _, line := range w.scrabble {
+// Validate will confirm if a given word is valid.
+//
+// It will return the position of the word in the Scrabble list as well as
+// a boolean indicating if it was found.
+func (w *WordStore) Validate(ctx context.Context, word string) (int, bool) {
+	for i, line := range w.scrabble {
 		if line == word {
-			return true
+			return i, true
 		}
 	}
 
-	return false
+	return 0, false
+}
+
+// DictionarySize will return the total size of the Scrabble dictionary.
+func (w *WordStore) DictionarySize() int {
+	return len(w.scrabble)
 }
 
 func (w *WordStore) GetWord(ctx context.Context, key string) (model.Word, error) {
@@ -103,6 +111,9 @@ func (w *WordStore) SetWord(ctx context.Context, key string, word model.Word) er
 	return w.client.SetWord(ctx, strings.ToLower(key), word)
 }
 
+// generateWord will determine the word for the given time and list.
+//
+// It will return the word, or an error.
 func (w *WordStore) generateWord(seed time.Time, words []string) (string, error) {
 	if seed.Unix() == 0 {
 		return "", fmt.Errorf("invalid timestamp for word")

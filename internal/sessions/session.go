@@ -29,8 +29,14 @@ type SessionMode struct {
 	// End tracks when the correct guess was made
 	End *time.Time `json:"end"`
 
+	// BeforeI tracks the numeric index of the closest lower guess in the full Scrabble dictionary.
+	BeforeI int `json:"before_i"`
+
 	// Before tracks all guesses that the correct word is before
 	Before []string `json:"before"`
+
+	// AfterI tracks the numeric index of the closest higher guess in the full Scrabble dictionary.
+	AfterI int `json:"after_i"`
 
 	// After tracks all guesses that the correct word is after
 	After []string `json:"after"`
@@ -134,7 +140,7 @@ func (m *SessionMode) DateUser() time.Time {
 var remainingSeedTime time.Time
 
 func (m *SessionMode) RemainingTime() string {
-	now := time.Now()
+	now := time.Now().UTC()
 	if !remainingSeedTime.IsZero() {
 		now = remainingSeedTime
 	}

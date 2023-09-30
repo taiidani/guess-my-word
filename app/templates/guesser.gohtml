@@ -3,7 +3,24 @@
 {{ $length := 0 }}
 {{ if .Session.Before }}{{ $length = len (slice .Session.Before 1) }}{{ end }}
 
+{{ if not .Session.Answer }}
+  <div class="progress-stacked">
+    <div class="progress" role="progressbar" aria-label="Before" aria-valuenow="{{ .ProgressBefore }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ .ProgressBefore }}%">
+      <div class="progress-bar bg-secondary text-end">{{ if .Session.Before }}{{ index .Session.Before $length}}{{ end }}</div>
+    </div>
+    <div class="progress" role="progressbar" aria-label="Range" aria-valuenow="{{ .ProgressRange }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ .ProgressRange }}%">
+      <div class="progress-bar bg-primary progress-bar-striped"></div>
+    </div>
+    <div class="progress" role="progressbar" aria-label="After" aria-valuenow="{{ .ProgressAfter }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ .ProgressAfter }}%">
+      <div class="progress-bar bg-secondary text-start">{{ if .Session.After }}{{ index .Session.After 0}}{{ end }}</div>
+    </div>
+  </div>
+{{ end }}
+
+<hr/>
+
 <div class="col-md-6 offset-md-3">
+{{ if .Session.Answer }}
 <ul class="list-group before">
   {{ range $i, $el := .Session.Before }}
     <li class="list-group-item guess {{ if eq $i ($length) }}active{{ else }}disabled{{ end }}">
@@ -17,6 +34,7 @@
     </li>
   {{ end }}
 </ul>
+{{ end }}
 
 <div class="guess-form">
   <section>
@@ -83,6 +101,7 @@
   </section>
 </div>
 
+{{ if .Session.Answer }}
 <ul class="list-group after">
   {{ range $i, $em := .Session.After }}
   <li class="list-group-item guess {{ if not $i }}active{{ else }}disabled{{ end }}">
@@ -96,4 +115,5 @@
   </li>
   {{ end }}
 </ul>
+{{ end }}
 </div>

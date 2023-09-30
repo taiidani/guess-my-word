@@ -32,6 +32,15 @@ type guessBag struct {
 	Session *sessions.SessionMode
 
 	Stats model.WordStats
+
+	// The position in the dictionary of the closest word before the answer
+	ProgressBefore float32
+
+	// The remaining percentage after before/after have been calculated
+	ProgressRange float32
+
+	// The position in the dictionary of the closest word after the answer
+	ProgressAfter float32
 }
 
 var guessMutex = sync.Mutex{}
@@ -51,12 +60,15 @@ func GuessHandler(c *gin.Context) {
 	if len(guess) == 0 {
 		errorResponse(c, http.StatusBadRequest, errors.New(ErrEmptyGuess))
 		return
-	} else if !wordStore.Validate(c, guess) {
+	}
+
+	wordI, found := wordStore.Validate(c, guess)
+	if !found {
 		errorResponse(c, http.StatusBadRequest, errors.New(ErrInvalidWord))
 		return
 	}
 
-	word, err := guessHandlerReply(c, session, guess)
+	word, err := guessHandlerReply(c, session, wordI, guess)
 	if err != nil {
 		errorResponse(c, http.StatusBadRequest, err)
 		return
@@ -72,9 +84,19 @@ func GuessHandler(c *gin.Context) {
 }
 
 func fillGuessBag(s *sessions.SessionMode, w wordClient, word model.Word) guessBag {
+	dictSize := w.DictionarySize()
+
+	slog.Info("Current word stats",
+		"BeforeI", s.BeforeI,
+		"AfterI", s.AfterI,
+		"DictSize", dictSize,
+	)
 	bag := guessBag{}
 	bag.Session = s
 	bag.Stats = word.Stats()
+	bag.ProgressBefore = float32(s.BeforeI) / float32(dictSize) * 100
+	bag.ProgressAfter = (float32(dictSize) - float32(s.AfterI)) / float32(dictSize) * 100
+	bag.ProgressRange = 100 - bag.ProgressBefore - bag.ProgressAfter
 	return bag
 }
 
@@ -83,7 +105,7 @@ var fnSetEndTime func() *time.Time = func() *time.Time {
 	return &now
 }
 
-func guessHandlerReply(ctx context.Context, session *sessions.Session, guess string) (model.Word, error) {
+func guessHandlerReply(ctx context.Context, session *sessions.Session, guessI int, guess string) (model.Word, error) {
 	// Only one guess operation may happen simultaneously
 	// This allows us to get the Word then modify it with new data without overriding anyone
 	// else's contributions
@@ -107,6 +129,7 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 		}
 		current.Before = append(current.Before, guess)
 		sort.Strings(current.Before)
+		current.BeforeI, _ = wordStore.Validate(ctx, current.Before[len(current.Before)-1])
 	case 1:
 		for _, w := range current.After {
 			if w == guess {
@@ -115,6 +138,7 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 		}
 		current.After = append(current.After, guess)
 		sort.Strings(current.After)
+		current.AfterI, _ = wordStore.Validate(ctx, current.After[0])
 	case 0:
 		current.Answer = guess
 		current.End = fnSetEndTime()

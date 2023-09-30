@@ -157,9 +157,10 @@ func TestWordStore_Validate(t *testing.T) {
 		word string
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name      string
+		args      args
+		wantI     int
+		wantFound bool
 	}{
 		{
 			name: "Valid",
@@ -167,7 +168,8 @@ func TestWordStore_Validate(t *testing.T) {
 				ctx:  context.Background(),
 				word: "happy",
 			},
-			want: true,
+			wantI:     101650,
+			wantFound: true,
 		},
 		{
 			name: "Invalid",
@@ -175,7 +177,8 @@ func TestWordStore_Validate(t *testing.T) {
 				ctx:  context.Background(),
 				word: "yppah",
 			},
-			want: false,
+			wantI:     0,
+			wantFound: false,
 		},
 	}
 	for _, tt := range tests {
@@ -184,8 +187,12 @@ func TestWordStore_Validate(t *testing.T) {
 				scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
 			}
 
-			if got := w.Validate(tt.args.ctx, tt.args.word); got != tt.want {
-				t.Errorf("Validate() = %v, want %v", got, tt.want)
+			gotI, gotFound := w.Validate(tt.args.ctx, tt.args.word)
+			if gotI != tt.wantI {
+				t.Errorf("Validate() i = %d, want %d", gotI, tt.wantI)
+			}
+			if gotFound != tt.wantFound {
+				t.Errorf("Validate() found = %v, want %v", gotFound, tt.wantFound)
 			}
 		})
 	}

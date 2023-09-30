@@ -21,6 +21,12 @@ a {
     --bs-tertiary-bg-rgb: 32, 99, 172;
 }
 
+.progress,
+.progress-stacked {
+    --bs-progress-height: 2.1rem;
+    --bs-progress-font-size: 2rem;
+}
+
 nav img {
     height: 1.5em;
 }
