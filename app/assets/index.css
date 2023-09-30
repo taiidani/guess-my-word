@@ -36,7 +36,6 @@ hr {
 .guess-form .htmx-indicator {
     position: absolute;
     background-color: var(--default-bg-color);
-    opacity: 1;
 }
 
 /* These need to match exactly, as the indicator must obscure the between logo */
