@@ -2,6 +2,7 @@ package app
 
 import (
 	_ "embed"
+	"errors"
 	"guess_my_word/internal/model"
 	"log/slog"
 	"net/http"
@@ -26,7 +27,7 @@ func StatsHandler(c *gin.Context) {
 	session, err := startSession(c)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -38,25 +39,25 @@ func StatsHandler(c *gin.Context) {
 	wordYesterday, err := wordStore.GetForDay(c, dateYesterday, "default")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 	wordYesterdayHard, err := wordStore.GetForDay(c, dateYesterday, "hard")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 	wordToday, err := wordStore.GetForDay(c, dateToday, "default")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 	wordTodayHard, err := wordStore.GetForDay(c, dateToday, "hard")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -77,7 +78,7 @@ func YesterdayHandler(c *gin.Context) {
 	session, err := startSession(c)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -90,7 +91,7 @@ func YesterdayHandler(c *gin.Context) {
 
 	if dateUser.After(cmp) {
 		slog.Warn("Too early to reveal word", "date", dateUser)
-		c.HTML(http.StatusBadRequest, "error.gohtml", ErrRevealToday)
+		errorResponse(c, http.StatusBadRequest, errors.New(ErrRevealToday))
 		return
 	}
 
@@ -98,7 +99,7 @@ func YesterdayHandler(c *gin.Context) {
 	word, err := wordStore.GetForDay(c, dateUser, session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -111,7 +112,7 @@ func TodayHandler(c *gin.Context) {
 	session, err := startSession(c)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -119,7 +120,7 @@ func TodayHandler(c *gin.Context) {
 	word, err := wordStore.GetForDay(c, session.DateUser(), session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 

@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
@@ -34,7 +35,7 @@ func GuessHandler(c *gin.Context) {
 	session, err := startSession(c)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -42,21 +43,21 @@ func GuessHandler(c *gin.Context) {
 
 	// Validate the guess
 	if len(word) == 0 {
-		c.HTML(http.StatusBadRequest, "error.gohtml", ErrEmptyGuess)
+		errorResponse(c, http.StatusBadRequest, errors.New(ErrEmptyGuess))
 		return
 	} else if !wordStore.Validate(c, word) {
-		c.HTML(http.StatusBadRequest, "error.gohtml", ErrInvalidWord)
+		errorResponse(c, http.StatusBadRequest, errors.New(ErrInvalidWord))
 		return
 	}
 
 	err = guessHandlerReply(c, session, word)
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := session.Save(); err != nil {
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 

@@ -21,7 +21,7 @@ func HintHandler(c *gin.Context) {
 	session, err := startSession(c)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -29,7 +29,7 @@ func HintHandler(c *gin.Context) {
 	h := session.Current()
 	word, err := wordStore.GetForDay(c, h.DateUser(), session.Mode)
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "error.gohtml", err.Error())
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 

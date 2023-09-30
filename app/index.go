@@ -40,7 +40,7 @@ func IndexHandler(c *gin.Context) {
 	var err error
 	data.List, err = listStore.GetList(c, data.Mode)
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "error.gohtml", fmt.Sprintf("Could not load list %q: %s", data.Mode, err))
+		errorResponse(c, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
 		return
 	}
 

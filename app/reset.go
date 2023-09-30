@@ -11,12 +11,12 @@ func ResetHandler(c *gin.Context) {
 	session, err := startSession(c)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.HTML(http.StatusBadRequest, "error.gohtml", err)
+		errorResponse(c, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := session.Clear(); err != nil {
-		c.HTML(http.StatusInternalServerError, "error.gohtml", err.Error())
+		errorResponse(c, http.StatusInternalServerError, err)
 		return
 	}
 

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/assets/index.css" />
 </head>
 
-<body class="mode-{{ .List.Name }}">
+<body class="{{ if .List }}mode-{{ .List.Name }}{{ end }}">
     <noscript>
         <strong>We're sorry but Guess My Word doesn't work properly without JavaScript enabled.
             Please enable it to continue.</strong>
@@ -47,7 +47,7 @@
     </div>
     </nav>
 
-    {{ if .Session.Current.Stale }}
+    {{ if and .Session .Session.Current.Stale }}
     <div class="alert alert-warning" role="alert">
         <form method="POST" action="/reset">
             A new day has dawned, and a fresh word is available! <button type="submit" class="btn btn-success">Start guessing</button>.
