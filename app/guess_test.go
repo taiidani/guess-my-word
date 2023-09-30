@@ -1,6 +1,8 @@
 package app
 
 import (
+	"errors"
+	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
 	"html/template"
 	"net/http"
@@ -46,10 +48,12 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1587930259, 0), // generates "belong"
-				Before: []string{},
-				After:  []string{"power"},
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1587930259, 0), // generates "belong"
+					Before: []string{},
+					After:  []string{"power"},
+				},
 			}),
 		},
 		{
@@ -65,10 +69,12 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1587930259, 0), // generates "belong"
-				Before: []string{"apple"},
-				After:  []string{},
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1587930259, 0), // generates "belong"
+					Before: []string{"apple"},
+					After:  []string{},
+				},
 			}),
 		},
 		{
@@ -84,12 +90,17 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1587930259, 0), // generates "belong"
-				End:    &mockEndTime,
-				Before: []string{"apple"},
-				After:  []string{},
-				Answer: "belong",
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1587930259, 0), // generates "belong"
+					End:    &mockEndTime,
+					Before: []string{"apple"},
+					After:  []string{},
+					Answer: "belong",
+				},
+				Stats: model.WordStats{
+					BestRun: 2,
+				},
 			}),
 		},
 		{
@@ -105,7 +116,7 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("error.gohtml", ErrInvalidWord),
+			want: render("error.gohtml", errorBag{Message: errors.New(ErrInvalidWord)}),
 		},
 		{
 			name: "Empty word",
@@ -120,7 +131,7 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("error.gohtml", ErrEmptyGuess),
+			want: render("error.gohtml", errorBag{Message: errors.New(ErrEmptyGuess)}),
 		},
 		{
 			name: "Correct Tomorrow",
@@ -135,12 +146,17 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1588030259, 0), // generates "roll"
-				End:    &mockEndTime,
-				Before: []string{},
-				After:  []string{},
-				Answer: "roll",
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1588030259, 0), // generates "roll"
+					End:    &mockEndTime,
+					Before: []string{},
+					After:  []string{},
+					Answer: "roll",
+				},
+				Stats: model.WordStats{
+					BestRun: 1,
+				},
 			}),
 		},
 		{
@@ -156,12 +172,17 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1587830259, 0), // generates "laundry"
-				End:    &mockEndTime,
-				Before: []string{},
-				After:  []string{},
-				Answer: "laundry",
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1587830259, 0), // generates "laundry"
+					End:    &mockEndTime,
+					Before: []string{},
+					After:  []string{},
+					Answer: "laundry",
+				},
+				Stats: model.WordStats{
+					BestRun: 1,
+				},
 			}),
 		},
 		{
@@ -177,12 +198,17 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1587930259, 0), // generates "teth"
-				End:    &mockEndTime,
-				Before: []string{},
-				After:  []string{},
-				Answer: "teth",
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1587930259, 0), // generates "teth"
+					End:    &mockEndTime,
+					Before: []string{},
+					After:  []string{},
+					Answer: "teth",
+				},
+				Stats: model.WordStats{
+					BestRun: 1,
+				},
 			}),
 		},
 		{
@@ -198,12 +224,17 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("guesser.gohtml", &sessions.SessionMode{
-				Start:  time.Unix(1587830259, 0), // generates "tayra"
-				End:    &mockEndTime,
-				Before: []string{},
-				After:  []string{},
-				Answer: "tayra",
+			want: render("guesser.gohtml", guessBag{
+				Session: &sessions.SessionMode{
+					Start:  time.Unix(1587830259, 0), // generates "tayra"
+					End:    &mockEndTime,
+					Before: []string{},
+					After:  []string{},
+					Answer: "tayra",
+				},
+				Stats: model.WordStats{
+					BestRun: 1,
+				},
 			}),
 		},
 		{
@@ -219,7 +250,7 @@ func Test_GuessHandler(t *testing.T) {
 					},
 				}
 			},
-			want: render("error.gohtml", ErrEmptyGuess),
+			want: render("error.gohtml", errorBag{Message: errors.New(ErrEmptyGuess)}),
 		},
 	}
 	for _, tt := range tests {

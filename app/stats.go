@@ -16,10 +16,10 @@ const ErrRevealToday = "It's too early to reveal this word. Please try again lat
 
 type statsBag struct {
 	baseBag
-	Yesterday     replyData
-	YesterdayHard replyData
-	Today         replyData
-	TodayHard     replyData
+	Yesterday     model.WordStats
+	YesterdayHard model.WordStats
+	Today         model.WordStats
+	TodayHard     model.WordStats
 }
 
 // StatsHandler is an HTML handler for pre-populating data to test with.
@@ -64,11 +64,11 @@ func StatsHandler(c *gin.Context) {
 	data := statsBag{}
 	data.Session = session
 	data.Page = "stats"
-	data.Yesterday = analyzeDay(wordYesterday)
-	data.YesterdayHard = analyzeDay(wordYesterdayHard)
-	data.Today = analyzeDay(wordToday)
+	data.Yesterday = wordYesterday.Stats()
+	data.YesterdayHard = wordYesterdayHard.Stats()
+	data.Today = wordToday.Stats()
 	data.Today.Word = ""
-	data.TodayHard = analyzeDay(wordTodayHard)
+	data.TodayHard = wordTodayHard.Stats()
 	data.TodayHard.Word = ""
 	c.HTML(http.StatusOK, "stats.gohtml", data)
 }
@@ -103,7 +103,7 @@ func YesterdayHandler(c *gin.Context) {
 		return
 	}
 
-	data := analyzeDay(word)
+	data := word.Stats()
 	c.HTML(http.StatusOK, "stats.gohtml", data)
 }
 
@@ -124,42 +124,10 @@ func TodayHandler(c *gin.Context) {
 		return
 	}
 
-	data := analyzeDay(word)
+	data := word.Stats()
 
 	// Wipe the word from the data, as it's today
 	data.Word = ""
 
 	c.HTML(http.StatusOK, "stats.gohtml", data)
-}
-
-type replyData struct {
-	Word        string
-	Completions int
-	BestRun     int
-	AvgRun      int
-}
-
-func analyzeDay(word model.Word) replyData {
-	// If no one guessed that day
-	if len(word.Guesses) == 0 {
-		return replyData{Word: word.Value}
-	}
-
-	ret := replyData{
-		Word:        word.Value,
-		Completions: len(word.Guesses),
-		BestRun:     999,
-	}
-
-	var guessCount = 0
-	for _, item := range word.Guesses {
-		guessCount += item.Count
-
-		if item.Count < ret.BestRun {
-			ret.BestRun = item.Count
-		}
-	}
-
-	ret.AvgRun = guessCount / len(word.Guesses)
-	return ret
 }

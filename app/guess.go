@@ -28,6 +28,12 @@ const (
 	ErrEmptyGuess = "Guess must not be empty"
 )
 
+type guessBag struct {
+	Session *sessions.SessionMode
+
+	Stats model.WordStats
+}
+
 var guessMutex = sync.Mutex{}
 
 // GuessHandler is an API handler to process a user's guess.
@@ -39,18 +45,18 @@ func GuessHandler(c *gin.Context) {
 		return
 	}
 
-	word := strings.TrimSpace(c.Request.PostFormValue("word"))
+	guess := strings.TrimSpace(c.Request.PostFormValue("word"))
 
 	// Validate the guess
-	if len(word) == 0 {
+	if len(guess) == 0 {
 		errorResponse(c, http.StatusBadRequest, errors.New(ErrEmptyGuess))
 		return
-	} else if !wordStore.Validate(c, word) {
+	} else if !wordStore.Validate(c, guess) {
 		errorResponse(c, http.StatusBadRequest, errors.New(ErrInvalidWord))
 		return
 	}
 
-	err = guessHandlerReply(c, session, word)
+	word, err := guessHandlerReply(c, session, guess)
 	if err != nil {
 		errorResponse(c, http.StatusBadRequest, err)
 		return
@@ -61,7 +67,15 @@ func GuessHandler(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "guesser.gohtml", session.Current())
+	data := fillGuessBag(session.Current(), wordStore, word)
+	c.HTML(http.StatusOK, "guesser.gohtml", data)
+}
+
+func fillGuessBag(s *sessions.SessionMode, w wordClient, word model.Word) guessBag {
+	bag := guessBag{}
+	bag.Session = s
+	bag.Stats = word.Stats()
+	return bag
 }
 
 var fnSetEndTime func() *time.Time = func() *time.Time {
@@ -69,7 +83,7 @@ var fnSetEndTime func() *time.Time = func() *time.Time {
 	return &now
 }
 
-func guessHandlerReply(ctx context.Context, session *sessions.Session, guess string) error {
+func guessHandlerReply(ctx context.Context, session *sessions.Session, guess string) (model.Word, error) {
 	// Only one guess operation may happen simultaneously
 	// This allows us to get the Word then modify it with new data without overriding anyone
 	// else's contributions
@@ -80,7 +94,7 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 	tm := session.DateUser()
 	word, err := wordStore.GetForDay(ctx, tm, session.Mode)
 	if err != nil {
-		return err
+		return word, err
 	}
 
 	current := session.Current()
@@ -88,7 +102,7 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 	case -1:
 		for _, w := range current.Before {
 			if w == guess {
-				return fmt.Errorf("you have already guessed this word")
+				return word, fmt.Errorf("you have already guessed this word")
 			}
 		}
 		current.Before = append(current.Before, guess)
@@ -96,7 +110,7 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 	case 1:
 		for _, w := range current.After {
 			if w == guess {
-				return fmt.Errorf("you have already guessed this word")
+				return word, fmt.Errorf("you have already guessed this word")
 			}
 		}
 		current.After = append(current.After, guess)
@@ -110,8 +124,8 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 			Count: len(current.Before) + len(current.After) + 1,
 		})
 
-		return wordStore.SetWord(ctx, datastore.WordKey(session.Mode, tm), word)
+		return word, wordStore.SetWord(ctx, datastore.WordKey(session.Mode, tm), word)
 	}
 
-	return nil
+	return word, nil
 }

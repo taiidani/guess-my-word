@@ -1,10 +1,11 @@
-<ul class="list-group before">
-  {{/* Since templates don't support arithmetic, jumping through hoops to get N-1 */}}
-  {{/* It would be easier to simply know the last element in the array! */}}
-  {{ $length := 0 }}
-  {{ if .Before }}{{ $length = len (slice .Before 1) }}{{ end }}
+{{/* Since templates don't support arithmetic, jumping through hoops to get N-1 */}}
+{{/* It would be easier to simply know the last element in the array! */}}
+{{ $length := 0 }}
+{{ if .Session.Before }}{{ $length = len (slice .Session.Before 1) }}{{ end }}
 
-  {{ range $i, $el := .Before }}
+<div class="col-md-6 offset-md-3">
+<ul class="list-group before">
+  {{ range $i, $el := .Session.Before }}
     <li class="list-group-item guess {{ if eq $i ($length) }}active{{ else }}disabled{{ end }}">
       {{ if eq $i ($length) }}<strong>{{ . }}</strong>
       {{ else }}<span>{{ . }}</span>
@@ -19,7 +20,7 @@
 
 <div class="guess-form">
   <section>
-    {{ if not .Answer }}
+    {{ if not .Session.Answer }}
       <form method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
         <div class="hstack gap-2">
           <img
@@ -29,7 +30,7 @@
           />
           <img class="htmx-indicator" src="/assets/loading.svg" />
 
-          {{ $commonGuess := .CommonGuessPrefix }}
+          {{ $commonGuess := .Session.CommonGuessPrefix }}
           <label>
           <input
               id="guess-input"
@@ -48,26 +49,42 @@
         </div>
       </form>
 
-      {{ if and (gt .GuessCount 15) }}
+      {{ if and (gt .Session.GuessCount 15) }}
       <form method="GET" action="/hint" hx-get="/hint">
           <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
       </form>
       {{ end }}
 
-          {{ else }}
-            <form method="POST" action="/reset" style="display: inline">
-                🎉 You guessed "{{ .Answer }}" correctly with
-                {{ .GuessCount }} tries.
-                {{ if .Stale }} A new word is available! <button type="submit" class="btn btn-success">Start guessing</button>
-                {{ else }} Come back in {{ .RemainingTime }} for another!
-                {{ end}}
-            </form>
+    {{ else }}
+      <form method="POST" action="/reset" style="display: inline">
+        <p>
+          🎉 You guessed "{{ .Session.Answer }}" correctly with
+          <strong>{{ .Session.GuessCount }} tries</strong>.
+        </p>
+
+        <p>
+          {{ if eq .Session.GuessCount .Stats.BestRun }}🏆{{ end }}
+          The best attempt took <strong>{{ .Stats.BestRun }} tries</strong>.
+          {{ if eq .Session.GuessCount .Stats.BestRun }}Great job, you're the best run today!
           {{ end }}
-          </section>
-      </div>
+        </p>
+
+        <p>
+          📊 See the <a href="/stats">Stats</a> page for more information!
+        </p>
+
+        <p>
+          {{ if .Session.Stale }}✨ A new word is available! <button type="submit" class="btn btn-success">Start guessing</button>
+          {{ else }}⏳ Come back in {{ .Session.RemainingTime }} for another word!
+          {{ end }}
+        </p>
+      </form>
+    {{ end }}
+  </section>
+</div>
 
 <ul class="list-group after">
-  {{ range $i, $em := .After }}
+  {{ range $i, $em := .Session.After }}
   <li class="list-group-item guess {{ if not $i }}active{{ else }}disabled{{ end }}">
       {{ if not $i }}<strong>{{ . }}</strong>
       {{ else }}<span>{{ . }}</span>
@@ -79,3 +96,4 @@
   </li>
   {{ end }}
 </ul>
+</div>

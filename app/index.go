@@ -11,7 +11,8 @@ import (
 
 type indexBag struct {
 	baseBag
-	Mode string
+	Guesser guessBag
+	Mode    string
 }
 
 func IndexHandler(c *gin.Context) {
@@ -43,6 +44,16 @@ func IndexHandler(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
 		return
 	}
+
+	// Generate the word for the day
+	tm := data.Session.DateUser()
+	word, err := wordStore.GetForDay(c, tm, data.Session.Mode)
+	if err != nil {
+		errorResponse(c, http.StatusBadRequest, err)
+		return
+	}
+
+	data.Guesser = fillGuessBag(data.Session.Current(), wordStore, word)
 
 	c.HTML(http.StatusOK, "index.gohtml", data)
 }
