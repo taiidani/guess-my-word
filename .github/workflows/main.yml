@@ -13,7 +13,7 @@ jobs:
     outputs:
       version: ${{ steps.outputs.outputs.version }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -26,7 +26,7 @@ jobs:
         run: git tag v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}
 
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v5
         with:
           args: release --clean
         env:
