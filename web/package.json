@@ -2,8 +2,8 @@
   "name": "web",
   "private": true,
   "devDependencies": {
-    "@playwright/test": "^1.38.1",
-    "@types/node": "^20.8.0"
+    "@playwright/test": "^1.39.0",
+    "@types/node": "^20.8.10"
   },
   "browserslist": [
     "> 1%",
