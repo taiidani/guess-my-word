@@ -6,9 +6,9 @@ require (
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.1
-	github.com/gorilla/securecookie v1.1.1
-	github.com/gorilla/sessions v1.2.1
-	github.com/redis/go-redis/v9 v9.1.0
+	github.com/gorilla/securecookie v1.1.2
+	github.com/gorilla/sessions v1.2.2
+	github.com/redis/go-redis/v9 v9.3.0
 )
 
 require (
