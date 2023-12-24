@@ -4,6 +4,7 @@ import (
 	"errors"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
+	"guess_my_word/internal/words"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -54,6 +55,10 @@ func Test_GuessHandler(t *testing.T) {
 					Before: []string{},
 					After:  []string{"power"},
 				},
+				ProgressBefore:        0,
+				ProgressRange:         20,
+				ProgressAfter:         80,
+				ProgressAfterAbsolute: 20,
 			}),
 		},
 		{
@@ -75,6 +80,10 @@ func Test_GuessHandler(t *testing.T) {
 					Before: []string{"apple"},
 					After:  []string{},
 				},
+				ProgressBefore:        0,
+				ProgressRange:         100,
+				ProgressAfter:         0,
+				ProgressAfterAbsolute: 100,
 			}),
 		},
 		{
@@ -266,6 +275,102 @@ func Test_GuessHandler(t *testing.T) {
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("guess() = %#v, want %#v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_fillGuessBag(t *testing.T) {
+	type args struct {
+		s    *sessions.SessionMode
+		word model.Word
+	}
+	tests := []struct {
+		name string
+		args args
+		want guessBag
+	}{
+		{
+			name: "empty",
+			args: args{
+				s: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+			},
+			want: guessBag{
+				Session: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+				ProgressBefore:        0,
+				ProgressRange:         100,
+				ProgressAfter:         0,
+				ProgressAfterAbsolute: 100,
+			},
+		},
+		{
+			name: "before populated",
+			args: args{
+				s: &sessions.SessionMode{
+					BeforeI: 20000,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+			},
+			want: guessBag{
+				Session: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+				ProgressBefore:        7,
+				ProgressRange:         93,
+				ProgressAfter:         0,
+				ProgressAfterAbsolute: 100,
+			},
+		},
+		{
+			name: "after populated",
+			args: args{
+				s: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+			},
+			want: guessBag{
+				Session: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+				ProgressBefore:        0,
+				ProgressRange:         100,
+				ProgressAfter:         0,
+				ProgressAfterAbsolute: 100,
+			},
+		},
+		{
+			name: "both populated",
+			args: args{
+				s: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+			},
+			want: guessBag{
+				Session: &sessions.SessionMode{
+					BeforeI: 0,
+					AfterI:  words.ScrabbleDictionary.Size(), // Dictionary size
+				},
+				ProgressBefore:        0,
+				ProgressRange:         100,
+				ProgressAfter:         0,
+				ProgressAfterAbsolute: 100,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := fillGuessBag(tt.args.s, tt.args.word); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("fillGuessBag() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}

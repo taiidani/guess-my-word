@@ -135,7 +135,7 @@ func TestWordStore_GetForDay(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			w := &WordStore{
 				client:   tt.fields.client,
-				scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+				scrabble: ScrabbleDictionary.Words,
 				words:    strings.Split(strings.TrimSpace(wordList), "\n"),
 			}
 
@@ -146,53 +146,6 @@ func TestWordStore_GetForDay(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetForDay() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestWordStore_Validate(t *testing.T) {
-	type args struct {
-		ctx  context.Context
-		word string
-	}
-	tests := []struct {
-		name      string
-		args      args
-		wantI     int
-		wantFound bool
-	}{
-		{
-			name: "Valid",
-			args: args{
-				ctx:  context.Background(),
-				word: "happy",
-			},
-			wantI:     101650,
-			wantFound: true,
-		},
-		{
-			name: "Invalid",
-			args: args{
-				ctx:  context.Background(),
-				word: "yppah",
-			},
-			wantI:     0,
-			wantFound: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			w := WordStore{
-				scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
-			}
-
-			gotI, gotFound := w.Validate(tt.args.ctx, tt.args.word)
-			if gotI != tt.wantI {
-				t.Errorf("Validate() i = %d, want %d", gotI, tt.wantI)
-			}
-			if gotFound != tt.wantFound {
-				t.Errorf("Validate() found = %v, want %v", gotFound, tt.wantFound)
 			}
 		})
 	}

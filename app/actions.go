@@ -22,8 +22,6 @@ type listClient interface {
 }
 
 type wordClient interface {
-	DictionarySize() int
-	Validate(context.Context, string) (int, bool)
 	GetForDay(context.Context, time.Time, string) (model.Word, error)
 	GetWord(ctx context.Context, key string) (model.Word, error)
 	SetWord(ctx context.Context, key string, word model.Word) error

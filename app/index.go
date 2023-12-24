@@ -53,7 +53,7 @@ func IndexHandler(c *gin.Context) {
 		return
 	}
 
-	data.Guesser = fillGuessBag(data.Session.Current(), wordStore, word)
+	data.Guesser = fillGuessBag(data.Session.Current(), word)
 
 	c.HTML(http.StatusOK, "index.gohtml", data)
 }

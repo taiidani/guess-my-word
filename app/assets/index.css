@@ -21,10 +21,14 @@ a {
     --bs-tertiary-bg-rgb: 32, 99, 172;
 }
 
-.progress,
-.progress-stacked {
+.progress {
     --bs-progress-height: 2.1rem;
     --bs-progress-font-size: 2rem;
+}
+
+.rounded-pill {
+    height: 2rem;
+    font-size: 2rem;
 }
 
 nav img {

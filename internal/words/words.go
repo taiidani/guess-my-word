@@ -26,9 +26,6 @@ type (
 )
 
 var (
-	//go:embed sowpods.txt
-	scrabbleList string
-
 	// words were taken from the original inspiration for this app, https://hryanjones.com/guess-my-word/
 	// That project took the words from 1-1,000 common English words on TV and movies https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/TV/2006/1-1000
 	//go:embed words.txt
@@ -39,7 +36,7 @@ var (
 func NewWordStore(store Worder) *WordStore {
 	return &WordStore{
 		client:   store,
-		scrabble: strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+		scrabble: ScrabbleDictionary.Words,
 		words:    strings.Split(strings.TrimSpace(wordList), "\n"),
 	}
 }
@@ -82,25 +79,6 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 	}
 
 	return word, nil
-}
-
-// Validate will confirm if a given word is valid.
-//
-// It will return the position of the word in the Scrabble list as well as
-// a boolean indicating if it was found.
-func (w *WordStore) Validate(ctx context.Context, word string) (int, bool) {
-	for i, line := range w.scrabble {
-		if line == word {
-			return i, true
-		}
-	}
-
-	return 0, false
-}
-
-// DictionarySize will return the total size of the Scrabble dictionary.
-func (w *WordStore) DictionarySize() int {
-	return len(w.scrabble)
 }
 
 func (w *WordStore) GetWord(ctx context.Context, key string) (model.Word, error) {

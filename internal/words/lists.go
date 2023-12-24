@@ -56,7 +56,7 @@ func (l *ListStore) GetList(ctx context.Context, name string) (model.List, error
 			list = model.List{
 				Name:        hardListName,
 				Description: "The hardest mode available -- represents the entire Scrabble dictionary",
-				Words:       strings.Split(strings.TrimSpace(scrabbleList), "\n"),
+				Words:       ScrabbleDictionary.Words,
 			}
 			if err := l.CreateList(ctx, hardListName, list); err != nil {
 				return model.List{}, fmt.Errorf("unable to populate hard list: %w", err)

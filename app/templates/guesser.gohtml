@@ -4,17 +4,23 @@
 {{ if .Session.Before }}{{ $length = len (slice .Session.Before 1) }}{{ end }}
 
 {{ if not .Session.Answer }}
+{{ if or .Session.Before .Session.After }}
+<div class="position-relative m-4">
   <div class="progress-stacked">
-    <div class="progress" role="progressbar" aria-label="Before" aria-valuenow="{{ .ProgressBefore }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ .ProgressBefore }}%">
-      <div class="progress-bar bg-secondary text-end">{{ if .Session.Before }}{{ index .Session.Before $length}}{{ end }}</div>
+    <div class="progress" role="progressbar" aria-label="Before" aria-valuenow="{{ .ProgressBefore }}" aria-valuemin="0" aria-valuemax="100" style="height: 1px; width: {{ .ProgressBefore }}%">
+      <div class="progress-bar bg-secondary text-start"></div>
     </div>
-    <div class="progress" role="progressbar" aria-label="Range" aria-valuenow="{{ .ProgressRange }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ .ProgressRange }}%">
+    <div class="progress" role="progressbar" aria-label="Range" aria-valuenow="{{ .ProgressRange }}" aria-valuemin="0" aria-valuemax="100" style="height: 1px; width: {{ .ProgressRange }}%">
       <div class="progress-bar bg-primary progress-bar-striped"></div>
     </div>
-    <div class="progress" role="progressbar" aria-label="After" aria-valuenow="{{ .ProgressAfter }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ .ProgressAfter }}%">
-      <div class="progress-bar bg-secondary text-start">{{ if .Session.After }}{{ index .Session.After 0}}{{ end }}</div>
+    <div class="progress" role="progressbar" aria-label="After" aria-valuenow="{{ .ProgressAfter }}" aria-valuemin="0" aria-valuemax="100" style="height: 1px; width: {{ .ProgressAfter }}%">
+      <div class="progress-bar bg-secondary text-end"></div>
     </div>
   </div>
+  {{ if .Session.Before }}<button type="button" class="position-absolute top-50 translate-middle btn btn-sm btn-primary rounded-pill" style="left: {{ .ProgressBefore }}%;">{{ index .Session.Before $length}}</button>{{ end }}
+  {{ if .Session.After }}<button type="button" class="position-absolute top-50 translate-middle btn btn-sm btn-primary rounded-pill" style="left: {{ .ProgressAfterAbsolute }}%;">{{ index .Session.After 0}}</button>{{ end }}
+</div>
+{{ end }}
 {{ end }}
 
 <hr/>
