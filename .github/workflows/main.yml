@@ -54,15 +54,16 @@ jobs:
           namespace: admin
           jwtGithubAudience: https://github.com/taiidani
           secrets: |
-            credentials/data/digitalocean/spaces spaces_access_id | AWS_ACCESS_KEY_ID
+            credentials/data/digitalocean/spaces spaces_access_id | AWS_ACCESS_KEY_ID ;
             credentials/data/digitalocean/spaces spaces_secret_key | AWS_SECRET_ACCESS_KEY
 
-      - id: outputs
+      - name: s3
+        id: outputs
         env:
           AWS_ACCESS_KEY_ID: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp ./guess-my-word s3://rnd-public/guess-my-word/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64
+          aws s3 cp ./guess-my-word/guess-my-word s3://rnd-public/guess-my-word/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64
           echo "version=https://rnd-public.sfo3.digitaloceanspaces.com/guess-my-word/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64" >> "$GITHUB_OUTPUT"
 
   deploy:
