@@ -3,7 +3,7 @@ name: main
 on:
   push:
     branches:
-      - "taiidani/DOSpacesUpload"
+      - "main"
 
 jobs:
   build:
