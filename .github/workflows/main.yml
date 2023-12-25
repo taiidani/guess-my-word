@@ -70,11 +70,12 @@ jobs:
         id: upload
         env:
           BUCKET_URL: https://rnd-public.sfo3.digitaloceanspaces.com/guess-my-word/
+          AWS_REGION: "us-west-2" # Not used, but required for the CLI
           AWS_ACCESS_KEY_ID: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws s3 cp --endpoint=https://sfo3.digitaloceanspaces.com ./${{ needs.build.outputs.filename }} s3://rnd-public/guess-my-word/${{ needs.build.outputs.filename }}
-          echo "artifact=${BUCKET_URL}/${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${{ env.BUCKET_URL }}/${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
 
   deploy:
     uses: ./.github/workflows/deploy.yml
