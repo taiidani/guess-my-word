@@ -74,7 +74,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp --endpoint=https://sfo3.digitaloceanspaces.com ./${{ needs.build.outputs.filename }} s3://rnd-public/guess-my-word/${{ needs.build.outputs.filename }}
+          aws s3 cp \
+            --endpoint=https://sfo3.digitaloceanspaces.com \
+            --acl public-read \
+             ./${{ needs.build.outputs.filename }} s3://rnd-public/guess-my-word/${{ needs.build.outputs.filename }}
           echo "artifact=${{ env.BUCKET_URL }}/${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
 
   deploy:
