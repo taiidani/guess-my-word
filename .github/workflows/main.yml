@@ -3,15 +3,13 @@ name: main
 on:
   push:
     branches:
-      - "main"
+      - "taiidani/DOSpacesUpload"
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    outputs:
-      version: ${{ steps.outputs.outputs.version }}
+    env:
+      CGO_ENABLED: "0"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,22 +20,52 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Tag Release
-        run: git tag v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}
+      - run: go build -o ./guess-my-word
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+      - uses: actions/upload-artifact@v4
         with:
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: "artifact"
+          path: ./guess-my-word
+          if-no-files-found: error
+          retention-days: 1
 
-      - name: Set output
-        id: outputs
-        run: echo "version=https://github.com/taiidani/guess-my-word/releases/download/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}/guess-my-word_$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tar.gz" >> "$GITHUB_OUTPUT"
+  upload:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Needed for Vault JWT
+    outputs:
+      version: ${{ steps.outputs.outputs.version }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: "artifact"
+          path: ./guess-my-word
+
+      - name: vault
+        id: vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://rnd.vault.0846e66f-a975-4a88-9e46-6dc6267e9b73.aws.hashicorp.cloud:8200
+          role: github-role
+          method: jwt
+          path: github
+          namespace: admin
+          jwtGithubAudience: https://github.com/taiidani
+          secrets: |
+            credentials/data/digitalocean/spaces spaces_access_id | AWS_ACCESS_KEY_ID
+            credentials/data/digitalocean/spaces spaces_secret_key | AWS_SECRET_ACCESS_KEY
+
+      - id: outputs
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp ./guess-my-word s3://rnd-public/guess-my-word/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64
+          echo "version=https://rnd-public.sfo3.digitaloceanspaces.com/guess-my-word/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64" >> "$GITHUB_OUTPUT"
 
   deploy:
     uses: ./.github/workflows/deploy.yml
-    needs: release
+    needs: upload
     with:
-      artifact_url: "${{ needs.release.outputs.version }}"
+      artifact_url: "${{ needs.upload.outputs.version }}"
