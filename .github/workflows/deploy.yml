@@ -13,7 +13,7 @@ on:
         type: string
 
 jobs:
-  terraform:
+  nomad:
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -22,6 +22,8 @@ jobs:
     permissions:
       contents: read
       id-token: write # Needed for Vault JWT
+    env:
+      NOMAD_ADDR: "http://hashistack.taiidani.com:4646"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,24 +40,25 @@ jobs:
           namespace: admin
           jwtGithubAudience: https://github.com/taiidani
           secrets: |
-            credentials/data/github TFC_TOKEN | TFC_TOKEN
+            nomad/creds/deployer secret_id | NOMAD_TOKEN
 
+      - name: install asdf
+        uses: asdf-vm/actions/setup@v2
 
-      - name: setup-terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
-          terraform_version: 1.4.2
-          cli_config_credentials_token: ${{ steps.vault.outputs.TFC_TOKEN }}
-
-      - name: init
-        working-directory: .github/deploy
-        run: terraform init
+      - name: install tooling
+        working-directory: .github
+        run: |
+          asdf plugin-add nomad https://github.com/asdf-community/asdf-hashicorp.git
+          asdf install
 
       - name: validate
-        working-directory: .github/deploy
-        run: terraform validate -no-color
+        working-directory: .github
+        env:
+          NOMAD_TOKEN: ${{ steps.vault.outputs.NOMAD_TOKEN }}
+        run: nomad job plan -var 'artifact_url=${{ inputs.artifact_url }}' guess-my-word.nomad
 
       - name: apply
-        working-directory: .github/deploy
-        run: terraform apply -auto-approve -input=false -var 'artifact_url=${{ inputs.artifact_url }}'
+        working-directory: .github
+        env:
+          NOMAD_TOKEN: ${{ steps.vault.outputs.NOMAD_TOKEN }}
+        run: nomad job run -var 'artifact_url=${{ inputs.artifact_url }}' guess-my-word.nomad
