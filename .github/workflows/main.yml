@@ -23,14 +23,14 @@ jobs:
           cache: true
 
       - name: build
-        run: go build -o ./bin/guess-my-word
+        run: go build -o ./guess-my-word
 
       - name: filename
         id: filename
         run: echo "filename=guess-my-word-$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tgz" >> "$GITHUB_OUTPUT"
 
       - name: package
-        run: tar cvzf ./${{ steps.filename.outputs.filename }} bin/guess-my-word
+        run: tar cvzf ./${{ steps.filename.outputs.filename }} guess-my-word
 
       - uses: actions/upload-artifact@v4
         with:
