@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
@@ -26,7 +26,7 @@ jobs:
         run: go build -o guess-my-word
 
       - name: Upload
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: guess-my-word-app
           if-no-files-found: error
@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download App
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: guess-my-word-app
           path: guess-my-word
@@ -70,7 +70,7 @@ jobs:
           ./guess-my-word/guess-my-word --help
           ./guess-my-word/guess-my-word &
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version-file: '.tool-versions'
           cache: npm
@@ -87,7 +87,7 @@ jobs:
         working-directory: web
         run: npx playwright test
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
