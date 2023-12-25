@@ -23,11 +23,3 @@ updates:
     groups:
       npm:
         patterns: ["*"]
-
-  - package-ecosystem: "terraform"
-    directory: ".github/deploy"
-    schedule:
-      interval: "monthly"
-    groups:
-      terraform:
-        patterns: ["*"]
