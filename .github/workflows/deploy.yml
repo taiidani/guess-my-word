@@ -55,7 +55,7 @@ jobs:
         working-directory: .github
         env:
           NOMAD_TOKEN: ${{ steps.vault.outputs.NOMAD_TOKEN }}
-        run: nomad job plan -var 'artifact_url=${{ inputs.artifact_url }}' guess-my-word.nomad
+        run: nomad job validate -var 'artifact_url=${{ inputs.artifact_url }}' guess-my-word.nomad
 
       - name: apply
         working-directory: .github
