@@ -45,10 +45,11 @@ jobs:
       - name: install asdf
         uses: asdf-vm/actions/setup@v2
 
-      - name: install nomad
+      - name: install tooling
+        working-directory: .github
         run: |
           asdf plugin-add nomad https://github.com/asdf-community/asdf-hashicorp.git
-          asdf install nomad latest
+          asdf install
 
       - name: validate
         working-directory: .github
