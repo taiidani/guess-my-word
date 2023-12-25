@@ -6,12 +6,12 @@ on:
       - "main"
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    env:
+      CGO_ENABLED: "0"
     outputs:
-      version: ${{ steps.outputs.outputs.version }}
+      filename: ${{ steps.filename.outputs.filename }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,22 +22,66 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Tag Release
-        run: git tag v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}
+      - name: build
+        run: go build -o ./guess-my-word
 
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v5
+      - name: filename
+        id: filename
+        run: echo "filename=guess-my-word-$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tgz" >> "$GITHUB_OUTPUT"
+
+      - name: package
+        run: tar cvzf ./${{ steps.filename.outputs.filename }} guess-my-word
+
+      - uses: actions/upload-artifact@v4
         with:
-          args: release --clean
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: "artifact"
+          path: ./${{ steps.filename.outputs.filename }}
+          if-no-files-found: error
+          retention-days: 1
 
-      - name: Set output
-        id: outputs
-        run: echo "version=https://github.com/taiidani/guess-my-word/releases/download/v$(date +'%Y.%m.%d')-${GITHUB_SHA::6}/guess-my-word_$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tar.gz" >> "$GITHUB_OUTPUT"
+  upload:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+      id-token: write # Needed for Vault JWT
+    outputs:
+      artifact: ${{ steps.upload.outputs.artifact }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: "artifact"
+
+      - name: vault
+        id: vault
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://rnd.vault.0846e66f-a975-4a88-9e46-6dc6267e9b73.aws.hashicorp.cloud:8200
+          role: github-role
+          method: jwt
+          path: github
+          namespace: admin
+          jwtGithubAudience: https://github.com/taiidani
+          secrets: |
+            credentials/data/digitalocean/spaces spaces_access_id | AWS_ACCESS_KEY_ID ;
+            credentials/data/digitalocean/spaces spaces_secret_key | AWS_SECRET_ACCESS_KEY
+
+      - name: upload
+        id: upload
+        env:
+          BUCKET_URL: https://rnd-public.sfo3.digitaloceanspaces.com/guess-my-word/
+          AWS_REGION: "us-west-2" # Not used, but required for the CLI
+          AWS_ACCESS_KEY_ID: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 cp \
+            --endpoint=https://sfo3.digitaloceanspaces.com \
+            --acl public-read \
+             ./${{ needs.build.outputs.filename }} s3://rnd-public/guess-my-word/${{ needs.build.outputs.filename }}
+          echo "artifact=${{ env.BUCKET_URL }}${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
 
   deploy:
     uses: ./.github/workflows/deploy.yml
-    needs: release
+    needs: upload
     with:
-      artifact_url: "${{ needs.release.outputs.version }}"
+      artifact_url: "${{ needs.upload.outputs.artifact }}"
