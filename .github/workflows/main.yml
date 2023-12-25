@@ -78,7 +78,7 @@ jobs:
             --endpoint=https://sfo3.digitaloceanspaces.com \
             --acl public-read \
              ./${{ needs.build.outputs.filename }} s3://rnd-public/guess-my-word/${{ needs.build.outputs.filename }}
-          echo "artifact=${{ env.BUCKET_URL }}/${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
+          echo "artifact=${{ env.BUCKET_URL }}${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
 
   deploy:
     uses: ./.github/workflows/deploy.yml
