@@ -81,7 +81,9 @@ jobs:
           echo "artifact=${{ env.BUCKET_URL }}${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
 
   deploy:
-    uses: ./.github/workflows/deploy.yml
+    uses: taiidani/deploy-action/.github/workflows/nomad.yml@main
     needs: upload
     with:
-      artifact_url: "${{ needs.upload.outputs.artifact }}"
+      artifact: "${{ needs.upload.outputs.artifact }}"
+      jobspec: guess-my-word.nomad
+      url: https://guessmyword.xyz
