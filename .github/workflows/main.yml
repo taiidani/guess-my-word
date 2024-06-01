@@ -40,45 +40,10 @@ jobs:
           retention-days: 1
 
   upload:
-    runs-on: ubuntu-latest
+    uses: taiidani/deploy-action/.github/workflows/publish-binary.yml@main
     needs: build
-    permissions:
-      contents: read
-      id-token: write # Needed for Vault JWT
-    outputs:
-      artifact: ${{ steps.upload.outputs.artifact }}
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: "artifact"
-
-      - name: vault
-        id: vault
-        uses: hashicorp/vault-action@v3
-        with:
-          url: https://rnd.vault.0846e66f-a975-4a88-9e46-6dc6267e9b73.aws.hashicorp.cloud:8200
-          role: github-role
-          method: jwt
-          path: github
-          namespace: admin
-          jwtGithubAudience: https://github.com/taiidani
-          secrets: |
-            credentials/data/digitalocean/spaces spaces_access_id | AWS_ACCESS_KEY_ID ;
-            credentials/data/digitalocean/spaces spaces_secret_key | AWS_SECRET_ACCESS_KEY
-
-      - name: upload
-        id: upload
-        env:
-          BUCKET_URL: https://rnd-public.sfo3.digitaloceanspaces.com/guess-my-word/
-          AWS_REGION: "us-west-2" # Not used, but required for the CLI
-          AWS_ACCESS_KEY_ID: ${{ steps.vault.outputs.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.vault.outputs.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws s3 cp \
-            --endpoint=https://sfo3.digitaloceanspaces.com \
-            --acl public-read \
-             ./${{ needs.build.outputs.filename }} s3://rnd-public/guess-my-word/${{ needs.build.outputs.filename }}
-          echo "artifact=${{ env.BUCKET_URL }}${{ needs.build.outputs.filename }}" >> "$GITHUB_OUTPUT"
+    with:
+      filename: "${{ needs.build.outputs.filename }}"
 
   deploy:
     uses: taiidani/deploy-action/.github/workflows/nomad.yml@main
