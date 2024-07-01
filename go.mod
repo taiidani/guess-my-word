@@ -7,8 +7,8 @@ require (
 	github.com/gin-contrib/sessions v1.0.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/gorilla/securecookie v1.1.2
-	github.com/gorilla/sessions v1.2.2
-	github.com/redis/go-redis/v9 v9.5.2
+	github.com/gorilla/sessions v1.3.0
+	github.com/redis/go-redis/v9 v9.5.3
 )
 
 require (
