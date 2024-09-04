@@ -56,6 +56,7 @@ jobs:
     needs: [ "go" ]
     steps:
       - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
 
       - name: Download App
         uses: actions/download-artifact@v4
@@ -68,12 +69,6 @@ jobs:
           chmod +x guess-my-word/guess-my-word
           ./guess-my-word/guess-my-word --help
           ./guess-my-word/guess-my-word &
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.tool-versions'
-          cache: npm
-          cache-dependency-path: web/package-lock.json
 
       - working-directory: web
         run: npm ci
