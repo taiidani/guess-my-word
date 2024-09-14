@@ -30,8 +30,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: t
-`,
+			want: `The word starts with: t`,
 		},
 		{
 			name: "1 character",
@@ -45,8 +44,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: t
-`,
+			want: `The word starts with: t`,
 		},
 		{
 			name: "2 characters",
@@ -60,8 +58,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: te
-`,
+			want: `The word starts with: te`,
 		},
 		{
 			name: "Almost there",
@@ -75,8 +72,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: belon
-`,
+			want: `The word starts with: belon`,
 		},
 		{
 			name: "1 letter left",
@@ -90,8 +86,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: belon
-`,
+			want: `The word starts with: belon`,
 		},
 		{
 			name: "Empty before",
@@ -105,8 +100,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: b
-`,
+			want: `The word starts with: b`,
 		},
 		{
 			name: "Empty after",
@@ -120,8 +114,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: b
-`,
+			want: `The word starts with: b`,
 		},
 		{
 			name: "Empty both",
@@ -135,8 +128,7 @@ func Test_HintHandler(t *testing.T) {
 					},
 				}
 			},
-			want: `The word starts with: b
-`,
+			want: `The word starts with: b`,
 		},
 	}
 	for _, tt := range tests {
@@ -148,9 +140,11 @@ func Test_HintHandler(t *testing.T) {
 			router.ServeHTTP(w, req)
 
 			got := w.Body.String()
+			want := `<article><i class="bi bi-question-circle"></i> ` + tt.want + `</article>
+`
 
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("guess() = %#v, want %#v", got, tt.want)
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("guess() = %#v, want %#v", got, want)
 			}
 		})
 	}
