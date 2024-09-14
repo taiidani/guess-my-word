@@ -4,8 +4,6 @@ import (
 	"guess_my_word/internal/sessions"
 	"log/slog"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -17,24 +15,24 @@ const (
 )
 
 // HintHandler is an API handler to provide a hint to a user.
-func HintHandler(c *gin.Context) {
-	session, err := startSession(c)
+func HintHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	// Generate the word for the day
 	h := session.Current()
-	word, err := wordStore.GetForDay(c, h.DateUser(), session.Mode)
+	word, err := wordStore.GetForDay(r.Context(), h.DateUser(), session.Mode)
 	if err != nil {
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	hintWord := getWordHint(h, word.Value)
-	c.HTML(http.StatusOK, "raw.gohtml", "The word starts with: "+hintWord)
+	renderHtml(w, http.StatusOK, "raw.gohtml", "The word starts with: "+hintWord)
 }
 
 func getWordHint(h *sessions.SessionMode, word string) string {

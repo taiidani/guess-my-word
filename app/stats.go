@@ -7,8 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 // ErrRevealToday is emitted when the reveal request is for a current or future word
@@ -23,11 +21,11 @@ type statsBag struct {
 }
 
 // StatsHandler is an HTML handler for pre-populating data to test with.
-func StatsHandler(c *gin.Context) {
-	session, err := startSession(c)
+func StatsHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -36,28 +34,28 @@ func StatsHandler(c *gin.Context) {
 	dateYesterday := dateToday.Add(time.Hour * -24)
 
 	// Generate the word for the day
-	wordYesterday, err := wordStore.GetForDay(c, dateYesterday, "default")
+	wordYesterday, err := wordStore.GetForDay(r.Context(), dateYesterday, "default")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
-	wordYesterdayHard, err := wordStore.GetForDay(c, dateYesterday, "hard")
+	wordYesterdayHard, err := wordStore.GetForDay(r.Context(), dateYesterday, "hard")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
-	wordToday, err := wordStore.GetForDay(c, dateToday, "default")
+	wordToday, err := wordStore.GetForDay(r.Context(), dateToday, "default")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
-	wordTodayHard, err := wordStore.GetForDay(c, dateToday, "hard")
+	wordTodayHard, err := wordStore.GetForDay(r.Context(), dateToday, "hard")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -70,15 +68,15 @@ func StatsHandler(c *gin.Context) {
 	data.Today.Word = ""
 	data.TodayHard = wordTodayHard.Stats()
 	data.TodayHard.Word = ""
-	c.HTML(http.StatusOK, "stats.gohtml", data)
+	renderHtml(w, http.StatusOK, "stats.gohtml", data)
 }
 
 // YesterdayHandler is an HTML handler for pre-populating data to test with.
-func YesterdayHandler(c *gin.Context) {
-	session, err := startSession(c)
+func YesterdayHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -91,36 +89,36 @@ func YesterdayHandler(c *gin.Context) {
 
 	if dateUser.After(cmp) {
 		slog.Warn("Too early to reveal word", "date", dateUser)
-		errorResponse(c, http.StatusBadRequest, errors.New(ErrRevealToday))
+		errorResponse(w, http.StatusBadRequest, errors.New(ErrRevealToday))
 		return
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, dateUser, session.Mode)
+	word, err := wordStore.GetForDay(r.Context(), dateUser, session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	data := word.Stats()
-	c.HTML(http.StatusOK, "stats.gohtml", data)
+	renderHtml(w, http.StatusOK, "stats.gohtml", data)
 }
 
 // TodayHandler is an HTML handler for pre-populating data to test with.
-func TodayHandler(c *gin.Context) {
-	session, err := startSession(c)
+func TodayHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	// Generate the word for the day
-	word, err := wordStore.GetForDay(c, session.DateUser(), session.Mode)
+	word, err := wordStore.GetForDay(r.Context(), session.DateUser(), session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -129,5 +127,5 @@ func TodayHandler(c *gin.Context) {
 	// Wipe the word from the data, as it's today
 	data.Word = ""
 
-	c.HTML(http.StatusOK, "stats.gohtml", data)
+	renderHtml(w, http.StatusOK, "stats.gohtml", data)
 }

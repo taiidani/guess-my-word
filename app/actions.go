@@ -3,14 +3,17 @@ package app
 import (
 	"context"
 	"embed"
+	"encoding/json"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
 	"html/template"
-	"io/fs"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type listClient interface {
@@ -37,6 +40,7 @@ type baseBag struct {
 var (
 	listStore listClient
 	wordStore wordClient
+	dev       = os.Getenv("DEV") == "true"
 )
 
 func SetupStores(l listClient, w wordClient) {
@@ -47,59 +51,82 @@ func SetupStores(l listClient, w wordClient) {
 //go:embed templates
 var templates embed.FS
 
-// SetupTemplates will load the HTML templates into gin.
-func SetupTemplates(r *gin.Engine) error {
-	t, err := template.ParseFS(templates, "templates/**")
-	if err != nil {
-		return err
-	}
-	r.SetHTMLTemplate(t)
-
-	return nil
-}
-
-//go:embed assets
-var assets embed.FS
-
-// SetupAssets will load the static assets into gin.
-func SetupAssets(r *gin.Engine) error {
-	sub, err := fs.Sub(assets, "assets")
-	if err != nil {
-		return err
-	}
-	r.StaticFS("/assets", http.FS(sub))
-
-	return nil
-}
-
 // AddHandlers will add the application handlers to the HTTP server
-func AddHandlers(r *gin.Engine) error {
-	r.Use(middlewareStandardHeaders())
-	r.GET("/", IndexHandler)
-	r.GET("/mode/:mode", IndexHandler)
-	r.GET("/about", AboutHandler)
-	r.GET("/ping", PingHandler)
-	r.GET("/stats", StatsHandler)
-	r.POST("/guess", GuessHandler)
-	r.GET("/hint", HintHandler)
-	r.POST("/reset", ResetHandler)
+func AddHandlers(r chi.Router) error {
+	r.Use(middleware.Logger)
+	r.Use(standardHeadersMiddleware)
 
-	g := r.Group("/api")
-	g.GET("/lists", ListsHandler)
-	g.GET("/list", ListHandler)
-	g.POST("/list", ListHandler)
-	g.PUT("/list", ListHandler)
-	g.DELETE("/list", ListHandler)
-	g.GET("/seed", SeedHandler)
+	r.Get("/", IndexHandler)
+	r.Get("/assets/*", assetsHandler)
+	r.Get("/mode/{mode}", IndexHandler)
+	r.Get("/about", AboutHandler)
+	r.Get("/ping", PingHandler)
+	r.Get("/stats", StatsHandler)
+	r.Post("/guess", GuessHandler)
+	r.Get("/hint", HintHandler)
+	r.Post("/reset", ResetHandler)
+
+	r.Route("/api", func(g chi.Router) {
+		g.Get("/lists", ListsHandler)
+		g.Get("/list", ListHandler)
+		g.Post("/list", ListHandler)
+		g.Put("/list", ListHandler)
+		g.Delete("/list", ListHandler)
+		g.Get("/seed", SeedHandler)
+	})
 
 	return nil
 }
 
 var fnPopulateSessionData func(s *sessions.Session) = func(s *sessions.Session) {}
 
-func startSession(c *gin.Context) (*sessions.Session, error) {
-	ret := sessions.New(c)
+func startSession(w http.ResponseWriter, r *http.Request) (*sessions.Session, error) {
+	ret := sessions.New(w, r)
 	fnPopulateSessionData(ret)
 
 	return ret, nil
+}
+
+func renderHtml(w http.ResponseWriter, code int, file string, data any) {
+	log := slog.With("name", file, "code", code)
+
+	var t *template.Template
+	var err error
+	if dev {
+		t, err = template.ParseGlob("app/templates/**")
+	} else {
+		t, err = template.ParseFS(templates, "templates/**")
+	}
+	if err != nil {
+		log.Error("Could not parse templates", "error", err)
+		return
+	}
+
+	log.Debug("Rendering file", "dev", dev)
+	w.WriteHeader(code)
+	err = t.ExecuteTemplate(w, file, data)
+	if err != nil {
+		log.Error("Could not render template", "error", err)
+	}
+}
+
+func renderJson(w http.ResponseWriter, code int, data any) {
+	log := slog.With("code", code)
+
+	log.Debug("Rendering json", "dev", dev)
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(code)
+
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		log.Error("Could not render template", "error", err)
+	}
+}
+
+func renderRedirect(w http.ResponseWriter, code int, location string) {
+	log := slog.With("code", code)
+
+	log.Debug("Rendering redirect", "dev", dev)
+	w.Header().Add("Location", location)
+	w.WriteHeader(code)
 }

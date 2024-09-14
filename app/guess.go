@@ -13,8 +13,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -37,41 +35,41 @@ type guessBag struct {
 var guessMutex = sync.Mutex{}
 
 // GuessHandler is an API handler to process a user's guess.
-func GuessHandler(c *gin.Context) {
-	session, err := startSession(c)
+func GuessHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
-	guess := strings.TrimSpace(c.Request.PostFormValue("word"))
+	guess := strings.TrimSpace(r.PostFormValue("word"))
 
 	// Validate the guess
 	if len(guess) == 0 {
-		errorResponse(c, http.StatusBadRequest, errors.New(ErrEmptyGuess))
+		errorResponse(w, http.StatusBadRequest, errors.New(ErrEmptyGuess))
 		return
-	} else if !wordStore.Validate(c, guess) {
-		errorResponse(c, http.StatusBadRequest, errors.New(ErrInvalidWord))
+	} else if !wordStore.Validate(r.Context(), guess) {
+		errorResponse(w, http.StatusBadRequest, errors.New(ErrInvalidWord))
 		return
 	}
 
-	word, err := guessHandlerReply(c, session, guess)
+	word, err := guessHandlerReply(r.Context(), session, guess)
 	if err != nil {
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := session.Save(); err != nil {
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	data := fillGuessBag(session.Current(), wordStore, word)
-	c.HTML(http.StatusOK, "guesser.gohtml", data)
+	renderHtml(w, http.StatusOK, "guesser.gohtml", data)
 }
 
-func fillGuessBag(s *sessions.SessionMode, w wordClient, word model.Word) guessBag {
+func fillGuessBag(s *sessions.SessionMode, _ wordClient, word model.Word) guessBag {
 	bag := guessBag{}
 	bag.Session = s
 	bag.Stats = word.Stats()

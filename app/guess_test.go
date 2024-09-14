@@ -15,7 +15,7 @@ import (
 )
 
 func Test_GuessHandler(t *testing.T) {
-	router := setupRouter()
+	router := setupRouter(t)
 	renderer := template.Must(template.ParseFS(templates, "templates/**"))
 
 	// Force the end time for correct guesses to be predictable

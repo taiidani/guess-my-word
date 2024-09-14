@@ -3,22 +3,20 @@ package app
 import (
 	"log/slog"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-func ResetHandler(c *gin.Context) {
-	session, err := startSession(c)
+func ResetHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := session.Clear(); err != nil {
-		errorResponse(c, http.StatusInternalServerError, err)
+		errorResponse(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	c.Redirect(301, "/")
+	renderRedirect(w, 301, "/")
 }

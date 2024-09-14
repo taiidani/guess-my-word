@@ -16,8 +16,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-contrib/sessions/memstore"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	gsessions "github.com/gorilla/sessions"
+	"github.com/quasoft/memstore"
 )
 
 func main() {
@@ -34,22 +35,10 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	r := gin.Default()
+	r := chi.NewRouter()
 
 	if err := setupStores(ctx, r); err != nil {
 		log.Fatalf("Unable to set up datastore: %s", err)
-	}
-
-	// Load the HTML templates into gin
-	if err := app.SetupTemplates(r); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to load embedded templates: %s\n", err)
-		os.Exit(1)
-	}
-
-	// And the static assets
-	if err := app.SetupAssets(r); err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to load embedded assets: %s\n", err)
-		os.Exit(1)
 	}
 
 	// Add all HTTP handlers
@@ -67,9 +56,9 @@ func main() {
 	<-done
 }
 
-func setupStores(ctx context.Context, r *gin.Engine) error {
+func setupStores(ctx context.Context, r chi.Router) error {
 	var dataClient datastore.Client
-	var sessionClient sessions.Store
+	var sessionClient gsessions.Store
 	var err error
 
 	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
@@ -104,7 +93,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 		)
 	} else {
 		slog.Warn("No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
-		sessionClient = memstore.NewStore([]byte("secret"))
+		sessionClient = memstore.NewMemStore([]byte("secret"))
 		dataClient = datastore.NewMemory()
 	}
 
@@ -115,7 +104,7 @@ func setupStores(ctx context.Context, r *gin.Engine) error {
 	)
 
 	// Set up session management
-	sessions.Configure(r, sessionClient)
+	sessions.Configure(r, "guessmyword", sessionClient)
 
 	return words.PopulateDefaultLists(ctx, dataClient)
 }
