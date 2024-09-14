@@ -2,11 +2,12 @@ package app
 
 import (
 	"guess_my_word/internal/datastore"
+	"guess_my_word/internal/sessions"
 	"guess_my_word/internal/words"
+	"testing"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	"github.com/quasoft/memstore"
 )
 
 func init() {
@@ -15,16 +16,13 @@ func init() {
 	wordStore = words.NewWordStore(client)
 }
 
-func setupRouter() *gin.Engine {
-	gin.SetMode(gin.TestMode)
-	r := gin.Default()
+func setupRouter(t *testing.T) chi.Router {
+	t.Setenv("DEV", "true")
 
-	if err := SetupTemplates(r); err != nil {
-		panic(err)
-	}
+	r := chi.NewRouter()
 
-	sessionClient := memstore.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("guessmyword", sessionClient))
+	sessionClient := memstore.NewMemStore([]byte("secret"))
+	sessions.Configure(r, "guessmyword", sessionClient)
 
 	_ = AddHandlers(r)
 	return r

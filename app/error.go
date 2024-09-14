@@ -1,16 +1,18 @@
 package app
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+)
 
 type errorBag struct {
 	baseBag
 	Message error
 }
 
-func errorResponse(c *gin.Context, code int, err error) {
+func errorResponse(w http.ResponseWriter, code int, err error) {
 	data := errorBag{
 		Message: err,
 	}
 
-	c.HTML(code, "error.gohtml", data)
+	renderHtml(w, code, "error.gohtml", data)
 }

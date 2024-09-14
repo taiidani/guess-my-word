@@ -12,7 +12,7 @@ Inspiration was taken heavily from https://hryanjones.com/guess-my-word/.
 
 The Scrabble word list was obtained from https://sourceforge.net/projects/scrabbledict/.
 
-The backend web framework in use is Gin: https://gin-gonic.com
+The backend web framework in use is Chi: https://go-chi.io
 
 The frontend frameworks in use are:
 

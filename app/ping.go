@@ -1,10 +1,11 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"net/http"
 )
 
 // PingHandler interacts with service healthchecks
-func PingHandler(c *gin.Context) {
-	c.String(200, "%s", "pong")
+func PingHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "pong")
 }

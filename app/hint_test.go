@@ -10,7 +10,7 @@ import (
 )
 
 func Test_HintHandler(t *testing.T) {
-	router := setupRouter()
+	router := setupRouter(t)
 
 	tests := []struct {
 		name    string

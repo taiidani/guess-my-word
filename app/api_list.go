@@ -1,11 +1,8 @@
 package app
 
 import (
-	"fmt"
 	"guess_my_word/internal/model"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type listReply struct {
@@ -13,46 +10,46 @@ type listReply struct {
 }
 
 // ListHandler is an API handler to provide a list to a user.
-func ListHandler(c *gin.Context) {
-	switch c.Request.Method {
-	case http.MethodGet:
-		if list, err := listGet(c); err != nil {
-			c.JSON(400, listReply{Error: err.Error()})
-		} else {
-			c.JSON(200, list)
-		}
-	case http.MethodPost:
-		if err := listUpdate(c); err != nil {
-			c.JSON(400, listReply{Error: err.Error()})
-		}
-	case http.MethodPut:
-		if err := listCreate(c); err != nil {
-			c.JSON(400, listReply{Error: err.Error()})
-		}
-	case http.MethodDelete:
-		if err := listDelete(c); err != nil {
-			c.JSON(400, listReply{Error: err.Error()})
-		}
+func ListHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	// case http.MethodGet:
+	// 	if list, err := listGet(r); err != nil {
+	// 		renderJson(w, 400, listReply{Error: err.Error()})
+	// 	} else {
+	// 		renderJson(w, 200, list)
+	// 	}
+	// case http.MethodPost:
+	// 	if err := listUpdate(r); err != nil {
+	// 		renderJson(w, 400, listReply{Error: err.Error()})
+	// 	}
+	// case http.MethodPut:
+	// 	if err := listCreate(r); err != nil {
+	// 		renderJson(w, 400, listReply{Error: err.Error()})
+	// 	}
+	// case http.MethodDelete:
+	// 	if err := listDelete(r); err != nil {
+	// 		renderJson(w, 400, listReply{Error: err.Error()})
+	// 	}
 	default:
 		reply := listReply{}
 		reply.Error = "unexpected HTTP method"
-		c.JSON(400, reply)
+		renderJson(w, 400, reply)
 	}
 }
 
 // ListsHandler is an API handler to enumerate all lists.
-func ListsHandler(c *gin.Context) {
-	lists, err := listStore.GetLists(c)
+func ListsHandler(w http.ResponseWriter, r *http.Request) {
+	lists, err := listStore.GetLists(r.Context())
 	if err != nil {
-		c.JSON(500, listReply{Error: err.Error()})
+		renderJson(w, 500, listReply{Error: err.Error()})
 		return
 	}
 
 	ret := []model.List{}
 	for _, list := range lists {
-		add, err := listStore.GetList(c, list)
+		add, err := listStore.GetList(r.Context(), list)
 		if err != nil {
-			c.JSON(500, listReply{Error: err.Error()})
+			renderJson(w, 500, listReply{Error: err.Error()})
 			return
 		}
 
@@ -61,57 +58,57 @@ func ListsHandler(c *gin.Context) {
 		ret = append(ret, add)
 	}
 
-	c.JSON(200, ret)
+	renderJson(w, 200, ret)
 }
 
-func listCreate(c *gin.Context) error {
-	type list struct {
-		List model.List `form:"list"`
-	}
+// func listCreate(r *http.Request) error {
+// 	type list struct {
+// 		List model.List `form:"list"`
+// 	}
 
-	request := list{}
-	if err := c.ShouldBind(&request); err != nil {
-		return fmt.Errorf("invalid request received: %w", err)
-	}
+// 	request := list{}
+// 	if err := c.ShouldBind(&request); err != nil {
+// 		return fmt.Errorf("invalid request received: %w", err)
+// 	}
 
-	return listStore.CreateList(c, request.List.Name, request.List)
-}
+// 	return listStore.CreateList(r.Context(), request.List.Name, request.List)
+// }
 
-func listUpdate(c *gin.Context) error {
-	type list struct {
-		List model.List `form:"list"`
-	}
+// func listUpdate(r *http.Request) error {
+// 	type list struct {
+// 		List model.List `form:"list"`
+// 	}
 
-	request := list{}
-	if err := c.ShouldBind(&request); err != nil {
-		return fmt.Errorf("invalid request received: %w", err)
-	}
+// 	request := list{}
+// 	if err := c.ShouldBind(&request); err != nil {
+// 		return fmt.Errorf("invalid request received: %w", err)
+// 	}
 
-	return listStore.UpdateList(c, request.List.Name, request.List)
-}
+// 	return listStore.UpdateList(r.Context(), request.List.Name, request.List)
+// }
 
-func listDelete(c *gin.Context) error {
-	type list struct {
-		Name string `form:"name"`
-	}
+// func listDelete(r *http.Request) error {
+// 	type list struct {
+// 		Name string `form:"name"`
+// 	}
 
-	request := list{}
-	if err := c.ShouldBind(&request); err != nil {
-		return fmt.Errorf("invalid request received: %w", err)
-	}
+// 	request := list{}
+// 	if err := c.ShouldBind(&request); err != nil {
+// 		return fmt.Errorf("invalid request received: %w", err)
+// 	}
 
-	return listStore.DeleteList(c, request.Name)
-}
+// 	return listStore.DeleteList(r.Context(), request.Name)
+// }
 
-func listGet(c *gin.Context) (model.List, error) {
-	type list struct {
-		Name string `form:"name"`
-	}
+// func listGet(r *http.Request) (model.List, error) {
+// 	type list struct {
+// 		Name string `form:"name"`
+// 	}
 
-	request := list{}
-	if err := c.ShouldBind(&request); err != nil {
-		return model.List{}, fmt.Errorf("invalid request received: %w", err)
-	}
+// 	request := list{}
+// 	if err := c.ShouldBind(&request); err != nil {
+// 		return model.List{}, fmt.Errorf("invalid request received: %w", err)
+// 	}
 
-	return listStore.GetList(c, request.Name)
-}
+// 	return listStore.GetList(r.Context(), request.Name)
+// }

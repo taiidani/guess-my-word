@@ -1,15 +1,40 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+	"guess_my_word/internal/sessions"
+	"net/http"
 )
 
-func middlewareStandardHeaders() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if gin.Mode() == gin.ReleaseMode {
-			c.Header("Strict-Transport-Security", "max-age=63072000") // 2 years
+func standardHeadersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if dev {
+			w.Header().Set("Access-Control-Allow-Origin", "*") // Let everyone in in dev mode only!
 		} else {
-			c.Header("Access-Control-Allow-Origin", "*") // Let everyone in in dev mode only!
+			w.Header().Set("Strict-Transport-Security", "max-age=63072000") // 2 years
 		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func sessionMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if dev {
+			w.Header().Set("Access-Control-Allow-Origin", "*") // Let everyone in in dev mode only!
+		} else {
+			w.Header().Set("Strict-Transport-Security", "max-age=63072000") // 2 years
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func getSession(ctx context.Context) *sessions.Session {
+	sess := ctx.Value("session")
+	if sess == nil {
+		return nil
 	}
+
+	return sess.(*sessions.Session)
 }

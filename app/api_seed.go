@@ -5,8 +5,6 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type seedReply struct {
@@ -14,11 +12,11 @@ type seedReply struct {
 }
 
 // SeedHandler is an internal API handler for pre-populating data to test with.
-func SeedHandler(c *gin.Context) {
-	session, err := startSession(c)
+func SeedHandler(w http.ResponseWriter, r *http.Request) {
+	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		c.JSON(http.StatusBadRequest, seedReply{Error: err.Error()})
+		renderJson(w, http.StatusBadRequest, seedReply{Error: err.Error()})
 		return
 	}
 
@@ -43,9 +41,9 @@ func SeedHandler(c *gin.Context) {
 	}
 
 	if err := session.Save(); err != nil {
-		c.JSON(http.StatusBadRequest, seedReply{Error: err.Error()})
+		renderJson(w, http.StatusBadRequest, seedReply{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, seedReply{})
+	renderJson(w, http.StatusOK, seedReply{})
 }

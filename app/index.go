@@ -5,8 +5,6 @@ import (
 	"guess_my_word/internal/sessions"
 	"log/slog"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type indexBag struct {
@@ -15,11 +13,11 @@ type indexBag struct {
 	Mode    string
 }
 
-func IndexHandler(c *gin.Context) {
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	data := indexBag{}
 	data.Page = "home"
 
-	data.Session = sessions.New(c)
+	data.Session = sessions.New(w, r)
 	defer func() {
 		if err := data.Session.Save(); err != nil {
 			slog.Warn("Unable to save session", "error", err)
@@ -29,8 +27,8 @@ func IndexHandler(c *gin.Context) {
 	// Assign the mode
 	switch {
 	// Allow mode selection through the path
-	case c.Param("mode") != "":
-		data.Mode = c.Param("mode")
+	case r.PathValue("mode") != "":
+		data.Mode = r.PathValue("mode")
 	default:
 		data.Mode = "default"
 	}
@@ -39,21 +37,21 @@ func IndexHandler(c *gin.Context) {
 	// Load list data for the current mode
 	// This also validates that it is an existing mode
 	var err error
-	data.List, err = listStore.GetList(c, data.Mode)
+	data.List, err = listStore.GetList(r.Context(), data.Mode)
 	if err != nil {
-		errorResponse(c, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
+		errorResponse(w, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
 		return
 	}
 
 	// Generate the word for the day
 	tm := data.Session.DateUser()
-	word, err := wordStore.GetForDay(c, tm, data.Session.Mode)
+	word, err := wordStore.GetForDay(r.Context(), tm, data.Session.Mode)
 	if err != nil {
-		errorResponse(c, http.StatusBadRequest, err)
+		errorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	data.Guesser = fillGuessBag(data.Session.Current(), wordStore, word)
 
-	c.HTML(http.StatusOK, "index.gohtml", data)
+	renderHtml(w, http.StatusOK, "index.gohtml", data)
 }

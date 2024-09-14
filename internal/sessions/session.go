@@ -1,14 +1,16 @@
 package sessions
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"math"
+	"net/http"
 	"time"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/sessions"
 )
 
 type Session struct {
@@ -18,8 +20,11 @@ type Session struct {
 	// History tracks the user's activity across each mode
 	History map[string]*SessionMode `json:"history"`
 
-	// session holds the internal session record for later saving
-	session sessions.Session
+	w http.ResponseWriter
+
+	r *http.Request
+
+	session *sessions.Session
 }
 
 type SessionMode struct {
@@ -39,15 +44,17 @@ type SessionMode struct {
 	Answer string `json:"answer"`
 }
 
-func New(c *gin.Context) *Session {
-	s := sessions.Default(c)
+func New(w http.ResponseWriter, r *http.Request) *Session {
+	sessAny := r.Context().Value("session")
+	s := sessAny.(*sessions.Session)
 
-	jsonSession := s.Get("session")
 	session := Session{
 		Mode:    "default",
 		History: map[string]*SessionMode{},
+		r:       r,
+		w:       w,
 	}
-	if jsonSession != nil {
+	if jsonSession, ok := s.Values["session"]; ok {
 		if err := json.Unmarshal(jsonSession.([]byte), &session); err != nil {
 			slog.Warn("Could not parse history", "error", err)
 		}
@@ -57,13 +64,26 @@ func New(c *gin.Context) *Session {
 	return &session
 }
 
-func Configure(r *gin.Engine, client sessions.Store) {
-	r.Use(sessions.Sessions("guessmyword", client))
+func Configure(r chi.Router, name string, client sessions.Store) {
+	r.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			sess, err := client.Get(r, "guessmyword")
+			if err != nil {
+				slog.Warn("Unable to load session", "error", err)
+			}
+
+			ctx := context.WithValue(r.Context(), "session", sess)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	})
 }
 
 func (s *Session) Clear() error {
-	s.session.Clear()
-	return s.session.Save()
+	for key := range s.session.Values {
+		delete(s.session.Values, key)
+	}
+
+	return s.session.Save(s.r, s.w)
 }
 
 func (s *Session) Current() *SessionMode {
@@ -89,8 +109,8 @@ func (s *Session) Save() error {
 		return fmt.Errorf("could not serialize to session: %s", err)
 	}
 
-	s.session.Set("session", h)
-	return s.session.Save()
+	s.session.Values["session"] = h
+	return s.session.Save(s.r, s.w)
 }
 
 func (m *SessionMode) GuessCount() int {
