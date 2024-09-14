@@ -1,9 +1,8 @@
 bin/
 pkged.go
 public/assets/
-.vscode/
 **/.DS_Store
-__debug_bin
+__debug*
 
 /dist
 guess_my_word
@@ -11,3 +10,5 @@ guess-my-word
 
 .terraform
 *.tfstate
+
+.env
