@@ -1,6 +1,12 @@
 :root {
     --text-color: #eee;
     --default-bg-color: #224;
+    --bs-body-color: rgb(222, 226, 230);
+    --bs-tertiary-bg-rgb: rgb(17, 34, 51);
+    --link-hover-color: rgb(139, 185, 254);
+    --header-footer-background: rgb(32, 99, 172);
+    --active-guess-background: var(--header-footer-background);
+    --active-guess-color: rgb(230, 230, 255);
 }
 
 body.mode-Hard {
@@ -8,8 +14,17 @@ body.mode-Hard {
 }
 
 body {
-    background-color: var(--default-bg-color);
+    background: repeating-conic-gradient(from 45deg, rgb(20, 20, 50) 0% 25%, rgb(50, 50, 80) 0% 50%);
+    background-size: 4px 4px;
+    /* background-color: var(--default-bg-color); */
     color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+body>header,
+body>footer {
+    background-color: var(--header-footer-background);
+    color: var(--bs-body-color);
 }
 
 a {
@@ -17,11 +32,12 @@ a {
     text-decoration: underline;
 }
 
-[data-bs-theme="dark"] {
-    --bs-tertiary-bg-rgb: 32, 99, 172;
+a:hover {
+    color: var(--link-hover-color);
+    text-decoration: none;
 }
 
-nav img {
+header nav img {
     height: 1.5em;
 }
 
@@ -29,23 +45,46 @@ hr {
     border-color: var(--text-color);
 }
 
-.guess-form section {
-    padding: 1em 0;
-}
-
-.guess-form .htmx-indicator {
+#guess-form .htmx-indicator {
     position: absolute;
     background-color: var(--default-bg-color);
 }
 
 /* These need to match exactly, as the indicator must obscure the between logo */
-.guess-form #between-logo,
-.guess-form .htmx-indicator {
+#guess-form #between-logo,
+#guess-form .htmx-indicator {
     height: 3em;
     width: 3em;
+    margin-right: 1em;
 }
 
-footer {
-    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity));
-    color: var(--bs-body-color);
+.guess-list {
+    background-color: white;
+    color: black;
+    padding: 0;
+    border-radius: 10px;
+}
+
+.guess-list li {
+    padding: 0.5rem 1rem;
+    list-style: none;
+}
+
+.guess-list li.active {
+    background-color: var(--active-guess-background);
+    color: var(--active-guess-color);
+    font-weight: bold;
+
+}
+
+.guess-list li.disabled {
+    font-weight: lighter;
+}
+
+.guess-list.before li.active {
+    border-radius: 0 0 10px 10px;
+}
+
+.guess-list.after li.active {
+    border-radius: 10px 10px 0 0;
 }

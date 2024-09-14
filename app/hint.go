@@ -19,7 +19,7 @@ func HintHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -27,12 +27,16 @@ func HintHandler(w http.ResponseWriter, r *http.Request) {
 	h := session.Current()
 	word, err := wordStore.GetForDay(r.Context(), h.DateUser(), session.Mode)
 	if err != nil {
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
 	hintWord := getWordHint(h, word.Value)
-	renderHtml(w, http.StatusOK, "raw.gohtml", "The word starts with: "+hintWord)
+	renderHtml(w, http.StatusOK, "hint.gohtml", struct {
+		Word string
+	}{
+		Word: hintWord,
+	})
 }
 
 func getWordHint(h *sessions.SessionMode, word string) string {

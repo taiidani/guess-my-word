@@ -39,7 +39,7 @@ func GuessHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -47,21 +47,21 @@ func GuessHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the guess
 	if len(guess) == 0 {
-		errorResponse(w, http.StatusBadRequest, errors.New(ErrEmptyGuess))
+		errorResponse(w, r, http.StatusBadRequest, errors.New(ErrEmptyGuess))
 		return
 	} else if !wordStore.Validate(r.Context(), guess) {
-		errorResponse(w, http.StatusBadRequest, errors.New(ErrInvalidWord))
+		errorResponse(w, r, http.StatusBadRequest, errors.New(ErrInvalidWord))
 		return
 	}
 
 	word, err := guessHandlerReply(r.Context(), session, guess)
 	if err != nil {
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := session.Save(); err != nil {
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 

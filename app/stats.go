@@ -25,7 +25,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -37,25 +37,25 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	wordYesterday, err := wordStore.GetForDay(r.Context(), dateYesterday, "default")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 	wordYesterdayHard, err := wordStore.GetForDay(r.Context(), dateYesterday, "hard")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 	wordToday, err := wordStore.GetForDay(r.Context(), dateToday, "default")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 	wordTodayHard, err := wordStore.GetForDay(r.Context(), dateToday, "hard")
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -76,7 +76,7 @@ func YesterdayHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -89,7 +89,7 @@ func YesterdayHandler(w http.ResponseWriter, r *http.Request) {
 
 	if dateUser.After(cmp) {
 		slog.Warn("Too early to reveal word", "date", dateUser)
-		errorResponse(w, http.StatusBadRequest, errors.New(ErrRevealToday))
+		errorResponse(w, r, http.StatusBadRequest, errors.New(ErrRevealToday))
 		return
 	}
 
@@ -97,7 +97,7 @@ func YesterdayHandler(w http.ResponseWriter, r *http.Request) {
 	word, err := wordStore.GetForDay(r.Context(), dateUser, session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -110,7 +110,7 @@ func TodayHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
@@ -118,7 +118,7 @@ func TodayHandler(w http.ResponseWriter, r *http.Request) {
 	word, err := wordStore.GetForDay(r.Context(), session.DateUser(), session.Mode)
 	if err != nil {
 		slog.Warn("Unable to get day", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 

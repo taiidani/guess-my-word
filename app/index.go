@@ -39,7 +39,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	data.List, err = listStore.GetList(r.Context(), data.Mode)
 	if err != nil {
-		errorResponse(w, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
+		errorResponse(w, r, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
 		return
 	}
 
@@ -47,7 +47,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	tm := data.Session.DateUser()
 	word, err := wordStore.GetForDay(r.Context(), tm, data.Session.Mode)
 	if err != nil {
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 

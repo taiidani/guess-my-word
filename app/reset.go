@@ -9,12 +9,12 @@ func ResetHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
 		slog.Warn("Unable to start session", "error", err)
-		errorResponse(w, http.StatusBadRequest, err)
+		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}
 
 	if err := session.Clear(); err != nil {
-		errorResponse(w, http.StatusInternalServerError, err)
+		errorResponse(w, r, http.StatusInternalServerError, err)
 		return
 	}
 

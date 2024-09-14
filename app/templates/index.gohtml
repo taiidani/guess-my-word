@@ -1,22 +1,18 @@
 {{ template "header.gohtml" . }}
 
-<div id="app" class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <p>
-                This application hosts a daily word game. Guessing using the form
-                below will place your guess above or below the box based on its place
-                in the alphabet relative to today's word. Every day a new word will
-                become guessable. Good luck!
-            </p>
-        </div>
-    </div>
+<div id="app">
+    <section>
+        <p>
+            This application hosts a daily word game. Guessing using the form
+            below will place your guess above or below the box based on its place
+            in the alphabet relative to today's word. Every day a new word will
+            become guessable. Good luck!
+        </p>
+    </section>
 
-    <div class="row">
-        <div id="guesser">
-            {{ template "guesser.gohtml" .Guesser }}
-        </div>
-    </div>
+    <section id="guesser">
+        {{ template "guesser.gohtml" .Guesser }}
+    </section>
 </div>
 
 {{ template "footer.gohtml" . }}

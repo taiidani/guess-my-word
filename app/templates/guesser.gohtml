@@ -3,97 +3,88 @@
 {{ $length := 0 }}
 {{ if .Session.Before }}{{ $length = len (slice .Session.Before 1) }}{{ end }}
 
-<div class="col-md-6 offset-md-3">
-<ul class="list-group before">
+<ul class="guess-list before">
   {{ range $i, $el := .Session.Before }}
-    <li class="list-group-item guess {{ if eq $i ($length) }}active{{ else }}disabled{{ end }}">
-      {{ if eq $i ($length) }}<strong>{{ . }}</strong>
-      {{ else }}<span>{{ . }}</span>
-      {{ end }}
+    <li class="guess {{ if eq $i ($length) }}active{{ else }}disabled{{ end }}">
+      <span>{{ . }}</span>
     </li>
   {{ else }}
-    <li class="list-group-item guess no-guesses disabled">
+    <li class="guess no-guesses disabled">
       <span>No guesses before the word</span>
     </li>
   {{ end }}
 </ul>
 
-<div class="guess-form">
-  <section>
-    {{ if not .Session.Answer }}
-      <form method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
-        <div class="hstack gap-2">
-          <img
+{{ if not .Session.Answer }}
+  <form id="guess-form" method="POST" action="/guess" hx-post="/guess" hx-target="#guesser">
+      {{ $commonGuess := .Session.CommonGuessPrefix }}
+      <fieldset role="group">
+        <img
           id="between-logo"
           src="/assets/between.svg"
           alt="Page Break by Arthur Shlain from the Noun Project"
           />
-          <img class="htmx-indicator" src="/assets/loading.svg" />
+        <img class="htmx-indicator" src="/assets/loading.svg" />
 
-          {{ $commonGuess := .Session.CommonGuessPrefix }}
-          <label>
-          <input
-              id="guess-input"
-              name="word"
-              class="form-control"
-              placeholder="{{ if $commonGuess }}Starting with '{{ $commonGuess }}'{{ else }}Enter a word here{{ end }}"
-              autocomplete="off"
-              autocorrect="off"
-              autocapitalize="off"
-              spellcheck="off"
-              v-model="word"
-          />
-          </label>
+        <input
+            id="guess-input"
+            name="word"
+            placeholder="{{ if $commonGuess }}Starting with '{{ $commonGuess }}'{{ else }}Enter a word here{{ end }}"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="off"
+            v-model="word"
+            aria-describedby="invalid-helper"
+        />
 
-          <button class="btn btn-primary" type="submit">Guess</button>
-        </div>
-      </form>
+        <button type="submit">Guess</button>
+      </fieldset>
+      <small id="invalid-helper"></small>
+  </form>
 
-      {{ if and (gt .Session.GuessCount 15) }}
-      <form method="GET" action="/hint" hx-get="/hint">
-          <button class="btn btn-link btn-sm" type="submit">Need a hint?</button>
-      </form>
+  {{ if and (gt .Session.GuessCount 15) }}
+  <form method="GET" action="/hint" hx-get="/hint">
+      <button class="secondary" type="submit"><i class="bi bi-question-circle"></i> Need a hint?</button>
+  </form>
+  {{ end }}
+
+{{ else }}
+  <form id="guess-form" method="POST" action="/reset" style="display: inline">
+    <p>
+      🎉 You guessed "{{ .Session.Answer }}" correctly with
+      <strong>{{ .Session.GuessCount }} tries</strong>.
+    </p>
+
+    <p>
+      {{ if eq .Session.GuessCount .Stats.BestRun }}🏆{{ end }}
+      The best attempt took <strong>{{ .Stats.BestRun }} tries</strong>.
+      {{ if eq .Session.GuessCount .Stats.BestRun }}Great job, you're the best run today!
       {{ end }}
+    </p>
 
-    {{ else }}
-      <form method="POST" action="/reset" style="display: inline">
-        <p>
-          🎉 You guessed "{{ .Session.Answer }}" correctly with
-          <strong>{{ .Session.GuessCount }} tries</strong>.
-        </p>
+    <p>
+      📊 See the <a href="/stats">Stats</a> page for more information!
+    </p>
 
-        <p>
-          {{ if eq .Session.GuessCount .Stats.BestRun }}🏆{{ end }}
-          The best attempt took <strong>{{ .Stats.BestRun }} tries</strong>.
-          {{ if eq .Session.GuessCount .Stats.BestRun }}Great job, you're the best run today!
-          {{ end }}
-        </p>
+    <p>
+      {{ if .Session.Stale }}
+      <article>✨ A new word is available! <button type="submit" class="btn btn-success">Start guessing</button></article>
+      {{ else }}
+      ⏳ Come back in {{ .Session.RemainingTime }} for another word!
+      {{ end }}
+    </p>
+  </form>
+{{ end }}
 
-        <p>
-          📊 See the <a href="/stats">Stats</a> page for more information!
-        </p>
-
-        <p>
-          {{ if .Session.Stale }}✨ A new word is available! <button type="submit" class="btn btn-success">Start guessing</button>
-          {{ else }}⏳ Come back in {{ .Session.RemainingTime }} for another word!
-          {{ end }}
-        </p>
-      </form>
-    {{ end }}
-  </section>
-</div>
-
-<ul class="list-group after">
+<ul class="guess-list after">
   {{ range $i, $em := .Session.After }}
-  <li class="list-group-item guess {{ if not $i }}active{{ else }}disabled{{ end }}">
-      {{ if not $i }}<strong>{{ . }}</strong>
-      {{ else }}<span>{{ . }}</span>
-      {{ end }}
+  <li class="guess {{ if not $i }}active{{ else }}disabled{{ end }}">
+      <span>{{ . }}</span>
   </li>
   {{ else }}
-  <li class="list-group-item guess no-guesses disabled">
+  <li class="guess no-guesses disabled">
     <span>No guesses after the word</span>
   </li>
   {{ end }}
 </ul>
-</div>
