@@ -13,6 +13,9 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// sessionKey is the key to track the session in the request context.Context.
+var sessionKey = "session"
+
 type Session struct {
 	// Mode tracks the current word list being guessed
 	Mode string `json:"mode"`
@@ -45,7 +48,7 @@ type SessionMode struct {
 }
 
 func New(w http.ResponseWriter, r *http.Request) *Session {
-	sessAny := r.Context().Value("session")
+	sessAny := r.Context().Value(&sessionKey)
 	s := sessAny.(*sessions.Session)
 
 	session := Session{
@@ -72,7 +75,7 @@ func Configure(r chi.Router, name string, client sessions.Store) {
 				slog.Warn("Unable to load session", "error", err)
 			}
 
-			ctx := context.WithValue(r.Context(), "session", sess)
+			ctx := context.WithValue(r.Context(), &sessionKey, sess)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	})

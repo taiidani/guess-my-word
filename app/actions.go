@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -51,18 +50,6 @@ func SetupStores(l listClient, w wordClient) {
 
 //go:embed templates
 var templates embed.FS
-
-//go:embed assets
-var assets embed.FS
-
-func assetsHandler(w http.ResponseWriter, r *http.Request) {
-	slog.Debug("Serving file", "path", r.URL.Path)
-	if dev {
-		http.ServeFile(w, r, filepath.Join("app", r.URL.Path))
-	} else {
-		http.ServeFileFS(w, r, assets, r.URL.Path)
-	}
-}
 
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r chi.Router) error {
