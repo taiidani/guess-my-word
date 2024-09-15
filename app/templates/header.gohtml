@@ -43,12 +43,11 @@
         </nav>
     </header>
 
-    {{ if and .Session .Session.Current.Stale }}
-    <div class="alert alert-warning" role="alert">
-        <form method="POST" action="/reset">
-            A new day has dawned, and a fresh word is available! <button type="submit">Start guessing</button>.
-        </form>
-    </div>
-    {{ end }}
-
     <main class="container">
+        {{ if and .Session .Session.Current.Stale }}
+        <article>
+            <form method="POST" action="/reset">
+                A new day has dawned, and a fresh word is available! <button type="submit">Start guessing</button>
+            </form>
+        </article>
+        {{ end }}
