@@ -16,9 +16,9 @@ The backend web framework in use is Chi: https://go-chi.io
 
 The frontend frameworks in use are:
 
-* Pico CSS: https://picocss.com/
-* Bootstrap Icons: https://icons.getbootstrap.com
-* HTMX: https://htmx.org
+- Pico CSS: https://picocss.com/
+- Bootstrap Icons: https://icons.getbootstrap.com
+- HTMX: https://htmx.org
 
 Persistence is being enabled using a Redis backend.
 
@@ -26,7 +26,7 @@ Persistence is being enabled using a Redis backend.
 
 The application requires the following to be configured:
 
-* Go installed, matching the version in the `go.mod` file.
+- Go installed, matching the version in the `go.mod` file.
 
 Start the application in development mode with:
 

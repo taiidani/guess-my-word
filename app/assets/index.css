@@ -1,97 +1,100 @@
 :root {
-    --text-color: #eee;
-    --bs-body-color: rgb(222, 226, 230);
-    --bs-tertiary-bg-rgb: rgb(17, 34, 51);
-    --link-hover-color: rgb(139, 185, 254);
-    --header-footer-background: rgb(32, 99, 172);
-    --active-guess-background: var(--header-footer-background);
-    --active-guess-color: rgb(230, 230, 255);
-    --background-color-tile-1: rgb(20, 20, 50);
-    --backgorund-color-tile-2: rgb(50, 50, 80);
+  --text-color: #eee;
+  --bs-body-color: rgb(222, 226, 230);
+  --bs-tertiary-bg-rgb: rgb(17, 34, 51);
+  --link-hover-color: rgb(139, 185, 254);
+  --header-footer-background: rgb(32, 99, 172);
+  --active-guess-background: var(--header-footer-background);
+  --active-guess-color: rgb(230, 230, 255);
+  --background-color-tile-1: rgb(20, 20, 50);
+  --backgorund-color-tile-2: rgb(50, 50, 80);
 }
 
-@media only screen and (prefers-color-scheme:light) {
+@media only screen and (prefers-color-scheme: light) {
   :root {
-    --text-color:rgb(25, 25, 0);
+    --text-color: rgb(25, 25, 0);
     --bs-body-color: rgb(25, 25, 0);
     --bs-tertiary-bg-rgb: rgb(238, 221, 204);
-    --header-footer-background: #D5C8F7;
+    --header-footer-background: #d5c8f7;
     --active-guess-background: var(--header-footer-background);
     --active-guess-color: rgb(25, 25, 0);
-    --background-color-tile-1: #C8F7D5;
-    --backgorund-color-tile-2: #C3F2D0;
+    --background-color-tile-1: #c8f7d5;
+    --backgorund-color-tile-2: #c3f2d0;
   }
 }
 
 body {
-    background: repeating-conic-gradient(from 45deg, var(--background-color-tile-1) 0% 25%, var(--backgorund-color-tile-2) 0% 50%);
-    background-size: 4px 4px;
-    font-size: 0.9rem;
+  background: repeating-conic-gradient(
+    from 45deg,
+    var(--background-color-tile-1) 0% 25%,
+    var(--backgorund-color-tile-2) 0% 50%
+  );
+  background-size: 4px 4px;
+  font-size: 0.9rem;
 }
 
-body>header,
-body>footer {
-    background-color: var(--header-footer-background);
-    color: var(--bs-body-color);
+body > header,
+body > footer {
+  background-color: var(--header-footer-background);
+  color: var(--bs-body-color);
 }
 
 a {
-    color: var(--text-color);
-    text-decoration: underline;
+  color: var(--text-color);
+  text-decoration: underline;
 }
 
 a:hover {
-    color: var(--link-hover-color);
-    text-decoration: none;
+  color: var(--link-hover-color);
+  text-decoration: none;
 }
 
 header nav svg {
-    height: 1.5em;
+  height: 1.5em;
 }
 
 hr {
-    border-color: var(--text-color);
+  border-color: var(--text-color);
 }
 
 #guess-form .htmx-indicator {
-    position: absolute;
+  position: absolute;
 }
 
 /* These need to match exactly, as the indicator must obscure the between logo */
 #guess-form #between-logo,
 #guess-form .htmx-indicator {
-    height: 3em;
-    width: 3em;
-    margin-right: 1em;
+  height: 3em;
+  width: 3em;
+  margin-right: 1em;
 }
 
 .guess-list {
-    background-color: white;
-    color: black;
-    padding: 0;
-    border-radius: 10px;
+  background-color: white;
+  color: black;
+  padding: 0;
+  border-radius: 10px;
 }
 
 .guess-list li {
-    padding: 0.5rem 1rem;
-    list-style: none;
+  padding: 0.5rem 1rem;
+  list-style: none;
 }
 
 .guess-list li.active {
-    background-color: var(--active-guess-background);
-    color: var(--active-guess-color);
-    font-weight: bold;
-
+  background-color: var(--active-guess-background);
+  color: var(--active-guess-color);
+  font-weight: bold;
 }
 
 .guess-list li.disabled {
-    font-weight: lighter;
+  font-weight: lighter;
 }
 
 .guess-list.before li.active {
-    border-radius: 0 0 10px 10px;
+  border-radius: 0 0 10px 10px;
 }
 
 .guess-list.after li.active {
-    border-radius: 10px 10px 0 0;
+  border-radius: 10px 10px 0 0;
 }
