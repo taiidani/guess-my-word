@@ -1,23 +1,31 @@
 :root {
     --text-color: #eee;
-    --default-bg-color: #224;
     --bs-body-color: rgb(222, 226, 230);
     --bs-tertiary-bg-rgb: rgb(17, 34, 51);
     --link-hover-color: rgb(139, 185, 254);
     --header-footer-background: rgb(32, 99, 172);
     --active-guess-background: var(--header-footer-background);
     --active-guess-color: rgb(230, 230, 255);
+    --background-color-tile-1: rgb(20, 20, 50);
+    --backgorund-color-tile-2: rgb(50, 50, 80);
 }
 
-body.mode-Hard {
-    --default-bg-color: #422;
+@media only screen and (prefers-color-scheme:light) {
+  :root {
+    --text-color:rgb(25, 25, 0);
+    --bs-body-color: rgb(25, 25, 0);
+    --bs-tertiary-bg-rgb: rgb(238, 221, 204);
+    --header-footer-background: #D5C8F7;
+    --active-guess-background: var(--header-footer-background);
+    --active-guess-color: rgb(25, 25, 0);
+    --background-color-tile-1: #C8F7D5;
+    --backgorund-color-tile-2: #C3F2D0;
+  }
 }
 
 body {
-    background: repeating-conic-gradient(from 45deg, rgb(20, 20, 50) 0% 25%, rgb(50, 50, 80) 0% 50%);
+    background: repeating-conic-gradient(from 45deg, var(--background-color-tile-1) 0% 25%, var(--backgorund-color-tile-2) 0% 50%);
     background-size: 4px 4px;
-    /* background-color: var(--default-bg-color); */
-    color: var(--text-color);
     font-size: 0.9rem;
 }
 
@@ -37,7 +45,7 @@ a:hover {
     text-decoration: none;
 }
 
-header nav img {
+header nav svg {
     height: 1.5em;
 }
 
@@ -47,7 +55,6 @@ hr {
 
 #guess-form .htmx-indicator {
     position: absolute;
-    background-color: var(--default-bg-color);
 }
 
 /* These need to match exactly, as the indicator must obscure the between logo */
