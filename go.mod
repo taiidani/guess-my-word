@@ -3,7 +3,7 @@ module guess_my_word
 go 1.23.1
 
 require (
-	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff
+	github.com/boj/redistore v1.3.0
 	github.com/go-chi/chi/v5 v5.2.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
