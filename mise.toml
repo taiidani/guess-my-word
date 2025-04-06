@@ -4,3 +4,4 @@ _.file = ".env"
 [tools]
 nodejs = "19.3.0"
 golang = "1.23.0"
+staticcheck = 'latest'

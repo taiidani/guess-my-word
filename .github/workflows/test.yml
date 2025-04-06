@@ -32,23 +32,17 @@ jobs:
           if-no-files-found: error
           path: guess-my-word
 
-  go-lint:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
+      - uses: jdx/mise-action@v2
 
       - name: Vet
         run: go vet ./...
 
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: "latest"
+      - name: Staticcheck
+        run: staticcheck ./...
 
   playwright:
     runs-on: ubuntu-latest
