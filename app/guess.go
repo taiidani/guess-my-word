@@ -17,13 +17,13 @@ import (
 
 const (
 	// ErrInvalidWord is emitted when the guess is not a legitimate word
-	ErrInvalidWord = "Guess must be a valid Scrabble word"
+	ErrInvalidWord = "guess must be a valid Scrabble word"
 
 	// ErrInvalidStartTime is emitted when the start time is malformed or invalid
-	ErrInvalidStartTime = "Invalid start time provided with request"
+	ErrInvalidStartTime = "invalid start time provided with request"
 
 	// ErrEmptyGuess is emitted when the guess provided was empty
-	ErrEmptyGuess = "Guess must not be empty"
+	ErrEmptyGuess = "guess must not be empty"
 )
 
 type guessBag struct {

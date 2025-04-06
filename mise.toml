@@ -1,7 +1,34 @@
 [env]
 _.file = ".env"
+REDIS_ADDR = "127.0.0.1:6379"
+DEV = "true"
 
 [tools]
 nodejs = "19.3.0"
 golang = "1.23.0"
 staticcheck = 'latest'
+
+[tasks.dependencies]
+description = "Download binary dependencies"
+run = ["go mod download"]
+
+[tasks.test]
+description = "Unit tests"
+depends = ["dependencies"]
+env.DEV = "false"
+run = ["go test -race -covermode=atomic -cover ./..."]
+
+[tasks.lint]
+depends = ["dependencies"]
+run = ["go vet ./...", "staticcheck ./..."]
+
+[tasks.default]
+description = "Execute the app in development mode"
+depends = ["dependencies", "test", "lint"]
+run = ["docker compose up -d --wait", "go run main.go"]
+
+[tasks.build]
+description = "Execute the app in development mode"
+depends = ["dependencies", "test", "lint"]
+env.CGO_ENABLED = "0"
+run = ["go build -o ./guess-my-word"]

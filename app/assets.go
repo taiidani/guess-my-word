@@ -22,7 +22,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 		safePath := filepath.Join(cwd, "app")
 		absPath, err := filepath.Abs(filepath.Join(safePath, r.URL.Path))
 		if err != nil || !strings.HasPrefix(absPath, safePath) {
-			errorResponse(w, r, http.StatusBadRequest, fmt.Errorf("Invalid file name %q", absPath))
+			errorResponse(w, r, http.StatusBadRequest, fmt.Errorf("invalid file name %q", absPath))
 			return
 		}
 

@@ -10,7 +10,7 @@ import (
 )
 
 // ErrRevealToday is emitted when the reveal request is for a current or future word
-const ErrRevealToday = "It's too early to reveal this word. Please try again later!"
+const ErrRevealToday = "it's too early to reveal this word. Please try again later"
 
 type statsBag struct {
 	baseBag

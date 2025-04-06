@@ -33,13 +33,7 @@ func errorResponse(w http.ResponseWriter, r *http.Request, code int, err error) 
 func renderHtml(w http.ResponseWriter, code int, file string, data any) {
 	log := slog.With("name", file, "code", code)
 
-	var t *template.Template
-	var err error
-	if dev {
-		t, err = template.ParseGlob("app/templates/**")
-	} else {
-		t, err = template.ParseFS(templates, "templates/**")
-	}
+	t, err := getTemplate()
 	if err != nil {
 		log.Error("Could not parse templates", "error", err)
 		return
@@ -50,6 +44,14 @@ func renderHtml(w http.ResponseWriter, code int, file string, data any) {
 	err = t.ExecuteTemplate(w, file, data)
 	if err != nil {
 		log.Error("Could not render template", "error", err)
+	}
+}
+
+func getTemplate() (*template.Template, error) {
+	if dev {
+		return template.ParseGlob("app/templates/**")
+	} else {
+		return template.ParseFS(templates, "templates/**")
 	}
 }
 

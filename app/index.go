@@ -39,7 +39,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	data.List, err = listStore.GetList(r.Context(), data.Mode)
 	if err != nil {
-		errorResponse(w, r, http.StatusBadRequest, fmt.Errorf("Could not load list %q: %s", data.Mode, err))
+		errorResponse(w, r, http.StatusBadRequest, fmt.Errorf("could not load list %q: %s", data.Mode, err))
 		return
 	}
 

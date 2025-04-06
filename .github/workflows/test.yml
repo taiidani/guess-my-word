@@ -10,20 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-
-      - name: Get dependencies
-        run: go mod download
-
-      - name: Test
-        run: go test -race -covermode=atomic -cover ./...
+      - uses: jdx/mise-action@v2
 
       - name: Build
-        run: go build -o guess-my-word
+        run: mise run build
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -38,11 +28,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
 
-      - name: Vet
-        run: go vet ./...
-
-      - name: Staticcheck
-        run: staticcheck ./...
+      - name: Lint
+        run: mise run lint
 
   playwright:
     runs-on: ubuntu-latest
