@@ -70,11 +70,7 @@ func setupStores(ctx context.Context, r chi.Router) error {
 		dataClient = datastore.NewRedis(addr)
 
 	} else if host, ok := os.LookupEnv("REDIS_HOST"); ok {
-		db := 0
-		if dbParsed, err := strconv.ParseInt(os.Getenv("REDIS_DB"), 10, 64); err == nil {
-			db = int(dbParsed)
-		}
-
+		db, _ := strconv.Atoi(os.Getenv("REDIS_DB"))
 		port := os.Getenv("REDIS_PORT")
 		user := os.Getenv("REDIS_USER")
 		pass := os.Getenv("REDIS_PASSWORD")
