@@ -16,6 +16,7 @@ run = ["go mod download"]
 description = "Unit tests"
 depends = ["dependencies"]
 env.DEV = "false"
+env.CGO_ENABLED = 1                                    # Required for -race
 run = ["go test -race -covermode=atomic -cover ./..."]
 
 [tasks.lint]
