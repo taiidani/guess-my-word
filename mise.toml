@@ -8,6 +8,20 @@ nodejs = "19.3.0"
 golang = "1.23.0"
 staticcheck = 'latest'
 
+[vars]
+filename = 'guess-my-word'
+
+[tasks.default]
+description = "Execute the app in development mode"
+depends = ["build"]
+run = ["docker compose up -d --wait", "./{{vars.filename}}"]
+
+[tasks.build]
+description = "Execute the app in development mode"
+depends = ["dependencies", "test", "lint"]
+env.CGO_ENABLED = "0"
+run = ["go build -o ./{{vars.filename}}"]
+
 [tasks.dependencies]
 description = "Download binary dependencies"
 run = ["go mod download"]
@@ -22,14 +36,3 @@ run = ["go test -race -covermode=atomic -cover ./..."]
 [tasks.lint]
 depends = ["dependencies"]
 run = ["go vet ./...", "staticcheck ./..."]
-
-[tasks.default]
-description = "Execute the app in development mode"
-depends = ["dependencies", "test", "lint"]
-run = ["docker compose up -d --wait", "go run main.go"]
-
-[tasks.build]
-description = "Execute the app in development mode"
-depends = ["dependencies", "test", "lint"]
-env.CGO_ENABLED = "0"
-run = ["go build -o ./guess-my-word"]
