@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/getsentry/sentry-go"
+	sentryslog "github.com/getsentry/sentry-go/slog"
 	"github.com/go-chi/chi/v5"
 	gsessions "github.com/gorilla/sessions"
 	"github.com/quasoft/memstore"
@@ -35,6 +37,22 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	// Set up Sentry
+	err := sentry.Init(sentry.ClientOptions{
+		SampleRate:       1.0,
+		EnableTracing:    true,
+		TracesSampleRate: 1.0,
+		EnableLogs:       true,
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
+	defer sentry.Flush(2 * time.Second)
+
+	// Set up the structured logger
+	initLogging(ctx)
+
+	// Set up the app
 	r := chi.NewRouter()
 
 	if err := setupStores(ctx, r); err != nil {
@@ -43,17 +61,50 @@ func main() {
 
 	// Add all HTTP handlers
 	if err := app.AddHandlers(r); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		sentry.CaptureException(err)
 		os.Exit(1)
 	}
 
 	fmt.Printf("Listening and serving HTTP on port %s\n", bind)
 	srv := http.Server{Addr: bind, Handler: r}
 
-	done := make(chan interface{})
+	done := make(chan any)
 	go gracefulShutdown(ctx, &srv, done)
 	_ = srv.ListenAndServe()
 	<-done
+}
+
+func initLogging(ctx context.Context) {
+	var logger *slog.Logger
+
+	switch os.Getenv("SENTRY_ENVIRONMENT") {
+	case "prod", "production":
+		handler := sentryslog.Option{
+			// Explicitly specify the levels that you want to be captured.
+			EventLevel: []slog.Level{slog.LevelError},                                 // Captures only [slog.LevelError] as error events.
+			LogLevel:   []slog.Level{slog.LevelWarn, slog.LevelInfo, slog.LevelDebug}, // Captures remaining items as log entries.
+		}.NewSentryHandler(ctx)
+		logger = slog.New(handler)
+	default:
+		var level slog.Level
+		switch os.Getenv("LOG_LEVEL") {
+		case "error":
+			level = slog.LevelError
+		case "warn":
+			level = slog.LevelWarn
+		case "debug":
+			level = slog.LevelDebug
+		default:
+			level = slog.LevelInfo
+		}
+
+		handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+			Level: level,
+		})
+		logger = slog.New(handler)
+	}
+
+	slog.SetDefault(logger)
 }
 
 func setupStores(ctx context.Context, r chi.Router) error {
@@ -105,7 +156,7 @@ func setupStores(ctx context.Context, r chi.Router) error {
 	return words.PopulateDefaultLists(ctx, dataClient)
 }
 
-func gracefulShutdown(ctx context.Context, srv *http.Server, done chan<- interface{}) {
+func gracefulShutdown(ctx context.Context, srv *http.Server, done chan<- any) {
 	const drainTimeout = time.Minute
 
 	// Wait for the process to be interrupted

@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -50,8 +51,11 @@ var templates embed.FS
 
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r chi.Router) error {
+	sentryHandler := sentryhttp.New(sentryhttp.Options{})
+
 	r.Use(middleware.Logger)
 	r.Use(standardHeadersMiddleware)
+	r.Use(sentryHandler.Handle)
 
 	r.Get("/", IndexHandler)
 	r.Get("/assets/*", assetsHandler)
