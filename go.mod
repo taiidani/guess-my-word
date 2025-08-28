@@ -7,6 +7,7 @@ require (
 	github.com/getsentry/sentry-go v0.35.1
 	github.com/getsentry/sentry-go/slog v0.35.1
 	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/httplog/v3 v3.2.2
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b

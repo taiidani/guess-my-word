@@ -5,13 +5,14 @@ import (
 	"embed"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
 
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httplog/v3"
 )
 
 type listClient interface {
@@ -53,7 +54,7 @@ var templates embed.FS
 func AddHandlers(r chi.Router) error {
 	sentryHandler := sentryhttp.New(sentryhttp.Options{})
 
-	r.Use(middleware.Logger)
+	r.Use(httplog.RequestLogger(slog.Default(), &httplog.Options{}))
 	r.Use(standardHeadersMiddleware)
 	r.Use(sentryHandler.Handle)
 

@@ -65,7 +65,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Listening and serving HTTP on port %s\n", bind)
+	slog.Info("Listening and serving HTTP", "port", bind)
 	srv := http.Server{Addr: bind, Handler: r}
 
 	done := make(chan any)
