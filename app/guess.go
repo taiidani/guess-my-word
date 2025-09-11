@@ -3,12 +3,12 @@ package app
 import (
 	"context"
 	"errors"
-	"fmt"
 	"guess_my_word/internal/datastore"
 	"guess_my_word/internal/model"
 	"guess_my_word/internal/sessions"
 	"log/slog"
 	"net/http"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -81,6 +81,8 @@ var fnSetEndTime func() *time.Time = func() *time.Time {
 	return &now
 }
 
+var errAlreadyGuessed = errors.New("you have already guessed this word")
+
 func guessHandlerReply(ctx context.Context, session *sessions.Session, guess string) (model.Word, error) {
 	// Only one guess operation may happen simultaneously
 	// This allows us to get the Word then modify it with new data without overriding anyone
@@ -98,18 +100,14 @@ func guessHandlerReply(ctx context.Context, session *sessions.Session, guess str
 	current := session.Current()
 	switch strings.Compare(guess, word.Value) {
 	case -1:
-		for _, w := range current.Before {
-			if w == guess {
-				return word, fmt.Errorf("you have already guessed this word")
-			}
+		if slices.Contains(current.Before, guess) {
+			return word, errAlreadyGuessed
 		}
 		current.Before = append(current.Before, guess)
 		sort.Strings(current.Before)
 	case 1:
-		for _, w := range current.After {
-			if w == guess {
-				return word, fmt.Errorf("you have already guessed this word")
-			}
+		if slices.Contains(current.After, guess) {
+			return word, errAlreadyGuessed
 		}
 		current.After = append(current.After, guess)
 		sort.Strings(current.After)

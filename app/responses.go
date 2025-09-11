@@ -20,7 +20,7 @@ func errorResponse(w http.ResponseWriter, r *http.Request, code int, err error) 
 		Message: err,
 	}
 
-	log.Error(err.Error())
+	log.Warn(err.Error())
 	if r.Header.Get("HX-Request") != "" {
 		w.WriteHeader(code)
 		fmt.Fprint(w, "Error: "+err.Error())
