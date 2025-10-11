@@ -30,11 +30,14 @@ type RedisClient struct {
 }
 
 // NewRedis instantiates a new client
-func NewRedis(addr string) *RedisClient {
+func NewRedis(addr string, db int) *RedisClient {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	client := redis.NewClient(&redis.Options{Addr: addr})
+	client := redis.NewClient(&redis.Options{
+		Addr: addr,
+		DB:   db,
+	})
 	status := client.Ping(ctx)
 	if status.Err() != nil {
 		slog.Error("Failed to create Redis client", "addr", addr)
