@@ -37,11 +37,14 @@ type store struct {
 }
 
 // NewRedis instantiates a new client
-func NewRedis(addr string, keyPairs ...[]byte) (sessions.Store, error) {
+func NewRedis(addr string, db int, keyPairs ...[]byte) (sessions.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 	defer cancel()
 
-	client := redis.NewClient(&redis.Options{Addr: addr})
+	client := redis.NewClient(&redis.Options{
+		Addr: addr,
+		DB:   db,
+	})
 	status := client.Ping(ctx)
 	if status.Err() != nil {
 		return nil, fmt.Errorf("failed to create Redis client: %w", status.Err())

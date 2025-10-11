@@ -115,7 +115,7 @@ func setupStores(ctx context.Context, r chi.Router) error {
 	db, _ := strconv.Atoi(os.Getenv("REDIS_DB"))
 
 	if addr, ok := os.LookupEnv("REDIS_ADDR"); ok {
-		sessionClient, err = sessions.NewRedis(addr, []byte("secret"))
+		sessionClient, err = sessions.NewRedis(addr, db, []byte("secret"))
 		if err != nil {
 			return fmt.Errorf("redis setup failure: %w", err)
 		}
