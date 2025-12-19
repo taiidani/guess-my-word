@@ -6,8 +6,9 @@
     <meta charset="utf-8">
     <title>Guess My Word</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.css" rel="stylesheet" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.13.1/dist/cdn/beer.min.js"></script>
+
     <link rel="icon" href="/assets/favicon.png" />
     <link rel="stylesheet" href="/assets/index.css" />
 </head>
@@ -18,11 +19,43 @@
             Please enable it to continue.</strong>
     </noscript>
 
-    <header class="container-fluid">
+    <header class="fill fixed">
         <nav>
-            <ul>
-                <li>
-                    <a href="/">
+            <button class="transparent s m">
+                <i>
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 490.001 490.001" xml:space="preserve" alt="Question by https://www.svgrepo.com/svg/2545/question">
+                        <g>
+                            <g>
+                                <g>
+                                    <path d="M450,0h-410c-22.055,0-40,17.944-40,40v280c0,22.056,17.944,40,40,40h235v120c0,4.118,2.523,7.814,6.358,9.314
+                                        c1.184,0.463,2.417,0.687,3.64,0.687c2.738,0,5.419-1.126,7.35-3.218L409.378,360H450c22.056,0,40-17.944,40-40V40
+                                        C490,17.944,472.057,0,450,0z M470,320c0,11.028-8.972,20-20,20h-45c-2.791,0-5.455,1.167-7.348,3.217L295,454.423V350
+                                        c0-5.523-4.478-10-10-10h-245c-11.028,0-20-8.972-20-20V40c0-11.028,8.972-20,20-20h410c11.028,0,20,8.972,20,20V320z"/>
+                                    <path d="M215.001,205v-50c0-44.112-35.888-80-80-80s-80,35.888-80,80v50c0,44.112,35.888,80,80,80
+                                        c18.459,0,35.464-6.301,49.016-16.842l23.913,23.913l14.143-14.143l-23.913-23.913C208.7,240.464,215.001,223.459,215.001,205z
+                                        M195.001,205c0,12.939-4.131,24.924-11.123,34.734l-26.806-26.806l-14.143,14.143l26.806,26.806
+                                        C159.925,260.87,147.94,265,135.001,265c-33.084,0-60-26.916-60-60v-50c0-33.084,26.916-60,60-60s60,26.916,60,60V205z"/>
+                                    <rect x="255.001" y="95" width="80" height="20"/>
+                                    <rect x="350" y="95" width="60" height="20"/>
+                                    <rect x="255.001" y="145" width="180" height="20"/>
+                                    <rect x="255.001" y="195" width="180" height="20"/>
+                                    <rect x="255.001" y="245" width="180" height="20"/>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                </i>
+                Guess My Word
+                <menu class="no-wrap">
+                    <li><a class="{{ if and (eq .Page "home") (eq .Mode "default")}} active" aria-current="page{{end}}" href="/"><i>home</i> Home</a></li>
+                    <li><a class="{{ if eq .Page "stats"}} active" aria-current="page{{end}}" href="/stats"><i>leaderboard</i> Stats</a></li>
+                    <li><a class="{{ if eq .Page "about"}} active" aria-current="page{{end}}" href="/about"><i>info</i> About</a></li>
+                    <li><a class="{{ if and (eq .Page "home") (eq .Mode "hard")}} active" aria-current="page{{end}}" href="/mode/hard"><i>swords</i> Hard Mode</a></li>
+                </menu>
+            </button>
+            <button class="transparent l">
+                <a href="/">
+                    <i>
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 490.001 490.001" xml:space="preserve" alt="Question by https://www.svgrepo.com/svg/2545/question">
                             <g>
                                 <g>
@@ -44,30 +77,17 @@
                                 </g>
                             </g>
                         </svg>
-                        <span>Guess My Word</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="{{ if and (eq .Page "home") (eq .Mode "default")}} active" aria-current="page{{end}}" href="/">Home</a>
-                </li>
-                <li>
-                    <a class="{{ if eq .Page "stats"}} active" aria-current="page{{end}}" href="/stats">Stats</a>
-                </li>
-                <li>
-                    <a class="{{ if eq .Page "about"}} active" aria-current="page{{end}}" href="/about">About</a>
-                </li>
-                <li>
-                    <a class="{{ if and (eq .Page "home") (eq .Mode "hard")}} active" aria-current="page{{end}}" href="/mode/hard">Hard Mode</a>
-                </li>
-            </ul>
+                    </i>
+                    Guess My Word
+                </a>
+            </button>
+            <button class="transparent l"><a class="{{ if and (eq .Page "home") (eq .Mode "default")}} active" aria-current="page{{end}}" href="/"><i>home</i> Home</a></button>
+            <button class="transparent l"><a class="{{ if eq .Page "stats"}} active" aria-current="page{{end}}" href="/stats"><i>leaderboard</i> Stats</a></button>
+            <button class="transparent l"><a class="{{ if eq .Page "about"}} active" aria-current="page{{end}}" href="/about"><i>info</i> About</a></button>
+            <button class="transparent l"><a class="{{ if and (eq .Page "home") (eq .Mode "hard")}} active" aria-current="page{{end}}" href="/mode/hard"><i>swords</i> Hard Mode</a></button>
+            <span class="max"></span>
+            <progress class="circle indeterminate htmx-indicator" value="50" max="100"></progress>
         </nav>
     </header>
 
-    <main class="container">
-        {{ if and .Session .Session.Current.Stale }}
-        <article>
-            <form method="POST" action="/reset">
-                A new day has dawned, and a fresh word is available! <button type="submit">Start guessing</button>
-            </form>
-        </article>
-        {{ end }}
+    <main class="responsive">

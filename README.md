@@ -16,8 +16,7 @@ The backend web framework in use is Chi: https://go-chi.io
 
 The frontend frameworks in use are:
 
-- Pico CSS: https://picocss.com/
-- Bootstrap Icons: https://icons.getbootstrap.com
+- Beer CSS: https://www.beercss.com
 - HTMX: https://htmx.org
 
 Persistence is being enabled using a Redis backend.

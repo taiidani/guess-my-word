@@ -1,6 +1,6 @@
 module guess_my_word
 
-go 1.23.1
+go 1.25.1
 
 require (
 	github.com/boj/redistore v1.4.1

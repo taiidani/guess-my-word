@@ -1,27 +1,30 @@
 {{ template "header.gohtml" .}}
 
-<h1>About</h1>
+<section>
+    <article class="blur">
+        <h2>About</h2>
 
-<p>This is a pet project game around guessing a word based on its location in the alphabet. Users will provide a word, and the application will tell them if that word falls before or after the target in the alphabet. This process will then be repeated until the target is found. HINT: Think binary search trees!</p>
+        <p>This is a pet project game around guessing a word based on its location in the alphabet. Users will provide a word, and the application will tell them if that word falls before or after the target in the alphabet. This process will then be repeated until the target is found. HINT: Think binary search trees!</p>
 
-<h1>Attributions</h1>
+        <h2>Attributions</h2>
 
-<p>Originally inspired by <a href="https://hryanjones.com/guess-my-word/">https://hryanjones.com/guess-my-word/</a>.</p>
+        <p>Originally inspired by <a href="https://hryanjones.com/guess-my-word/">https://hryanjones.com/guess-my-word/</a>.</p>
 
-<p>The Scrabble word list was obtained from <a href="https://sourceforge.net/projects/scrabbledict/">https://sourceforge.net/projects/scrabbledict/</a>.</p>
+        <p>The Scrabble word list was obtained from <a href="https://sourceforge.net/projects/scrabbledict/">https://sourceforge.net/projects/scrabbledict/</a>.</p>
 
-<p>The backend web framework in use is Chi: <a href="https://go-chi.io">https://go-chi.io</a></p>
+        <p>The backend web framework in use is Chi: <a href="https://go-chi.io">https://go-chi.io</a></p>
 
-<p>The frontend frameworks in use are:</p>
+        <p>The frontend frameworks in use are:</p>
 
-<ul>
-    <li>Pico CSS: <a href="https://picocss.com/">https://picocss.com/</a></li>
-    <li>Bootstrap Icons: <a href="https://icons.getbootstrap.com">https://icons.getbootstrap.com</a></li>
-    <li>HTMX: <a href="https://htmx.org">https://htmx.org</a></li>
-</ul>
+        <ul>
+            <li>Beer CSS: <a href="https://www.beercss.com">https://www.beercss.com</a></li>
+            <li>HTMX: <a href="https://htmx.org">https://htmx.org</a></li>
+        </ul>
 
-<p>Persistence is being enabled using a Redis backend.</p>
+        <p>Persistence is being enabled using Postgres and Redis backends.</p>
 
-<p>View the source at <a href="https://github.com/taiidani/guess-my-word">https://github.com/taiidani/guess-my-word</a>.</p>
+        <p>View the source at <a href="https://github.com/taiidani/guess-my-word">https://github.com/taiidani/guess-my-word</a>.</p>
+    </article>
+</section>
 
 {{ template "footer.gohtml" .}}

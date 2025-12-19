@@ -15,14 +15,14 @@ document.addEventListener("htmx:responseError", function (evt) {
   input.ariaInvalid = true;
   document.getElementById("invalid-helper").innerHTML =
     evt.detail.xhr.responseText;
+  document.getElementById("invalid-helper").classList.remove("hide");
 });
 
 // Clear any invalid states when typing in the guess input
-document
-  .getElementById("guess-input")
-  .addEventListener("keydown", function (evt) {
-    this.ariaInvalid = null;
-    document.getElementById("invalid-helper").innerHTML = "";
-  });
+document.getElementById("guesser").addEventListener("keydown", function (evt) {
+  document.getElementById("guess-input").ariaInvalid = null;
+  document.getElementById("invalid-helper").innerHTML = "";
+  document.getElementById("invalid-helper").classList.add("hide");
+});
 
 console.log("Loaded");
