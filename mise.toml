@@ -6,7 +6,7 @@ DEV = "true"
 [tools]
 nodejs = "19.3.0"
 golang = "1.25.1"
-staticcheck = 'latest'
+"go:honnef.co/go/tools/cmd/staticcheck" = 'latest'
 
 [vars]
 filename = 'guess-my-word'
@@ -14,7 +14,7 @@ filename = 'guess-my-word'
 [tasks.default]
 description = "Execute the app in development mode"
 depends = ["build"]
-run = ["docker compose up -d --wait", "./{{vars.filename}}"]
+run = ["./{{vars.filename}}"]
 
 [tasks.build]
 description = "Execute the app in development mode"

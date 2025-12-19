@@ -140,7 +140,7 @@ func Test_HintHandler(t *testing.T) {
 			router.ServeHTTP(w, req)
 
 			got := w.Body.String()
-			want := `<article><i class="bi bi-question-circle"></i> ` + tt.want + `</article>
+			want := `<article class="secondary"><i>help</i> ` + tt.want + `</article>
 `
 
 			if !reflect.DeepEqual(got, want) {
