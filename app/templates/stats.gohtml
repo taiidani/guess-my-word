@@ -1,30 +1,30 @@
 {{ template "header.gohtml" . }}
 
-<section class="list-default">
-    <article class="blur">
+<section>
+    <article class="blur list-default">
         <h3>Default</h3>
 
         <div class="grid">
-            <div class="s6">
+            <div class="s6 yesterday">
                 <h4><i>history</i> Yesterday's Stats</h4>
                 {{ template "stats_block.gohtml" .Yesterday }}
             </div>
-            <div class="s6">
+            <div class="s6 today">
                 <h4><i>bar_chart</i> Today's Stats</h4>
                 {{ template "stats_block.gohtml" .Today }}
             </div>
         </div>
     </article>
 
-    <article class="blur">
+    <article class="blur list-hard">
         <h3>Hard</h3>
 
         <div class="grid">
-            <div class="s6">
+            <div class="s6 yesterday">
                 <h4><i>history</i> Yesterday's Stats</h4>
                 {{ template "stats_block.gohtml" .YesterdayHard }}
             </div>
-            <div class="s6">
+            <div class="s6 today">
                 <h4><i>bar_chart</i> Today's Stats</h4>
                 {{ template "stats_block.gohtml" .TodayHard }}
             </div>

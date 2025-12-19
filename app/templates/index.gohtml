@@ -12,12 +12,14 @@
         </div>
     {{ end }}
 
-    <p>
-        This application hosts a daily word game. Guessing using the form
-        below will place your guess above or below the box based on its place
-        in the alphabet relative to today's word. Every day a new word will
-        become guessable. Good luck!
-    </p>
+    <article class="blur">
+        <p>
+            This application hosts a daily word game. Guessing using the form
+            below will place your guess above or below the box based on its place
+            in the alphabet relative to today's word. Every day a new word will
+            become guessable. Good luck!
+        </p>
+    </article>
 
     <article id="guesser" class="blur">
         {{ template "guesser.gohtml" .Guesser }}

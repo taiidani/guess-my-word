@@ -33,6 +33,11 @@ env.DEV = "false"
 env.CGO_ENABLED = 1                                    # Required for -race
 run = ["go test -race -covermode=atomic -cover ./..."]
 
+[tasks.playwright]
+description = "Playwright acceptance tests"
+dir = "./web"
+run = ["npm ci", "npx playwright install", "npx playwright test --ui"]
+
 [tasks.lint]
 depends = ["dependencies"]
 run = ["go vet ./...", "staticcheck ./..."]
