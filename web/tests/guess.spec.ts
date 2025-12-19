@@ -24,19 +24,19 @@ test("guesses the default word", async ({ page }) => {
   await expect(lGuessAfter).toHaveText("No guesses after the word");
 
   // First guess
-  await lWordEntry.type("apple");
+  await lWordEntry.fill("apple");
   await lWordEntry.press("Enter");
   await expect(lGuessBefore).toHaveText("keyboard_arrow_down apple");
   await expect(lGuessAfter).toHaveText("No guesses after the word");
 
   // Second guess
-  await lWordEntry.type("yam");
+  await lWordEntry.fill("yam");
   await lWordEntry.press("Enter");
   await expect(lGuessBefore).toHaveText("keyboard_arrow_down apple");
   await expect(lGuessAfter).toHaveText("keyboard_arrow_up yam");
 
   // Third guess
-  await lWordEntry.type("ham");
+  await lWordEntry.fill("ham");
   await lWordEntry.press("Enter");
   await expect(lGuessBefore).toHaveText(
     "keyboard_arrow_down apple keyboard_arrow_down ham",
@@ -44,7 +44,7 @@ test("guesses the default word", async ({ page }) => {
   await expect(lGuessAfter).toHaveText("keyboard_arrow_up yam");
 
   // Fourth guess
-  await lWordEntry.type("zoo");
+  await lWordEntry.fill("zoo");
   await lWordEntry.press("Enter");
   await expect(lGuessBefore).toHaveText(
     "keyboard_arrow_down apple keyboard_arrow_down ham",
@@ -54,13 +54,17 @@ test("guesses the default word", async ({ page }) => {
   );
 
   // Correct guess
-  await lWordEntry.type(defaultToday);
+  await lWordEntry.fill(defaultToday);
   await lWordEntry.press("Enter");
-  await expect(page.locator("#guess-form").first()).toContainText(
+  await expect(page.locator("#guess-result").first()).toContainText(
     'You guessed "' + defaultToday + '" correctly',
   );
-  await expect(lGuessBefore).toHaveText("apple ham");
-  await expect(lGuessAfter).toHaveText("yam zoo");
+  await expect(lGuessBefore).toHaveText(
+    "keyboard_arrow_down apple keyboard_arrow_down ham",
+  );
+  await expect(lGuessAfter).toHaveText(
+    "keyboard_arrow_up yam keyboard_arrow_up zoo",
+  );
 });
 
 test("guesses the hard word", async ({ page }) => {
@@ -107,15 +111,19 @@ test("guesses the hard word", async ({ page }) => {
     "keyboard_arrow_down apple keyboard_arrow_down cherry",
   );
   await expect(lGuessAfter).toHaveText(
-    "keyboard_arrow_uptree keyboard_arrow_up trunk",
+    "keyboard_arrow_up tree keyboard_arrow_up trunk",
   );
 
   // Correct guess
-  await lWordEntry.type(hardToday);
+  await lWordEntry.fill(hardToday);
   await lWordEntry.press("Enter");
-  await expect(page.locator("#guess-form").first()).toContainText(
+  await expect(page.locator("#guess-result").first()).toContainText(
     'You guessed "' + hardToday + '" correctly',
   );
-  await expect(lGuessBefore).toHaveText("apple cherry");
-  await expect(lGuessAfter).toHaveText("tree trunk");
+  await expect(lGuessBefore).toHaveText(
+    "keyboard_arrow_down apple keyboard_arrow_down cherry",
+  );
+  await expect(lGuessAfter).toHaveText(
+    "keyboard_arrow_up tree keyboard_arrow_up trunk",
+  );
 });

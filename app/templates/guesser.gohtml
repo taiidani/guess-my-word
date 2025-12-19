@@ -46,7 +46,7 @@
     {{ end }}
 
 {{ else }}
-<article class="fill">
+<article id="guess-result" class="fill">
     <p>
       🎉 You guessed "{{ .Session.Answer }}" correctly with
       <strong>{{ .Session.GuessCount }} tries</strong>.
