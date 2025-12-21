@@ -4,14 +4,14 @@ go 1.25.1
 
 require (
 	github.com/boj/redistore v1.4.1
-	github.com/getsentry/sentry-go v0.36.2
-	github.com/getsentry/sentry-go/slog v0.36.2
+	github.com/getsentry/sentry-go v0.40.0
+	github.com/getsentry/sentry-go/slog v0.40.0
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-chi/httplog/v3 v3.3.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b
-	github.com/redis/go-redis/v9 v9.16.0
+	github.com/redis/go-redis/v9 v9.17.2
 )
 
 require (
