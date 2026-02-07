@@ -42,9 +42,9 @@ jobs:
       filename: "${{ needs.build.outputs.filename }}"
 
   deploy:
-    uses: taiidani/deploy-action/.github/workflows/nomad.yml@main
+    uses: taiidani/deploy-action/.github/workflows/deploy.yml@main
     needs: upload
     with:
       artifact: "${{ needs.upload.outputs.artifact }}"
-      jobspec: guess-my-word.nomad
+      service: guess-my-word
       url: https://guessmyword.xyz
