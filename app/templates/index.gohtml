@@ -12,12 +12,17 @@
         </div>
     {{ end }}
 
-    <article class="blur">
+    <article class="{{ if eq .Mode "hard" }}tertiary-container{{end}}">
         <p>
-            This application hosts a daily word game. Guessing using the form
-            below will place your guess above or below the box based on its place
-            in the alphabet relative to today's word. Every day a new word will
-            become guessable. Good luck!
+            {{ if eq .Mode "hard" }}
+            This is a <strong>challenging</strong> mode.
+            It uses the entire Scrabble dictionary as its word list, including plurals and different tenses.
+            It is not recommended for new players!
+            {{ else }}
+            This application hosts a daily word game.
+            Guessing using the form below will place your guess above or below the box based on its place in the alphabet relative to today's word.
+            Every day a new word will become guessable. Good luck!
+            {{ end }}
         </p>
     </article>
 
