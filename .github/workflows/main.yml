@@ -13,10 +13,10 @@ jobs:
     outputs:
       filename: ${{ steps.filename.outputs.filename }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: jdx/mise-action@v2
+      - uses: jdx/mise-action@v3
 
       - name: build
         run: mise run build
@@ -28,7 +28,7 @@ jobs:
       - name: package
         run: tar cvzf ./${{ steps.filename.outputs.filename }} guess-my-word
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: "artifact"
           path: ./${{ steps.filename.outputs.filename }}
