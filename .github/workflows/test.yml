@@ -34,7 +34,7 @@ jobs:
   playwright:
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: [ "go" ]
+    needs: ["go"]
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
@@ -44,6 +44,9 @@ jobs:
         with:
           name: guess-my-word-app
           path: guess-my-word
+
+      - name: Run Dependencies
+        run: docker compose up -d --wait
 
       - name: Run App
         run: |
