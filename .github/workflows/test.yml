@@ -16,7 +16,7 @@ jobs:
         run: mise run build
 
       - name: Upload
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: guess-my-word-app
           if-no-files-found: error
@@ -40,7 +40,7 @@ jobs:
       - uses: jdx/mise-action@v3
 
       - name: Download App
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: guess-my-word-app
           path: guess-my-word
@@ -65,7 +65,7 @@ jobs:
         working-directory: web
         run: npx playwright test
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report
