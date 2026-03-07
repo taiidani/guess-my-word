@@ -35,16 +35,9 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  upload:
-    uses: taiidani/deploy-action/.github/workflows/publish-binary.yml@main
+  deploy:
+    uses: taiidani/deploy-action/.github/workflows/deploy.yml@main
     needs: build
     with:
       filename: "${{ needs.build.outputs.filename }}"
-
-  deploy:
-    uses: taiidani/deploy-action/.github/workflows/deploy.yml@main
-    needs: upload
-    with:
-      artifact: "${{ needs.upload.outputs.artifact }}"
-      service: guess-my-word
       url: https://guessmyword.xyz
