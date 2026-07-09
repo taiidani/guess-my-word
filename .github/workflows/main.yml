@@ -17,27 +17,39 @@ jobs:
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v3
+      - run: mise run build
 
-      - name: build
-        run: mise run build
-
-      - name: filename
-        id: filename
-        run: echo "filename=guess-my-word-$(date +'%Y.%m.%d')-${GITHUB_SHA::6}_linux_amd64.tgz" >> "$GITHUB_OUTPUT"
-
-      - name: package
-        run: tar cvzf ./${{ steps.filename.outputs.filename }} guess-my-word
-
-      - uses: actions/upload-artifact@v7
+  release:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: ${{ github.ref == 'refs/heads/main' }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
         with:
-          name: "artifact"
-          path: ./${{ steps.filename.outputs.filename }}
-          if-no-files-found: error
-          retention-days: 1
+          fetch-depth: 0
 
-  deploy:
-    uses: taiidani/deploy-action/.github/workflows/deploy.yml@main
-    needs: build
-    with:
-      filename: "${{ needs.build.outputs.filename }}"
-      url: https://guessmyword.xyz
+      - uses: jdx/mise-action@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          VERSION="v$(date +'%Y').$(date +'%-m').$(date +'%-d')+$(git rev-parse --short HEAD)"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.version }}" -m "Release ${{ steps.version.outputs.version }}"
+          git push origin "${{ steps.version.outputs.version }}"
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
