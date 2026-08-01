@@ -1,0 +1,26 @@
+name: guess-my-word
+
+services:
+  guess-my-word-app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    x-ports:
+      - guessmyword.xyz:3000/https
+    restart: unless-stopped
+    command: ["/app", "--port=3000"]
+    environment:
+      ADDR: "0.0.0.0"
+      ORIGIN: "guessmyword.xyz"
+      SENTRY_ENVIRONMENT: "prod"
+      SENTRY_DSN: "https://acb76cbf7c2ebaad3c9c8fd7766e59e3@o55858.ingest.us.sentry.io/4509922391490560"
+      REDIS_ADDR: guess-my-word-redis.internal:6379
+      REDIS_DB: 1
+
+  guess-my-word-redis:
+    image: redis:8
+    restart: unless-stopped
+    healthcheck:
+      test: redis-cli ping || exit 1
+    volumes:
+      - /data/guess-my-word/redis:/data
