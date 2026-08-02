@@ -161,7 +161,7 @@ func (s *store) save(session *sessions.Session) error {
 	if age == 0 {
 		age = defaultMaxAge
 	}
-	cmd := s.client.SetEx(context.TODO(), keyPrefix+session.ID, b, time.Duration(age*int(time.Second)))
+	cmd := s.client.Set(context.TODO(), keyPrefix+session.ID, b, time.Duration(age*int(time.Second)))
 	return cmd.Err()
 }
 
