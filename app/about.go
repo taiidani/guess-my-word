@@ -21,5 +21,5 @@ func AboutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	renderHtml(w, http.StatusOK, "about.gohtml", data)
+	renderHtml(r.Context(), w, http.StatusOK, "about.gohtml", data)
 }

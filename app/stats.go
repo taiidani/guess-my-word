@@ -68,7 +68,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	data.Today.Word = ""
 	data.TodayHard = wordTodayHard.Stats()
 	data.TodayHard.Word = ""
-	renderHtml(w, http.StatusOK, "stats.gohtml", data)
+	renderHtml(r.Context(), w, http.StatusOK, "stats.gohtml", data)
 }
 
 // YesterdayHandler is an HTML handler for pre-populating data to test with.
@@ -102,7 +102,7 @@ func YesterdayHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := word.Stats()
-	renderHtml(w, http.StatusOK, "stats.gohtml", data)
+	renderHtml(r.Context(), w, http.StatusOK, "stats.gohtml", data)
 }
 
 // TodayHandler is an HTML handler for pre-populating data to test with.
@@ -127,5 +127,5 @@ func TodayHandler(w http.ResponseWriter, r *http.Request) {
 	// Wipe the word from the data, as it's today
 	data.Word = ""
 
-	renderHtml(w, http.StatusOK, "stats.gohtml", data)
+	renderHtml(r.Context(), w, http.StatusOK, "stats.gohtml", data)
 }

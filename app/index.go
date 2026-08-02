@@ -53,5 +53,5 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	data.Guesser = fillGuessBag(data.Session.Current(), wordStore, word)
 
-	renderHtml(w, http.StatusOK, "index.gohtml", data)
+	renderHtml(r.Context(), w, http.StatusOK, "index.gohtml", data)
 }

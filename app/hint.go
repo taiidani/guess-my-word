@@ -32,7 +32,7 @@ func HintHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hintWord := getWordHint(h, word.Value)
-	renderHtml(w, http.StatusOK, "hint.gohtml", struct {
+	renderHtml(r.Context(), w, http.StatusOK, "hint.gohtml", struct {
 		Word string
 	}{
 		Word: hintWord,

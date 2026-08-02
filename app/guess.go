@@ -66,7 +66,7 @@ func GuessHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := fillGuessBag(session.Current(), wordStore, word)
-	renderHtml(w, http.StatusOK, "guesser.gohtml", data)
+	renderHtml(r.Context(), w, http.StatusOK, "guesser.gohtml", data)
 }
 
 func fillGuessBag(s *sessions.SessionMode, _ wordClient, word model.Word) guessBag {
