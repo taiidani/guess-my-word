@@ -25,15 +25,9 @@ updates:
         patterns: ["*"]
 
   - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    groups:
-      docker:
-        patterns: ["*"]
-
-  - package-ecosystem: "docker"
-    directory: "/deploy"
+    directories:
+      - "/"
+      - "/deploy"
     schedule:
       interval: "monthly"
     groups:
