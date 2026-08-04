@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog/v3"
 )
 
@@ -51,6 +52,7 @@ var templates embed.FS
 
 // AddHandlers will add the application handlers to the HTTP server
 func AddHandlers(r chi.Router) error {
+	r.Use(middleware.ClientIPFromHeader("X-Forwarded-For"))
 	r.Use(httplog.RequestLogger(slog.Default(), &httplog.Options{}))
 	r.Use(standardHeadersMiddleware)
 
