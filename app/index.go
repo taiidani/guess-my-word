@@ -20,7 +20,7 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	data.Session = sessions.New(w, r)
 	defer func() {
 		if err := data.Session.Save(); err != nil {
-			slog.Warn("Unable to save session", "error", err)
+			slog.WarnContext(r.Context(), "Unable to save session", "error", err)
 		}
 	}()
 

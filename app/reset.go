@@ -8,7 +8,7 @@ import (
 func ResetHandler(w http.ResponseWriter, r *http.Request) {
 	session, err := startSession(w, r)
 	if err != nil {
-		slog.Warn("Unable to start session", "error", err)
+		slog.WarnContext(r.Context(), "Unable to start session", "error", err)
 		errorResponse(w, r, http.StatusBadRequest, err)
 		return
 	}

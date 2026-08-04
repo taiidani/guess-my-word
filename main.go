@@ -47,11 +47,11 @@ func main() {
 
 	// Add all HTTP handlers
 	if err := app.AddHandlers(r); err != nil {
-		slog.Error("Error adding handlers", "err", err)
+		slog.ErrorContext(ctx, "Error adding handlers", "err", err)
 		os.Exit(1)
 	}
 
-	slog.Info("Listening and serving HTTP", "port", bind)
+	slog.InfoContext(ctx, "Listening and serving HTTP", "port", bind)
 	srv := http.Server{Addr: bind, Handler: r}
 
 	done := make(chan any)
@@ -75,7 +75,7 @@ func initLogging(_ context.Context) {
 		level = slog.LevelInfo
 	}
 
-	handler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+	handler := slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{
 		Level: level,
 	})
 	logger = slog.New(handler)
@@ -115,7 +115,7 @@ func setupStores(ctx context.Context, r chi.Router) error {
 			db,
 		)
 	} else {
-		slog.Warn("No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
+		slog.WarnContext(ctx, "No REDIS_ADDR or REDIS_HOST env var set. Falling back upon in-memory store")
 		sessionClient = memstore.NewMemStore([]byte("secret"))
 		dataClient = datastore.NewMemory()
 	}

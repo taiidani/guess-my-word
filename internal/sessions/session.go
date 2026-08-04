@@ -59,7 +59,7 @@ func New(w http.ResponseWriter, r *http.Request) *Session {
 	}
 	if jsonSession, ok := s.Values["session"]; ok {
 		if err := json.Unmarshal(jsonSession.([]byte), &session); err != nil {
-			slog.Warn("Could not parse history", "error", err)
+			slog.WarnContext(r.Context(), "Could not parse history", "error", err)
 		}
 	}
 
@@ -72,7 +72,7 @@ func Configure(r chi.Router, name string, client sessions.Store) {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			sess, err := client.Get(r, "guessmyword")
 			if err != nil {
-				slog.Warn("Unable to load session", "error", err)
+				slog.WarnContext(r.Context(), "Unable to load session", "error", err)
 			}
 
 			ctx := context.WithValue(r.Context(), &sessionKey, sess)

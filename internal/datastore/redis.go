@@ -40,7 +40,7 @@ func NewRedis(addr string, db int) *RedisClient {
 	})
 	status := client.Ping(ctx)
 	if status.Err() != nil {
-		slog.Error("Failed to create Redis client", "addr", addr)
+		slog.ErrorContext(ctx, "Failed to create Redis client", "addr", addr)
 		panic(status.Err())
 	}
 
@@ -61,7 +61,7 @@ func NewRedisSecure(host, port, user, password string, db int) *RedisClient {
 	})
 	status := client.Ping(ctx)
 	if status.Err() != nil {
-		slog.Warn("Failed to create secure Redis client", "addr", client.Options().Addr)
+		slog.WarnContext(ctx, "Failed to create secure Redis client", "addr", client.Options().Addr)
 		panic(status.Err())
 	}
 

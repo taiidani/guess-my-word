@@ -15,7 +15,7 @@ var assets embed.FS
 
 func assetsHandler(w http.ResponseWriter, r *http.Request) {
 	if dev {
-		slog.Debug("Serving file from disk", "path", r.URL.Path)
+		slog.DebugContext(r.Context(), "Serving file from disk", "path", r.URL.Path)
 
 		// Sanitize the path
 		cwd, _ := os.Getwd()
@@ -28,7 +28,7 @@ func assetsHandler(w http.ResponseWriter, r *http.Request) {
 
 		http.ServeFile(w, r, filepath.Join("app", r.URL.Path))
 	} else {
-		slog.Debug("Serving file from FS", "path", r.URL.Path)
+		slog.DebugContext(r.Context(), "Serving file from FS", "path", r.URL.Path)
 		http.ServeFileFS(w, r, assets, r.URL.Path)
 	}
 }

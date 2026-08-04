@@ -55,7 +55,7 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 	word, err := w.GetWord(ctx, key)
 	if err != nil {
 		// Generate a new word
-		log.Warn("Encountered error. Generating new word", "error", err)
+		log.WarnContext(ctx, "Encountered error. Generating new word", "error", err)
 		listStore := NewListStore(w.client)
 		l, err := listStore.GetList(ctx, mode)
 		if err != nil {
@@ -70,10 +70,10 @@ func (w *WordStore) GetForDay(ctx context.Context, tm time.Time, mode string) (m
 		}
 
 		// And store it if we're able
-		log.Info("Storing generated word", "word", word)
+		log.InfoContext(ctx, "Storing generated word", "word", word)
 		err = w.SetWord(ctx, key, word)
 		if err != nil {
-			log.Info("Encountered error storing new word", "word", word, "error", err)
+			log.InfoContext(ctx, "Encountered error storing new word", "word", word, "error", err)
 		}
 	}
 
