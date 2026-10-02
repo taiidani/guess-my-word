@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/boj/redistore v1.4.2
 	github.com/go-chi/chi/v5 v5.3.2
-	github.com/go-chi/httplog/v3 v3.4.0
+	github.com/go-chi/httplog/v3 v3.5.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/sessions v1.4.0
 	github.com/quasoft/memstore v0.0.0-20191010062613-2bce066d2b0b
